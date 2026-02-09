@@ -1,88 +1,158 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Stethoscope, Plus, X, Send, AlertTriangle, 
-  CheckCircle, AlertCircle, Loader2 
-} from 'lucide-react';
+import { Stethoscope, Search, AlertTriangle, CheckCircle, Clock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { getSymptomAssessment, parseUrgencyLevel } from '@/services/api';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
-const commonSymptoms = [
-  'Headache', 'Fever', 'Cough', 'Fatigue', 'Nausea',
-  'Dizziness', 'Chest pain', 'Shortness of breath', 'Sore throat',
-  'Body aches', 'Runny nose', 'Stomach pain', 'Back pain', 'Joint pain'
-];
+const symptomCategories = {
+  'Head & Neurological': [
+    'Headache', 'Migraine', 'Dizziness', 'Vertigo', 'Confusion', 'Memory problems',
+    'Difficulty concentrating', 'Blurred vision', 'Double vision', 'Light sensitivity',
+    'Ringing in ears', 'Numbness in face', 'Fainting', 'Seizures'
+  ],
+  'Respiratory': [
+    'Cough', 'Dry cough', 'Wet cough', 'Shortness of breath', 'Wheezing', 'Chest tightness',
+    'Rapid breathing', 'Difficulty breathing', 'Runny nose', 'Stuffy nose', 'Sneezing',
+    'Sore throat', 'Hoarse voice', 'Coughing up blood'
+  ],
+  'Digestive': [
+    'Nausea', 'Vomiting', 'Diarrhea', 'Constipation', 'Stomach pain', 'Bloating',
+    'Heartburn', 'Acid reflux', 'Loss of appetite', 'Excessive hunger', 'Difficulty swallowing',
+    'Blood in stool', 'Black stool', 'Abdominal cramps'
+  ],
+  'Musculoskeletal': [
+    'Back pain', 'Lower back pain', 'Upper back pain', 'Neck pain', 'Joint pain',
+    'Muscle aches', 'Muscle weakness', 'Stiffness', 'Swollen joints', 'Leg cramps',
+    'Arm pain', 'Shoulder pain', 'Hip pain', 'Knee pain'
+  ],
+  'Cardiovascular': [
+    'Chest pain', 'Heart palpitations', 'Rapid heartbeat', 'Slow heartbeat', 'Irregular heartbeat',
+    'High blood pressure symptoms', 'Low blood pressure symptoms', 'Swollen legs', 'Swollen ankles',
+    'Cold hands and feet', 'Bluish skin'
+  ],
+  'Skin': [
+    'Rash', 'Itching', 'Hives', 'Dry skin', 'Acne', 'Bruising easily', 'Skin discoloration',
+    'Wound not healing', 'Excessive sweating', 'Night sweats', 'Skin lumps', 'Moles changing'
+  ],
+  'General': [
+    'Fever', 'Chills', 'Fatigue', 'Weakness', 'Weight loss', 'Weight gain', 'Loss of appetite',
+    'Excessive thirst', 'Frequent urination', 'Night sweats', 'Swollen lymph nodes', 'Malaise'
+  ],
+  'Mental Health': [
+    'Anxiety', 'Depression', 'Mood swings', 'Irritability', 'Sleep problems', 'Insomnia',
+    'Excessive sleep', 'Panic attacks', 'Stress', 'Difficulty relaxing', 'Loss of interest'
+  ],
+};
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/medical-chat`;
 
 export default function SymptomsPage() {
-  const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [customSymptom, setCustomSymptom] = useState('');
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [assessment, setAssessment] = useState<string | null>(null);
   const [urgency, setUrgency] = useState<'low' | 'medium' | 'high' | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const addSymptom = (symptom: string) => {
-    if (!symptoms.includes(symptom)) {
-      setSymptoms([...symptoms, symptom]);
+  const toggleSymptom = (symptom: string) => {
+    setSelectedSymptoms(prev =>
+      prev.includes(symptom)
+        ? prev.filter(s => s !== symptom)
+        : [...prev, symptom]
+    );
+  };
+
+  const filteredCategories = Object.entries(symptomCategories).reduce((acc, [category, symptoms]) => {
+    const filtered = symptoms.filter(s => 
+      s.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    if (filtered.length > 0) {
+      acc[category] = filtered;
     }
+    return acc;
+  }, {} as Record<string, string[]>);
+
+  const parseUrgency = (text: string): 'low' | 'medium' | 'high' => {
+    const lowerText = text.toLowerCase();
+    const highKeywords = ['emergency', 'urgent', 'immediately', 'call 911', 'severe', 'critical', 'life-threatening'];
+    const mediumKeywords = ['soon', 'within 24', 'see a doctor', 'consult', 'moderate', 'concerning'];
+    
+    if (highKeywords.some(k => lowerText.includes(k))) return 'high';
+    if (mediumKeywords.some(k => lowerText.includes(k))) return 'medium';
+    return 'low';
   };
 
-  const removeSymptom = (symptom: string) => {
-    setSymptoms(symptoms.filter(s => s !== symptom));
-  };
-
-  const addCustomSymptom = () => {
-    if (customSymptom.trim() && !symptoms.includes(customSymptom.trim())) {
-      setSymptoms([...symptoms, customSymptom.trim()]);
-      setCustomSymptom('');
+  const handleAssess = async () => {
+    if (selectedSymptoms.length === 0) {
+      toast({ title: 'No symptoms selected', description: 'Please select at least one symptom.', variant: 'destructive' });
+      return;
     }
-  };
-
-  const handleSubmit = async () => {
-    if (symptoms.length === 0) return;
 
     setIsLoading(true);
     setAssessment(null);
-    setUrgency(null);
+    
+    const prompt = `I am experiencing the following symptoms: ${selectedSymptoms.join(', ')}. ${additionalInfo ? `Additional information: ${additionalInfo}` : ''}`;
 
     try {
-      const result = await getSymptomAssessment(symptoms, additionalInfo);
-      setAssessment(result.assessment);
-      setUrgency(parseUrgencyLevel(result.assessment));
+      const response = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: prompt }],
+          type: 'symptom-assessment',
+        }),
+      });
+
+      if (!response.ok || !response.body) throw new Error('Failed to get assessment');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let fullContent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '' || !line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              fullContent += content;
+              setAssessment(fullContent);
+            }
+          } catch {
+            buffer = line + '\n' + buffer;
+            break;
+          }
+        }
+      }
+
+      setUrgency(parseUrgency(fullContent));
     } catch (error) {
       console.error('Assessment error:', error);
-      setAssessment('Unable to get assessment. Please check your connection and try again.');
-      setUrgency(null);
+      toast({ title: 'Error', description: 'Failed to get assessment. Please try again.', variant: 'destructive' });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getUrgencyStyles = () => {
-    switch (urgency) {
-      case 'high':
-        return 'urgency-high';
-      case 'medium':
-        return 'urgency-medium';
-      case 'low':
-        return 'urgency-low';
-      default:
-        return 'bg-card border border-border';
-    }
-  };
-
-  const getUrgencyIcon = () => {
-    switch (urgency) {
-      case 'high':
-        return <AlertTriangle className="h-6 w-6" />;
-      case 'medium':
-        return <AlertCircle className="h-6 w-6" />;
-      case 'low':
-        return <CheckCircle className="h-6 w-6" />;
-      default:
-        return null;
     }
   };
 
@@ -91,157 +161,166 @@ export default function SymptomsPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto"
+        className="max-w-6xl mx-auto"
       >
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="icon-container w-16 h-16 mx-auto mb-4">
-            <Stethoscope className="h-8 w-8" />
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-500">
+            <Stethoscope className="h-7 w-7 text-white" />
           </div>
-          <h1 className="font-display text-3xl font-bold mb-2">Symptom Assessment</h1>
-          <p className="text-muted-foreground">
-            Select your symptoms and get an AI-powered health assessment
-          </p>
+          <div>
+            <h1 className="text-3xl font-bold">Symptom Checker</h1>
+            <p className="text-muted-foreground">
+              Select your symptoms for an AI-powered preliminary assessment
+            </p>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Symptom Selection */}
           <div className="space-y-6">
-            {/* Common Symptoms */}
-            <div className="bg-card rounded-2xl p-6 border border-border shadow-soft">
-              <h3 className="font-semibold mb-4">Common Symptoms</h3>
-              <div className="flex flex-wrap gap-2">
-                {commonSymptoms.map((symptom) => {
-                  const isSelected = symptoms.includes(symptom);
-                  return (
-                    <button
-                      key={symptom}
-                      onClick={() => isSelected ? removeSymptom(symptom) : addSymptom(symptom)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                        isSelected
-                          ? 'bg-primary text-primary-foreground shadow-glow'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      {isSelected && <span className="mr-1">✓</span>}
-                      {symptom}
-                    </button>
-                  );
-                })}
-              </div>
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search symptoms..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-white/5 border-white/10"
+              />
             </div>
 
-            {/* Custom Symptom */}
-            <div className="bg-card rounded-2xl p-6 border border-border shadow-soft">
-              <h3 className="font-semibold mb-4">Add Custom Symptom</h3>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Type a symptom..."
-                  value={customSymptom}
-                  onChange={(e) => setCustomSymptom(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && addCustomSymptom()}
-                />
-                <Button onClick={addCustomSymptom} size="icon" variant="secondary">
-                  <Plus className="h-4 w-4" />
+            {/* Selected count */}
+            {selectedSymptoms.length > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <CheckCircle className="h-4 w-4 text-success" />
+                <span>{selectedSymptoms.length} symptom(s) selected</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedSymptoms([])}
+                  className="text-muted-foreground"
+                >
+                  Clear all
                 </Button>
               </div>
+            )}
+
+            {/* Symptom Categories */}
+            <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
+              {Object.entries(filteredCategories).map(([category, symptoms]) => (
+                <div key={category}>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                    {category}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {symptoms.map((symptom) => (
+                      <button
+                        key={symptom}
+                        onClick={() => toggleSymptom(symptom)}
+                        className={cn(
+                          "symptom-chip",
+                          selectedSymptoms.includes(symptom) && "selected"
+                        )}
+                      >
+                        {symptom}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Additional Info */}
-            <div className="bg-card rounded-2xl p-6 border border-border shadow-soft">
-              <h3 className="font-semibold mb-4">Additional Information</h3>
-              <Textarea
-                placeholder="Age, medical history, when symptoms started, etc..."
+            <div>
+              <label className="text-sm font-medium text-muted-foreground block mb-2">
+                Additional Information (optional)
+              </label>
+              <textarea
                 value={additionalInfo}
                 onChange={(e) => setAdditionalInfo(e.target.value)}
-                rows={3}
+                placeholder="Duration, severity, when symptoms started, medications..."
+                className="w-full h-24 px-4 py-3 rounded-xl bg-white/5 border border-white/10 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
+
+            {/* Assess Button */}
+            <Button
+              onClick={handleAssess}
+              disabled={selectedSymptoms.length === 0 || isLoading}
+              className="w-full btn-primary text-lg py-6"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                'Get Assessment'
+              )}
+            </Button>
           </div>
 
-          {/* Selected Symptoms & Results */}
-          <div className="space-y-6">
-            {/* Selected Symptoms */}
-            <div className="bg-card rounded-2xl p-6 border border-border shadow-soft">
-              <h3 className="font-semibold mb-4">
-                Selected Symptoms ({symptoms.length})
-              </h3>
-              {symptoms.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  No symptoms selected. Click on symptoms above to add them.
-                </p>
-              ) : (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {symptoms.map((symptom) => (
-                    <motion.span
-                      key={symptom}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium"
-                    >
-                      {symptom}
-                      <button
-                        onClick={() => removeSymptom(symptom)}
-                        className="hover:text-destructive transition-colors"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </motion.span>
-                  ))}
-                </div>
-              )}
-
-              <Button
-                onClick={handleSubmit}
-                disabled={symptoms.length === 0 || isLoading}
-                className="w-full"
-                size="lg"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <Send className="mr-2 h-4 w-4" />
-                    Get Assessment
-                  </>
-                )}
-              </Button>
-            </div>
-
-            {/* Assessment Results */}
-            {assessment && (
+          {/* Assessment Results */}
+          <div className="space-y-4">
+            {assessment ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`rounded-2xl p-6 ${getUrgencyStyles()}`}
+                className="space-y-4"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  {getUrgencyIcon()}
-                  <h3 className="font-semibold text-lg">Assessment Results</h3>
-                  {urgency && (
-                    <span className="ml-auto text-sm font-medium uppercase">
-                      {urgency} Urgency
+                {/* Urgency Badge */}
+                {urgency && (
+                  <div className={cn(
+                    "flex items-center gap-2 px-4 py-3 rounded-xl",
+                    urgency === 'high' && "bg-destructive/10 border border-destructive/30",
+                    urgency === 'medium' && "bg-warning/10 border border-warning/30",
+                    urgency === 'low' && "bg-success/10 border border-success/30"
+                  )}>
+                    {urgency === 'high' && <AlertTriangle className="h-5 w-5 text-destructive" />}
+                    {urgency === 'medium' && <Clock className="h-5 w-5 text-warning" />}
+                    {urgency === 'low' && <CheckCircle className="h-5 w-5 text-success" />}
+                    <span className={cn(
+                      "font-semibold",
+                      urgency === 'high' && "text-destructive",
+                      urgency === 'medium' && "text-warning",
+                      urgency === 'low' && "text-success"
+                    )}>
+                      {urgency === 'high' && 'High Urgency - Seek immediate medical attention'}
+                      {urgency === 'medium' && 'Medium Urgency - See a doctor soon'}
+                      {urgency === 'low' && 'Low Urgency - Monitor and home care may help'}
                     </span>
-                  )}
-                </div>
-                <div className="prose prose-sm max-w-none">
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {assessment}
-                  </p>
-                </div>
-
-                {urgency === 'high' && (
-                  <div className="mt-4 p-4 bg-background/50 rounded-xl">
-                    <p className="text-sm font-semibold flex items-center gap-2">
-                      🚨 Please contact a healthcare professional or emergency services immediately.
-                    </p>
                   </div>
                 )}
+
+                {/* Assessment Content */}
+                <div className="glass-card rounded-2xl p-6">
+                  <h3 className="font-semibold text-lg mb-4">AI Assessment</h3>
+                  <div className="prose prose-invert prose-sm max-w-none">
+                    <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                      {assessment}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Disclaimer */}
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-warning/5 border border-warning/20">
+                  <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+                  <p className="text-sm text-warning/80">
+                    This is a preliminary AI assessment and not a medical diagnosis. 
+                    Always consult a healthcare professional for proper evaluation.
+                  </p>
+                </div>
               </motion.div>
+            ) : (
+              <div className="glass-card rounded-2xl p-12 text-center">
+                <Stethoscope className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Select Your Symptoms</h3>
+                <p className="text-muted-foreground">
+                  Choose symptoms from the list and click "Get Assessment" to receive 
+                  an AI-powered preliminary evaluation.
+                </p>
+              </div>
             )}
           </div>
         </div>
