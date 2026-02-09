@@ -1,29 +1,36 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageCircle, Send, Mic, MicOff, Trash2, Loader2 } from 'lucide-react';
+import { MessageCircle, Send, Mic, MicOff, Trash2, Loader2, Volume2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { sendChatMessage, ChatMessage, playBase64Audio, speakText } from '@/services/api';
 import { cn } from '@/lib/utils';
-import '@/types/speech.d.ts';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-type SpeechRecognitionType = InstanceType<typeof window.SpeechRecognition> | null;
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/medical-chat`;
+const TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`;
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm Mediredy AI Doctor. I'm here to help with basic health questions and provide general medical information. How can I assist you today?\n\n⚠️ Remember: For serious or urgent conditions, please contact a real doctor or emergency services."
+      content: "Hello! I'm Dr. Mediredy, your AI medical assistant. I'm here to help with basic health questions and provide general wellness guidance.\n\n⚠️ **Important:** For serious or emergency conditions, please contact a real doctor or call emergency services immediately."
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<SpeechRecognitionType>(null);
+  const recognitionRef = useRef<any>(null);
+  const { toast } = useToast();
 
-  // Initialize speech recognition
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -31,26 +38,56 @@ export default function ChatPage() {
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
 
-      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+      recognitionRef.current.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         setInput(transcript);
         setIsListening(false);
       };
 
-      recognitionRef.current.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
+      recognitionRef.current.onerror = () => setIsListening(false);
+      recognitionRef.current.onend = () => setIsListening(false);
     }
   }, []);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const speakText = async (text: string) => {
+    try {
+      setIsSpeaking(true);
+      const response = await fetch(TTS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ text: text.slice(0, 500) }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.audio) {
+          const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
+          audio.onended = () => setIsSpeaking(false);
+          await audio.play();
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('TTS error:', error);
+    }
+    
+    // Fallback to browser speech
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text.slice(0, 300));
+      utterance.rate = 1.1;
+      utterance.onend = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    } else {
+      setIsSpeaking(false);
+    }
+  };
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -58,26 +95,71 @@ export default function ChatPage() {
     const userMessage = input.trim();
     setInput('');
 
-    const newMessages: ChatMessage[] = [...messages, { role: 'user', content: userMessage }];
+    const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
     setMessages(newMessages);
 
     setIsLoading(true);
+    let assistantContent = '';
+
     try {
-      const history = messages.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
+      const response = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+        }),
+      });
 
-      const response = await sendChatMessage(userMessage, history);
-      
-      setMessages([...newMessages, { role: 'assistant', content: response.response }]);
-
-      // Play audio if available
-      if (response.audio) {
-        playBase64Audio(response.audio);
+      if (!response.ok || !response.body) {
+        throw new Error('Failed to get response');
       }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages([...newMessages, { role: 'assistant', content: assistantContent }]);
+            }
+          } catch {
+            buffer = line + '\n' + buffer;
+            break;
+          }
+        }
+      }
+
     } catch (error) {
       console.error('Chat error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to get response. Please try again.',
+        variant: 'destructive',
+      });
       setMessages([
         ...newMessages,
         { role: 'assistant', content: 'I apologize, but I encountered an error. Please try again.' }
@@ -89,7 +171,7 @@ export default function ChatPage() {
 
   const toggleVoiceInput = () => {
     if (!recognitionRef.current) {
-      alert('Voice recognition is not supported in your browser');
+      toast({ title: 'Voice not supported', description: 'Your browser does not support voice input.', variant: 'destructive' });
       return;
     }
 
@@ -103,12 +185,10 @@ export default function ChatPage() {
   };
 
   const clearChat = () => {
-    setMessages([
-      {
-        role: 'assistant',
-        content: 'Chat cleared. How can I help you today?'
-      }
-    ]);
+    setMessages([{
+      role: 'assistant',
+      content: 'Chat cleared. How can I help you today?'
+    }]);
   };
 
   const suggestedQuestions = [
@@ -128,11 +208,11 @@ export default function ChatPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="icon-container-accent w-12 h-12">
-              <MessageCircle className="h-6 w-6" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-secondary">
+              <MessageCircle className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-display text-2xl font-bold">Chat with AI Doctor</h1>
+              <h1 className="text-2xl font-bold">Chat with AI Doctor</h1>
               <p className="text-sm text-muted-foreground">
                 Ask health questions and get instant AI-powered answers
               </p>
@@ -145,7 +225,7 @@ export default function ChatPage() {
         </div>
 
         {/* Chat Container */}
-        <div className="flex-1 bg-card rounded-2xl border border-border shadow-soft flex flex-col overflow-hidden">
+        <div className="flex-1 glass-card rounded-2xl flex flex-col overflow-hidden">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message, index) => (
@@ -161,14 +241,25 @@ export default function ChatPage() {
                 <div
                   className={cn(
                     "max-w-[80%] px-4 py-3",
-                    message.role === 'user'
-                      ? 'chat-bubble-user'
-                      : 'chat-bubble-ai'
+                    message.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'
                   )}
                 >
-                  <p className="text-xs font-medium mb-1 opacity-70">
-                    {message.role === 'user' ? 'You' : '🤖 AI Doctor'}
-                  </p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-medium opacity-70">
+                      {message.role === 'user' ? 'You' : '🤖 Dr. Mediredy'}
+                    </p>
+                    {message.role === 'assistant' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => speakText(message.content)}
+                        disabled={isSpeaking}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Volume2 className={cn("h-3 w-3", isSpeaking && "animate-pulse text-primary")} />
+                      </Button>
+                    )}
+                  </div>
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">
                     {message.content}
                   </p>
@@ -179,9 +270,10 @@ export default function ChatPage() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="chat-bubble-ai px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">Thinking...</span>
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                   </div>
                 </div>
               </div>
@@ -190,7 +282,7 @@ export default function ChatPage() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Suggested Questions (show only at start) */}
+          {/* Suggested Questions */}
           {messages.length === 1 && (
             <div className="px-4 pb-2">
               <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
@@ -199,7 +291,7 @@ export default function ChatPage() {
                   <button
                     key={index}
                     onClick={() => setInput(question)}
-                    className="px-3 py-1.5 text-xs rounded-full bg-muted hover:bg-muted/80 text-muted-foreground transition-colors"
+                    className="symptom-chip text-xs"
                   >
                     {question}
                   </button>
@@ -209,13 +301,13 @@ export default function ChatPage() {
           )}
 
           {/* Input Area */}
-          <div className="p-4 border-t border-border">
+          <div className="p-4 border-t border-white/5">
             <div className="flex items-center gap-2">
               <Button
                 variant={isListening ? 'default' : 'outline'}
                 size="icon"
                 onClick={toggleVoiceInput}
-                className={isListening ? 'animate-pulse' : ''}
+                className={isListening ? 'animate-pulse bg-destructive' : ''}
               >
                 {isListening ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
               </Button>
@@ -225,11 +317,12 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 disabled={isLoading || isListening}
-                className="flex-1"
+                className="flex-1 bg-white/5 border-white/10"
               />
               <Button
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
+                className="btn-primary"
               >
                 <Send className="h-4 w-4" />
               </Button>

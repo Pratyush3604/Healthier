@@ -11,6 +11,9 @@ import InjuryPage from "@/pages/InjuryPage";
 import ReportsPage from "@/pages/ReportsPage";
 import ChatPage from "@/pages/ChatPage";
 import AIDoctorPage from "@/pages/AIDoctorPage";
+import FirstAidPage from "@/pages/FirstAidPage";
+import HealthTipsPage from "@/pages/HealthTipsPage";
+import EmergencyPage from "@/pages/EmergencyPage";
 import AboutPage from "@/pages/AboutPage";
 import NotFound from "@/pages/NotFound";
 
@@ -31,8 +34,10 @@ const App = () => (
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/ai-doctor" element={<AIDoctorPage />} />
+            <Route path="/first-aid" element={<FirstAidPage />} />
+            <Route path="/health-tips" element={<HealthTipsPage />} />
+            <Route path="/emergency" element={<EmergencyPage />} />
             <Route path="/about" element={<AboutPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
