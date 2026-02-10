@@ -1,82 +1,188 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Heart, Flame, Zap, Droplets, Brain, Phone } from 'lucide-react';
+import { BookOpen, Heart, Flame, Zap, Droplets, Brain, Phone, Bug, Bone, Eye, Baby, Pill, Thermometer, Wind, Shield, Scissors, AlertTriangle, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
 
 const firstAidTopics = [
-  {
-    icon: Heart,
-    title: 'CPR & Choking',
-    description: 'Life-saving techniques for cardiac arrest and airway obstruction',
-    steps: ['Call emergency services', 'Check for responsiveness', 'Begin chest compressions', 'Give rescue breaths'],
-    color: 'from-red-500 to-rose-500',
-  },
-  {
-    icon: Flame,
-    title: 'Burns',
-    description: 'How to treat minor to moderate burns',
-    steps: ['Cool the burn under running water for 10-20 min', 'Remove jewelry near the burn', 'Cover with sterile bandage', 'Take pain relievers if needed'],
-    color: 'from-orange-500 to-amber-500',
-  },
-  {
-    icon: Droplets,
-    title: 'Bleeding',
-    description: 'Stop bleeding and prevent infection',
-    steps: ['Apply direct pressure with clean cloth', 'Elevate the wound above heart level', 'Apply bandage firmly', 'Seek help if bleeding doesn\'t stop'],
-    color: 'from-red-600 to-pink-600',
-  },
-  {
-    icon: Zap,
-    title: 'Shock',
-    description: 'Recognize and respond to shock symptoms',
-    steps: ['Call emergency services', 'Lay person flat, elevate legs', 'Keep them warm', 'Monitor breathing'],
-    color: 'from-yellow-500 to-orange-500',
-  },
-  {
-    icon: Brain,
-    title: 'Head Injuries',
-    description: 'Response to bumps, concussions, and trauma',
-    steps: ['Keep person still and calm', 'Apply ice pack to swelling', 'Monitor for confusion or vomiting', 'Seek immediate care for severe symptoms'],
-    color: 'from-purple-500 to-indigo-500',
-  },
+  { icon: Heart, title: 'CPR (Adult)', description: 'Cardiopulmonary resuscitation for adults', steps: ['Call emergency services immediately', 'Place person on firm flat surface', 'Put heel of hand on center of chest', 'Push hard and fast (100-120/min), 2 inches deep', 'After 30 compressions, give 2 rescue breaths', 'Continue until help arrives'], color: 'from-red-500 to-rose-500', category: 'Life-Saving' },
+  { icon: Heart, title: 'CPR (Child)', description: 'CPR for children ages 1-8', steps: ['Call emergency services', 'Use one or two hands for chest compressions', 'Compress about 2 inches deep', '30 compressions then 2 gentle breaths', 'Continue cycle until help arrives'], color: 'from-red-500 to-rose-500', category: 'Life-Saving' },
+  { icon: Heart, title: 'CPR (Infant)', description: 'CPR for babies under 1 year', steps: ['Call emergency services', 'Use 2 fingers on breastbone just below nipple line', 'Compress about 1.5 inches deep', 'Give 2 gentle puffs covering mouth and nose', 'Continue 30:2 ratio'], color: 'from-red-500 to-rose-500', category: 'Life-Saving' },
+  { icon: Wind, title: 'Choking (Adult)', description: 'Heimlich maneuver for adults', steps: ['Stand behind the person', 'Make a fist above their navel', 'Grasp fist with other hand', 'Give quick upward thrusts', 'Repeat until object is expelled', 'If unconscious, begin CPR'], color: 'from-red-500 to-rose-500', category: 'Life-Saving' },
+  { icon: Wind, title: 'Choking (Infant)', description: 'Back blows and chest thrusts for babies', steps: ['Place baby face-down on forearm', 'Give 5 firm back blows between shoulder blades', 'Turn baby face-up', 'Give 5 chest thrusts with 2 fingers', 'Repeat until object comes out', 'If unresponsive, begin infant CPR'], color: 'from-red-500 to-rose-500', category: 'Life-Saving' },
+  { icon: Zap, title: 'Using an AED', description: 'Automated External Defibrillator usage', steps: ['Turn on AED and follow voice prompts', 'Expose chest and attach pads', 'Make sure no one is touching the person', 'Press shock button if advised', 'Resume CPR immediately after shock', 'Continue until paramedics arrive'], color: 'from-yellow-500 to-orange-500', category: 'Life-Saving' },
+  { icon: Droplets, title: 'Severe Bleeding', description: 'Control life-threatening hemorrhage', steps: ['Call emergency services', 'Apply firm direct pressure with clean cloth', 'Do not remove blood-soaked cloths — add more', 'Elevate wound above heart if possible', 'Apply tourniquet if bleeding won\'t stop (limbs only)', 'Keep person warm and still'], color: 'from-red-600 to-pink-600', category: 'Bleeding' },
+  { icon: Droplets, title: 'Minor Cuts & Scrapes', description: 'Treating small wounds', steps: ['Wash hands before treating', 'Rinse wound under clean running water', 'Apply gentle pressure to stop bleeding', 'Apply antibiotic ointment', 'Cover with sterile bandage', 'Change dressing daily'], color: 'from-red-400 to-pink-400', category: 'Bleeding' },
+  { icon: Droplets, title: 'Nosebleed', description: 'How to stop a nosebleed', steps: ['Sit upright and lean slightly forward', 'Pinch soft part of nose firmly', 'Hold for 10-15 minutes without checking', 'Breathe through mouth', 'Apply cold compress to bridge of nose', 'Seek help if bleeding persists over 20 minutes'], color: 'from-red-400 to-pink-400', category: 'Bleeding' },
+  { icon: Scissors, title: 'Puncture Wounds', description: 'Deep wound from sharp objects', steps: ['Do NOT remove embedded objects', 'Apply pressure around (not on) the object', 'Stabilize the object with bandaging', 'Check tetanus vaccination status', 'Seek immediate medical care', 'Watch for signs of infection'], color: 'from-red-500 to-pink-500', category: 'Bleeding' },
+  { icon: Flame, title: 'Minor Burns (1st Degree)', description: 'Superficial burns - redness only', steps: ['Cool under running water for 10-20 minutes', 'Do NOT use ice, butter, or toothpaste', 'Apply aloe vera or burn cream', 'Cover with sterile non-stick bandage', 'Take ibuprofen for pain', 'Keep area clean and moisturized'], color: 'from-orange-500 to-amber-500', category: 'Burns' },
+  { icon: Flame, title: 'Moderate Burns (2nd Degree)', description: 'Blistering burns', steps: ['Cool under running water for 20 minutes', 'Do NOT pop blisters', 'Cover loosely with sterile bandage', 'Take pain medication', 'Watch for signs of infection', 'See a doctor within 24 hours'], color: 'from-orange-500 to-amber-500', category: 'Burns' },
+  { icon: Flame, title: 'Severe Burns (3rd Degree)', description: 'Deep tissue damage — emergency', steps: ['Call emergency services immediately', 'Do NOT remove stuck clothing', 'Cover with clean dry sheet', 'Do NOT apply water or creams', 'Check for breathing', 'Keep person warm, treat for shock'], color: 'from-red-600 to-orange-600', category: 'Burns' },
+  { icon: Flame, title: 'Chemical Burns', description: 'Burns from chemicals/acids', steps: ['Remove contaminated clothing carefully', 'Flush with large amounts of water for 20+ min', 'Do NOT try to neutralize the chemical', 'Cover with sterile dressing', 'Note the chemical name for medics', 'Call poison control'], color: 'from-orange-600 to-red-600', category: 'Burns' },
+  { icon: Zap, title: 'Electrical Burns', description: 'Burns from electrical current', steps: ['Do NOT touch person if still in contact with source', 'Turn off power source if safe', 'Call emergency services', 'Check for breathing and pulse', 'Cover burns with sterile bandage', 'Watch for cardiac issues'], color: 'from-yellow-500 to-orange-500', category: 'Burns' },
+  { icon: Flame, title: 'Sunburn', description: 'UV radiation skin damage', steps: ['Get out of the sun immediately', 'Take a cool (not cold) shower', 'Apply aloe vera gel generously', 'Take anti-inflammatory medication', 'Drink plenty of water', 'Wear loose clothing over affected areas'], color: 'from-yellow-400 to-orange-400', category: 'Burns' },
+  { icon: Bone, title: 'Suspected Fracture', description: 'Broken bone first aid', steps: ['Do NOT move the injured area', 'Call emergency services for severe fractures', 'Immobilize the area with splint', 'Apply ice pack wrapped in cloth', 'Elevate if possible', 'Monitor circulation below injury'], color: 'from-gray-500 to-slate-500', category: 'Bones & Joints' },
+  { icon: Bone, title: 'Sprained Ankle', description: 'RICE method for sprains', steps: ['Rest — stop all activity', 'Ice — apply for 20 min every 2-3 hours', 'Compression — wrap with elastic bandage', 'Elevation — raise above heart level', 'Take anti-inflammatory medication', 'See doctor if unable to bear weight'], color: 'from-gray-500 to-slate-500', category: 'Bones & Joints' },
+  { icon: Bone, title: 'Dislocated Joint', description: 'Joint out of position', steps: ['Do NOT try to pop it back in', 'Immobilize in current position', 'Apply ice to reduce swelling', 'Support with sling or splint', 'Seek immediate medical care', 'Do not eat or drink (may need anesthesia)'], color: 'from-gray-500 to-slate-500', category: 'Bones & Joints' },
+  { icon: Bone, title: 'Back/Spinal Injury', description: 'Potential spinal cord damage', steps: ['Call emergency services immediately', 'Do NOT move the person', 'Keep them still and calm', 'Support head and neck in current position', 'Monitor breathing', 'Cover to prevent heat loss'], color: 'from-gray-600 to-slate-600', category: 'Bones & Joints' },
+  { icon: Brain, title: 'Concussion', description: 'Mild traumatic brain injury', steps: ['Remove from activity immediately', 'Monitor for worsening symptoms', 'Keep in quiet, low-light environment', 'Do not let them fall asleep for first hour', 'Watch for vomiting, confusion, uneven pupils', 'Seek ER if symptoms worsen'], color: 'from-purple-500 to-indigo-500', category: 'Head & Neurological' },
+  { icon: Brain, title: 'Seizure', description: 'What to do during a seizure', steps: ['Clear area of dangerous objects', 'Do NOT restrain or put anything in mouth', 'Cushion head if possible', 'Turn on side after convulsions stop', 'Time the seizure', 'Call 911 if seizure lasts > 5 minutes'], color: 'from-purple-500 to-indigo-500', category: 'Head & Neurological' },
+  { icon: Brain, title: 'Stroke Recognition (FAST)', description: 'Identify stroke symptoms quickly', steps: ['Face — ask them to smile, check drooping', 'Arms — raise both arms, check weakness', 'Speech — listen for slurring', 'Time — call emergency immediately', 'Note the time symptoms started', 'Do NOT give food or drink'], color: 'from-purple-600 to-indigo-600', category: 'Head & Neurological' },
+  { icon: Brain, title: 'Fainting', description: 'Loss of consciousness', steps: ['Lay person flat on their back', 'Elevate legs above heart level', 'Loosen tight clothing', 'Check for breathing', 'If they don\'t recover in 1 minute, call 911', 'When they wake, have them sit up slowly'], color: 'from-purple-400 to-indigo-400', category: 'Head & Neurological' },
+  { icon: Zap, title: 'Shock', description: 'Body not getting enough blood flow', steps: ['Call emergency services', 'Lay person flat', 'Elevate legs 12 inches if no spinal injury', 'Keep warm with blanket', 'Do not give food or drink', 'Monitor breathing continuously'], color: 'from-yellow-500 to-orange-500', category: 'Life-Saving' },
+  { icon: AlertTriangle, title: 'Anaphylaxis', description: 'Severe allergic reaction', steps: ['Call 911 immediately', 'Use epinephrine auto-injector (EpiPen) if available', 'Inject in outer thigh', 'Lay person flat, elevate legs', 'Give second dose in 5-15 min if no improvement', 'Begin CPR if they stop breathing'], color: 'from-red-500 to-orange-500', category: 'Allergies & Poisons' },
+  { icon: Pill, title: 'Mild Allergic Reaction', description: 'Hives, itching, mild swelling', steps: ['Remove allergen if possible', 'Take antihistamine (Benadryl)', 'Apply cold compress to itchy areas', 'Monitor for worsening symptoms', 'Seek help if swelling spreads to face/throat', 'Keep emergency medication accessible'], color: 'from-pink-400 to-rose-400', category: 'Allergies & Poisons' },
+  { icon: Pill, title: 'Poisoning (Ingested)', description: 'Swallowed toxic substance', steps: ['Call Poison Control immediately', 'Do NOT induce vomiting unless directed', 'Identify the substance and amount', 'Save container/label for medics', 'Monitor breathing and consciousness', 'If unconscious, place in recovery position'], color: 'from-green-600 to-emerald-600', category: 'Allergies & Poisons' },
+  { icon: Bug, title: 'Snake Bite', description: 'Venomous or unknown snake bite', steps: ['Call emergency services', 'Keep person calm and still', 'Immobilize bitten limb below heart', 'Remove jewelry near bite site', 'Do NOT cut, suck, or tourniquet', 'Note snake appearance if safe to do so'], color: 'from-green-600 to-emerald-600', category: 'Bites & Stings' },
+  { icon: Bug, title: 'Insect Stings (Bee/Wasp)', description: 'Bee, wasp, or hornet stings', steps: ['Remove stinger by scraping (don\'t squeeze)', 'Wash area with soap and water', 'Apply cold compress for 10 minutes', 'Take antihistamine for itching', 'Watch for allergic reaction signs', 'Seek help if multiple stings or allergic'], color: 'from-yellow-500 to-amber-500', category: 'Bites & Stings' },
+  { icon: Bug, title: 'Dog/Animal Bite', description: 'Bite wounds from animals', steps: ['Wash wound with soap and water for 5 min', 'Apply pressure if bleeding', 'Apply antibiotic ointment', 'Cover with clean bandage', 'Seek medical care (may need rabies shot)', 'Report bite to animal control'], color: 'from-amber-500 to-orange-500', category: 'Bites & Stings' },
+  { icon: Bug, title: 'Tick Bite', description: 'Tick removal and care', steps: ['Use fine-tipped tweezers to grasp tick near skin', 'Pull upward with steady even pressure', 'Clean area with rubbing alcohol', 'Save tick in sealed container for testing', 'Watch for rash, fever, aches for 30 days', 'See doctor if bull\'s-eye rash appears'], color: 'from-green-500 to-teal-500', category: 'Bites & Stings' },
+  { icon: Bug, title: 'Jellyfish Sting', description: 'Marine creature sting treatment', steps: ['Rinse with vinegar for 30 seconds', 'Do NOT use fresh water or urine', 'Remove tentacles with tweezers', 'Soak in hot water (110-113°F) for 20-45 min', 'Take pain medication', 'Seek help for severe reactions'], color: 'from-blue-400 to-cyan-400', category: 'Bites & Stings' },
+  { icon: Bug, title: 'Scorpion Sting', description: 'Scorpion sting treatment', steps: ['Wash the sting area with soap and water', 'Apply a cool compress for 10 minutes', 'Take pain reliever (not aspirin for children)', 'Keep affected area elevated', 'Watch for severe symptoms (breathing issues)', 'Call poison control or 911 if severe'], color: 'from-amber-600 to-orange-600', category: 'Bites & Stings' },
+  { icon: Thermometer, title: 'Heat Stroke', description: 'Body temp above 104°F — emergency', steps: ['Call 911 immediately', 'Move to cool shaded area', 'Remove excess clothing', 'Cool with cold water, ice packs at neck/armpits', 'Do NOT give fluids if unconscious', 'Fan continuously'], color: 'from-red-500 to-orange-500', category: 'Environmental' },
+  { icon: Thermometer, title: 'Heat Exhaustion', description: 'Heavy sweating, weakness, nausea', steps: ['Move to cool area', 'Lie down and elevate legs', 'Loosen clothing', 'Sip cool water or sports drink', 'Apply cool wet cloths', 'Seek help if symptoms worsen or last > 1 hour'], color: 'from-orange-400 to-yellow-400', category: 'Environmental' },
+  { icon: Thermometer, title: 'Hypothermia', description: 'Dangerously low body temperature', steps: ['Call emergency services', 'Move to warm, dry area', 'Remove wet clothing gently', 'Warm center of body first (chest, neck, head)', 'Use blankets, skin-to-skin contact', 'Give warm beverages if conscious (no alcohol)'], color: 'from-blue-500 to-cyan-500', category: 'Environmental' },
+  { icon: Thermometer, title: 'Frostbite', description: 'Frozen skin and tissue', steps: ['Get to warm area', 'Do NOT rub affected areas', 'Soak in warm (not hot) water 104-108°F', 'Apply sterile dressing between frozen fingers/toes', 'Take pain medication', 'Seek medical care — do not re-freeze'], color: 'from-blue-400 to-indigo-400', category: 'Environmental' },
+  { icon: Droplets, title: 'Drowning/Near-Drowning', description: 'Water rescue and recovery', steps: ['Call 911 immediately', 'Get person out of water safely', 'Check for breathing', 'Begin CPR if not breathing', 'Turn on side if vomiting', 'Keep warm and monitor until help arrives'], color: 'from-blue-600 to-indigo-600', category: 'Environmental' },
+  { icon: Zap, title: 'Lightning Strike', description: 'Struck by lightning', steps: ['Call 911 — lightning victims are safe to touch', 'Check for breathing and pulse', 'Begin CPR if needed', 'Treat burns', 'Watch for cardiac arrest', 'Monitor in hospital for 24 hours'], color: 'from-yellow-400 to-amber-400', category: 'Environmental' },
+  { icon: Eye, title: 'Eye Injury — Chemical', description: 'Chemical splash in eye', steps: ['Flush eye with clean water for 15-20 minutes', 'Hold eyelid open during flushing', 'Remove contact lenses if present', 'Do NOT rub the eye', 'Cover with sterile pad', 'Seek immediate medical care'], color: 'from-blue-500 to-teal-500', category: 'Eye & Ear' },
+  { icon: Eye, title: 'Eye Injury — Object', description: 'Foreign object in eye', steps: ['Do NOT rub the eye', 'Blink several times to flush', 'Pull upper lid over lower lid', 'Flush with clean water', 'Do NOT try to remove embedded objects', 'Cover both eyes and seek medical care'], color: 'from-blue-500 to-teal-500', category: 'Eye & Ear' },
+  { icon: Eye, title: 'Black Eye', description: 'Bruised tissue around eye', steps: ['Apply cold compress for 15-20 minutes', 'Repeat every hour as needed', 'Keep head elevated', 'Check for vision changes', 'Take pain medication', 'See doctor if vision is affected'], color: 'from-purple-400 to-blue-400', category: 'Eye & Ear' },
+  { icon: Thermometer, title: 'Fever Management', description: 'Reducing high body temperature', steps: ['Take temperature accurately', 'Take acetaminophen or ibuprofen as directed', 'Drink plenty of fluids', 'Rest and wear light clothing', 'Apply lukewarm compress (not cold)', 'Seek help if fever > 103°F or lasts > 3 days'], color: 'from-orange-500 to-red-500', category: 'Common Ailments' },
+  { icon: Pill, title: 'Food Poisoning', description: 'Illness from contaminated food', steps: ['Stay hydrated with small sips of water', 'Try oral rehydration solution', 'Avoid solid food until vomiting stops', 'Rest as much as possible', 'Avoid dairy, caffeine, and alcohol', 'See doctor if symptoms last > 3 days'], color: 'from-green-500 to-teal-500', category: 'Common Ailments' },
+  { icon: Heart, title: 'Heart Attack Signs', description: 'Recognizing and responding to heart attack', steps: ['Call 911 immediately', 'Have person chew aspirin (if not allergic)', 'Help them sit in comfortable position', 'Loosen tight clothing', 'Be ready to perform CPR', 'Note time symptoms started'], color: 'from-red-600 to-rose-600', category: 'Life-Saving' },
+  { icon: Wind, title: 'Asthma Attack', description: 'Severe breathing difficulty', steps: ['Help person sit upright', 'Help them use rescue inhaler (2 puffs)', 'Wait 4 minutes, give 2 more puffs if needed', 'Call 911 if no improvement', 'Keep them calm and reassured', 'Loosen tight clothing'], color: 'from-blue-400 to-cyan-400', category: 'Breathing' },
+  { icon: Wind, title: 'Hyperventilation', description: 'Rapid over-breathing', steps: ['Help person sit comfortably', 'Speak calmly and reassuringly', 'Have them breathe slowly: in 4 sec, out 6 sec', 'Do NOT use a paper bag', 'Address underlying anxiety', 'Seek help if it doesn\'t resolve'], color: 'from-blue-300 to-cyan-300', category: 'Breathing' },
+  { icon: Shield, title: 'Carbon Monoxide Poisoning', description: 'Invisible odorless gas', steps: ['Get everyone out of the area immediately', 'Call 911', 'Open windows and doors if safe', 'Do NOT re-enter until cleared', 'Seek medical evaluation for all exposed', 'Symptoms: headache, dizziness, nausea, confusion'], color: 'from-gray-600 to-slate-600', category: 'Environmental' },
+  { icon: Baby, title: 'Febrile Seizure (Child)', description: 'Seizure from fever in children', steps: ['Place child on soft surface on their side', 'Do NOT restrain or put anything in mouth', 'Time the seizure', 'Remove nearby objects', 'Call 911 if seizure > 5 minutes', 'See pediatrician after seizure'], color: 'from-pink-500 to-rose-500', category: 'Children' },
+  { icon: Baby, title: 'Croup in Children', description: 'Barking cough in young children', steps: ['Keep child calm — crying worsens symptoms', 'Run hot shower and sit in steamy bathroom', 'Or take child into cool night air', 'Offer warm clear fluids', 'Elevate head while sleeping', 'Seek ER if breathing is labored'], color: 'from-pink-400 to-rose-400', category: 'Children' },
+  { icon: Baby, title: 'Diaper Rash Treatment', description: 'Red irritated skin under diaper', steps: ['Change diapers frequently', 'Clean gently with warm water', 'Pat dry completely', 'Apply thick layer of zinc oxide cream', 'Allow diaper-free time when possible', 'See doctor if rash has blisters or fever'], color: 'from-pink-300 to-rose-300', category: 'Children' },
+  { icon: Pill, title: 'Diabetic Emergency', description: 'High or low blood sugar crisis', steps: ['If conscious and able to swallow, give sugar', 'Fruit juice, glucose tablets, or candy', 'If unconscious, do NOT give food/drink', 'Call 911 for unconscious person', 'Place in recovery position', 'Check for medical ID bracelet'], color: 'from-blue-500 to-indigo-500', category: 'Medical Emergencies' },
+  { icon: Brain, title: 'Panic Attack', description: 'Intense anxiety episode', steps: ['Stay with the person', 'Speak in calm reassuring voice', 'Help them focus on slow breathing', '4 seconds in, hold 4, out 4', 'Ground them: name 5 things they can see', 'Remind them it will pass'], color: 'from-violet-400 to-purple-400', category: 'Mental Health' },
+  { icon: Shield, title: 'Tooth Knocked Out', description: 'Avulsed tooth emergency', steps: ['Find the tooth immediately', 'Hold by crown, never the root', 'Rinse gently — do NOT scrub', 'Try to reinsert in socket', 'If can\'t reinsert, place in milk', 'See dentist within 30 minutes'], color: 'from-gray-400 to-slate-400', category: 'Common Ailments' },
+  { icon: Droplets, title: 'Dehydration', description: 'Fluid loss from illness or heat', steps: ['Sip small amounts of water frequently', 'Use oral rehydration solution (ORS)', 'Avoid caffeine and alcohol', 'Monitor urine color (should be light yellow)', 'Rest in cool environment', 'Seek help if unable to keep fluids down'], color: 'from-blue-400 to-cyan-400', category: 'Common Ailments' },
+  { icon: Bone, title: 'Muscle Cramp', description: 'Sudden painful muscle contraction', steps: ['Gently stretch the affected muscle', 'Massage the area', 'Apply heat to tense muscles', 'Apply cold to sore muscles', 'Drink water or sports drink', 'Walk around gently if leg cramp'], color: 'from-green-400 to-teal-400', category: 'Bones & Joints' },
+  { icon: Bug, title: 'Spider Bite', description: 'Potentially venomous spider bite', steps: ['Clean bite with soap and water', 'Apply cold compress', 'Elevate the affected area', 'Take pain reliever', 'Try to identify or photograph the spider', 'Seek ER for black widow or brown recluse'], color: 'from-gray-500 to-slate-500', category: 'Bites & Stings' },
+  { icon: Flame, title: 'Friction Burns / Road Rash', description: 'Skin scraped by rough surface', steps: ['Wash hands before treating', 'Rinse wound gently under running water', 'Remove any debris with clean tweezers', 'Apply antibiotic ointment', 'Cover with non-stick sterile bandage', 'Change dressing daily and watch for infection'], color: 'from-orange-400 to-amber-400', category: 'Burns' },
+  { icon: Shield, title: 'Object in Nose', description: 'Foreign body in nostril (common in kids)', steps: ['Stay calm — do not push object deeper', 'Have child breathe through mouth', 'Try to blow nose gently if old enough', 'Do NOT use tweezers or tools', 'Seek medical help if it won\'t come out', 'Go to ER if difficulty breathing'], color: 'from-teal-400 to-cyan-400', category: 'Children' },
+  { icon: Shield, title: 'Object Swallowed', description: 'Small object ingested (common in kids)', steps: ['Stay calm', 'If choking, perform Heimlich maneuver', 'If breathing normally, call doctor', 'Most small smooth objects will pass naturally', 'Do NOT induce vomiting', 'Go to ER for batteries, magnets, or sharp objects'], color: 'from-teal-500 to-cyan-500', category: 'Children' },
+  { icon: Droplets, title: 'Bloody Nose (Posterior)', description: 'Serious nosebleed from back of nose', steps: ['Sit upright, lean slightly forward', 'Do NOT tilt head back', 'Pinch nose for 15-20 minutes', 'Apply cold compress to bridge of nose', 'Spit out blood — don\'t swallow', 'Go to ER if bleeding won\'t stop'], color: 'from-red-500 to-pink-500', category: 'Bleeding' },
+  { icon: Thermometer, title: 'Altitude Sickness', description: 'Illness from high elevation', steps: ['Descend to lower altitude immediately', 'Rest and avoid exertion', 'Drink plenty of water', 'Take acetazolamide if prescribed', 'Use supplemental oxygen if available', 'Seek medical care for severe symptoms'], color: 'from-blue-400 to-indigo-400', category: 'Environmental' },
+  { icon: Pill, title: 'Medication Overdose', description: 'Taking too much medication', steps: ['Call Poison Control or 911 immediately', 'Identify the medication and amount taken', 'Do NOT induce vomiting unless directed', 'Save any remaining pills and containers', 'Monitor breathing and consciousness', 'Be prepared to give CPR'], color: 'from-red-500 to-pink-500', category: 'Allergies & Poisons' },
+  { icon: Eye, title: 'Earache / Ear Infection', description: 'Pain in ear canal', steps: ['Apply warm compress to affected ear', 'Take pain relievers as directed', 'Do NOT insert anything into ear', 'Sleep with affected ear facing up', 'See doctor for fever or severe pain', 'See doctor if discharge is present'], color: 'from-blue-400 to-teal-400', category: 'Eye & Ear' },
+  { icon: Shield, title: 'Chest Pain (Non-Cardiac)', description: 'Chest pain not from heart attack', steps: ['If unsure, always call 911 first', 'Note type: sharp, dull, burning', 'Try antacids if suspected heartburn', 'Check for muscle tenderness', 'Practice slow deep breathing', 'See doctor to rule out serious causes'], color: 'from-amber-500 to-orange-500', category: 'Common Ailments' },
+  { icon: Bone, title: 'Finger/Toe Jam', description: 'Jammed or stubbed digit', steps: ['Apply ice for 15-20 minutes', 'Buddy tape to adjacent finger/toe', 'Take anti-inflammatory medication', 'Rest the affected hand/foot', 'Elevate above heart level', 'See doctor if can\'t bend or severe swelling'], color: 'from-gray-400 to-slate-400', category: 'Bones & Joints' },
+  { icon: Droplets, title: 'Internal Bleeding Signs', description: 'Recognizing hidden bleeding', steps: ['Look for: bruising, swollen abdomen, blood in stool/urine', 'Check for dizziness, rapid pulse, pale skin', 'Call 911 immediately if suspected', 'Keep person lying down and still', 'Do NOT give food or drink', 'Monitor breathing until help arrives'], color: 'from-red-600 to-rose-600', category: 'Bleeding' },
+  { icon: Wind, title: 'Smoke Inhalation', description: 'Breathing in smoke or fumes', steps: ['Get to fresh air immediately', 'Call 911', 'Loosen tight clothing', 'If not breathing, begin CPR', 'Keep person calm and still', 'Even if feeling fine, get medical evaluation'], color: 'from-gray-500 to-slate-500', category: 'Breathing' },
+  { icon: Shield, title: 'Abdominal Pain (Severe)', description: 'Intense stomach/belly pain', steps: ['Note location, type, and duration of pain', 'Do NOT eat or drink', 'Do NOT take pain medication before diagnosis', 'Lie in comfortable position', 'Call 911 for sudden severe pain', 'Seek ER for pain with fever or vomiting blood'], color: 'from-orange-500 to-amber-500', category: 'Medical Emergencies' },
+  { icon: Bug, title: 'Marine Sting (Stingray)', description: 'Stingray or sea urchin sting', steps: ['Rinse wound with seawater (not fresh water)', 'Remove visible spines with tweezers', 'Soak in hot water (110-113°F) for 30-90 min', 'Clean wound thoroughly', 'Apply antibiotic ointment', 'Seek medical care for deep punctures'], color: 'from-blue-500 to-cyan-500', category: 'Bites & Stings' },
+  { icon: Brain, title: 'Head Injury (Minor)', description: 'Bumps and minor head trauma', steps: ['Apply ice pack wrapped in cloth for 20 min', 'Monitor for confusion, vomiting, drowsiness', 'Keep person awake for at least 1 hour', 'Give acetaminophen for pain (not aspirin)', 'Rest and avoid screens', 'Seek ER if symptoms worsen'], color: 'from-purple-400 to-indigo-400', category: 'Head & Neurological' },
+  { icon: Pill, title: 'Alcohol Poisoning', description: 'Dangerous level of alcohol consumption', steps: ['Call 911 immediately', 'Do NOT leave person alone', 'Keep them sitting up or in recovery position', 'Do NOT give coffee or cold shower', 'Keep them awake if possible', 'Be ready to give CPR'], color: 'from-red-500 to-pink-500', category: 'Allergies & Poisons' },
+  { icon: Shield, title: 'Wound Infection Signs', description: 'Recognizing infected wounds', steps: ['Look for: increased redness, swelling, warmth', 'Check for red streaks spreading from wound', 'Watch for pus or foul-smelling discharge', 'Monitor for fever', 'See doctor immediately if infection suspected', 'Do NOT try to drain abscess at home'], color: 'from-green-500 to-teal-500', category: 'Common Ailments' },
+  { icon: Baby, title: 'Teething Pain (Baby)', description: 'Soothing teething discomfort', steps: ['Give clean cold teething ring', 'Gently rub gums with clean finger', 'Offer chilled (not frozen) washcloth to chew', 'Use infant pain reliever if needed', 'Avoid teething gels with benzocaine', 'See pediatrician for persistent fever'], color: 'from-pink-300 to-rose-300', category: 'Children' },
+  { icon: Thermometer, title: 'Motion Sickness', description: 'Nausea from travel', steps: ['Look at horizon or fixed point outside', 'Sit in front seat of car', 'Get fresh air', 'Eat light bland snacks', 'Try ginger or anti-nausea medication', 'Avoid reading while in motion'], color: 'from-green-400 to-teal-400', category: 'Common Ailments' },
+  { icon: Eye, title: 'Pink Eye (Conjunctivitis)', description: 'Red, itchy eye infection', steps: ['Wash hands frequently', 'Apply warm compress to affected eye', 'Clean discharge with damp cloth', 'Do NOT share towels or pillowcases', 'Avoid touching or rubbing eyes', 'See doctor for antibiotic drops if bacterial'], color: 'from-pink-400 to-red-400', category: 'Eye & Ear' },
+  { icon: Shield, title: 'Urinary Tract Infection', description: 'UTI symptom management', steps: ['Drink plenty of water', 'Avoid caffeine and alcohol', 'Take prescribed antibiotics fully', 'Use heating pad for abdominal pain', 'Urinate frequently', 'See doctor if symptoms worsen or include fever'], color: 'from-yellow-400 to-amber-400', category: 'Common Ailments' },
+  { icon: Bone, title: 'Shin Splints', description: 'Pain along the shin bone', steps: ['Rest from impact activities', 'Ice the area for 15-20 minutes', 'Take anti-inflammatory medication', 'Stretch calf muscles gently', 'Wear supportive shoes', 'Gradually return to activity'], color: 'from-green-500 to-emerald-500', category: 'Bones & Joints' },
+  { icon: Shield, title: 'Hiccups (Persistent)', description: 'Prolonged hiccups that won\'t stop', steps: ['Hold breath for 10-20 seconds', 'Breathe into paper bag briefly', 'Sip ice-cold water slowly', 'Swallow a teaspoon of sugar', 'Pull knees to chest', 'See doctor if lasting > 48 hours'], color: 'from-teal-400 to-cyan-400', category: 'Common Ailments' },
+  { icon: Wind, title: 'Choking on Water', description: 'Aspiration of liquid', steps: ['Encourage coughing', 'Lean forward and pat back firmly', 'Do NOT perform Heimlich for liquids', 'Sip water slowly once coughing subsides', 'Monitor breathing', 'Seek help if persistent cough or breathing difficulty'], color: 'from-blue-400 to-cyan-400', category: 'Breathing' },
+  { icon: Shield, title: 'Vertigo Episode', description: 'Severe dizziness and spinning', steps: ['Sit or lie down immediately', 'Avoid sudden head movements', 'Focus on a fixed point', 'Try Epley maneuver for BPPV', 'Stay hydrated', 'See doctor if recurrent or severe'], color: 'from-purple-400 to-violet-400', category: 'Head & Neurological' },
+  { icon: Flame, title: 'Hot Oil Splash', description: 'Burns from cooking oil', steps: ['Run cool water over burn for 20 minutes', 'Do NOT apply ice or butter', 'Remove clothing near the burn', 'Cover with clean non-stick dressing', 'Take pain medication', 'See doctor for large or blistering burns'], color: 'from-orange-500 to-red-500', category: 'Burns' },
+  { icon: Droplets, title: 'Bleeding Gums', description: 'Oral bleeding first aid', steps: ['Rinse with salt water', 'Apply gentle pressure with damp gauze', 'Avoid hot or spicy foods', 'Use soft-bristle toothbrush', 'Floss gently around area', 'See dentist if persistent'], color: 'from-red-400 to-pink-400', category: 'Common Ailments' },
+  { icon: Shield, title: 'Migraine Management', description: 'Severe headache with other symptoms', steps: ['Move to dark, quiet room', 'Apply cold compress to forehead', 'Take migraine medication early', 'Stay hydrated', 'Try relaxation techniques', 'See doctor for frequent migraines'], color: 'from-purple-500 to-indigo-500', category: 'Head & Neurological' },
+  { icon: Pill, title: 'Constipation Relief', description: 'Difficulty with bowel movements', steps: ['Increase fiber intake (fruits, vegetables, whole grains)', 'Drink more water (8+ glasses daily)', 'Exercise regularly', 'Try natural laxatives (prunes)', 'Establish regular bathroom routine', 'See doctor if lasting > 3 weeks'], color: 'from-green-400 to-teal-400', category: 'Common Ailments' },
+  { icon: Heart, title: 'Recovery Position', description: 'Placing unconscious breathing person safely', steps: ['Kneel beside the person', 'Place nearest arm at right angle', 'Bring far arm across chest, hold hand against cheek', 'Pull far leg up, knee bent', 'Roll toward you onto their side', 'Tilt head back to keep airway open'], color: 'from-blue-500 to-indigo-500', category: 'Life-Saving' },
+  { icon: Shield, title: 'Removing a Splinter', description: 'Extracting wood/metal splinters', steps: ['Wash hands and affected area', 'Sterilize tweezers with rubbing alcohol', 'Pull splinter out in the direction it entered', 'Squeeze wound gently to encourage bleeding', 'Clean and apply antibiotic ointment', 'Cover with bandage, watch for infection'], color: 'from-gray-400 to-slate-400', category: 'Common Ailments' },
+  { icon: Thermometer, title: 'Cold & Flu Care', description: 'Managing cold and flu symptoms', steps: ['Rest as much as possible', 'Stay hydrated with warm fluids', 'Use saline nasal spray for congestion', 'Take acetaminophen for fever and aches', 'Gargle salt water for sore throat', 'See doctor if symptoms worsen after 7 days'], color: 'from-blue-400 to-indigo-400', category: 'Common Ailments' },
+  { icon: Pill, title: 'Diarrhea Management', description: 'Treating acute diarrhea', steps: ['Drink plenty of clear fluids', 'Use oral rehydration solution', 'Eat bland foods (BRAT diet)', 'Avoid dairy, caffeine, and fatty foods', 'Take anti-diarrheal if needed', 'See doctor if blood in stool or lasting > 3 days'], color: 'from-green-400 to-emerald-400', category: 'Common Ailments' },
+  { icon: Shield, title: 'Sore Throat Home Care', description: 'Relieving throat pain', steps: ['Gargle with warm salt water', 'Drink warm liquids (tea with honey)', 'Suck on throat lozenges', 'Use a humidifier', 'Rest your voice', 'See doctor if white patches or fever > 101°F'], color: 'from-teal-400 to-cyan-400', category: 'Common Ailments' },
+  { icon: Bug, title: 'Mosquito Bite Care', description: 'Relieving mosquito bite itch', steps: ['Wash with soap and water', 'Apply cold compress', 'Use anti-itch cream (hydrocortisone)', 'Avoid scratching', 'Take antihistamine for multiple bites', 'See doctor if signs of infection'], color: 'from-green-400 to-teal-400', category: 'Bites & Stings' },
+  { icon: Bone, title: 'Wrist Sprain', description: 'Twisted or sprained wrist', steps: ['Rest the wrist immediately', 'Apply ice for 20 minutes every 2-3 hours', 'Wrap with elastic bandage', 'Keep hand elevated', 'Take anti-inflammatory pain reliever', 'See doctor if severe swelling or can\'t move'], color: 'from-gray-500 to-slate-500', category: 'Bones & Joints' },
+  { icon: Pill, title: 'Heartburn / Acid Reflux', description: 'Burning sensation in chest from stomach acid', steps: ['Take an antacid', 'Avoid lying down after eating', 'Elevate head while sleeping', 'Avoid trigger foods (spicy, citrus, coffee)', 'Eat smaller meals', 'See doctor if frequent (> 2x/week)'], color: 'from-orange-400 to-amber-400', category: 'Common Ailments' },
 ];
 
+const categories = [...new Set(firstAidTopics.map(t => t.category))];
+
 export default function FirstAidPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  const filtered = firstAidTopics.filter(topic => {
+    const matchesSearch = !searchTerm || topic.title.toLowerCase().includes(searchTerm.toLowerCase()) || topic.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !selectedCategory || topic.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-rose-500 to-red-500">
             <BookOpen className="h-7 w-7 text-white" />
           </div>
           <div>
             <h1 className="text-3xl font-bold">First Aid Guide</h1>
-            <p className="text-muted-foreground">Emergency first aid instructions for common situations</p>
+            <p className="text-muted-foreground">{firstAidTopics.length} emergency first aid instructions for common situations</p>
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/30 mb-8">
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/30 mb-6">
           <Phone className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
           <p className="text-sm"><strong className="text-destructive">In emergencies, always call your local emergency number first!</strong> These guides are for reference only.</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {firstAidTopics.map((topic, index) => {
+        {/* Search & Filters */}
+        <div className="space-y-4 mb-8">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search first aid topics..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setSelectedCategory(null)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!selectedCategory ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              All ({firstAidTopics.length})
+            </button>
+            {categories.map(cat => (
+              <button key={cat} onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${selectedCategory === cat ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                {cat} ({firstAidTopics.filter(t => t.category === cat).length})
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((topic, index) => {
             const Icon = topic.icon;
+            const isExpanded = expandedIndex === index;
             return (
-              <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="glass-card rounded-2xl p-6">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${topic.color} mb-4`}>
-                  <Icon className="w-6 h-6 text-white" />
+              <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * 0.02, 0.5) }}
+                className="glass-card rounded-2xl p-5 cursor-pointer hover:border-primary/30 transition-colors"
+                onClick={() => setExpandedIndex(isExpanded ? null : index)}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${topic.color} shrink-0`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-sm">{topic.title}</h3>
+                      <p className="text-xs text-muted-foreground">{topic.description}</p>
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-muted text-[10px] font-medium text-muted-foreground">{topic.category}</span>
+                    </div>
+                  </div>
+                  {isExpanded ? <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{topic.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{topic.description}</p>
-                <ol className="space-y-2">
-                  {topic.steps.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
-                      <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
-                      <span className="text-muted-foreground">{step}</span>
-                    </li>
-                  ))}
-                </ol>
+                {isExpanded && (
+                  <motion.ol initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4 space-y-1.5">
+                    {topic.steps.map((step, i) => (
+                      <li key={i} className="flex items-start gap-2 text-xs">
+                        <span className="w-4 h-4 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                        <span className="text-muted-foreground">{step}</span>
+                      </li>
+                    ))}
+                  </motion.ol>
+                )}
               </motion.div>
             );
           })}
