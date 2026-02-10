@@ -73,7 +73,6 @@ const features = [
 ];
 
 const stats = [
-  { value: '100+', label: 'Symptoms', icon: Brain },
   { value: 'AI', label: 'Powered', icon: Sparkles },
   { value: '24/7', label: 'Available', icon: Zap },
   { value: 'Free', label: 'To Use', icon: Heart },
