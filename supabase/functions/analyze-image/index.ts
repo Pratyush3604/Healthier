@@ -50,10 +50,19 @@ Keep response structured and easy to follow. Use bullet points where appropriate
 CRITICAL: Always recommend discussing results with a qualified healthcare provider. You are providing educational context only.
 
 Keep the response clear and accessible to non-medical readers.`;
+    } else if (type === "skin") {
+      systemPrompt = `You are an AI dermatology assistant. Analyze this skin image and provide:
+
+1. **Possible Condition**: What the skin condition might be
+2. **Characteristics**: Describe visible features (color, texture, size, location)
+3. **Common Causes**: What typically causes this type of condition
+4. **Home Care**: Safe home remedies and care suggestions
+5. **When to See a Dermatologist**: Warning signs that need professional evaluation
+
+CRITICAL: Always recommend consulting a dermatologist for proper diagnosis. You are providing educational context only. If the condition looks potentially serious (irregular moles, rapidly changing lesions, signs of infection), strongly recommend immediate professional evaluation.`;
     } else {
       systemPrompt = `You are an AI medical assistant. Analyze this health-related image and provide helpful, educational information. Always recommend consulting healthcare professionals for proper diagnosis and treatment.`;
     }
-
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
