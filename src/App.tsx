@@ -15,6 +15,11 @@ import FirstAidPage from "@/pages/FirstAidPage";
 import HealthTipsPage from "@/pages/HealthTipsPage";
 import EmergencyPage from "@/pages/EmergencyPage";
 import AboutPage from "@/pages/AboutPage";
+import DietPlannerPage from "@/pages/DietPlannerPage";
+import WorkoutPlannerPage from "@/pages/WorkoutPlannerPage";
+import SleepAnalysisPage from "@/pages/SleepAnalysisPage";
+import MedicineInfoPage from "@/pages/MedicineInfoPage";
+import SkinAnalyzerPage from "@/pages/SkinAnalyzerPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,9 +36,14 @@ const App = () => (
             <Route path="/symptoms" element={<SymptomsPage />} />
             <Route path="/vitals" element={<VitalsPage />} />
             <Route path="/injury" element={<InjuryPage />} />
+            <Route path="/skin-analyzer" element={<SkinAnalyzerPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/ai-doctor" element={<AIDoctorPage />} />
+            <Route path="/diet-planner" element={<DietPlannerPage />} />
+            <Route path="/workout-planner" element={<WorkoutPlannerPage />} />
+            <Route path="/sleep-analysis" element={<SleepAnalysisPage />} />
+            <Route path="/medicine-info" element={<MedicineInfoPage />} />
             <Route path="/first-aid" element={<FirstAidPage />} />
             <Route path="/health-tips" element={<HealthTipsPage />} />
             <Route path="/emergency" element={<EmergencyPage />} />

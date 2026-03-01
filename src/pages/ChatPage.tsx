@@ -19,7 +19,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm Dr. Mediredy, your AI medical assistant. I'm here to help with basic health questions and provide general wellness guidance.\n\n⚠️ **Important:** For serious or emergency conditions, please contact a real doctor or call emergency services immediately."
+      content: "Hello! I'm your Healtify AI assistant. I'm here to help with basic health questions and provide general wellness guidance.\n\n⚠️ **Important:** For serious or emergency conditions, please contact a real doctor or call emergency services immediately."
     }
   ]);
   const [input, setInput] = useState('');
@@ -246,7 +246,7 @@ export default function ChatPage() {
                 >
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-xs font-medium opacity-70">
-                      {message.role === 'user' ? 'You' : '🤖 Dr. Mediredy'}
+                      {message.role === 'user' ? 'You' : '🤖 Healtify AI'}
                     </p>
                     {message.role === 'assistant' && (
                       <Button

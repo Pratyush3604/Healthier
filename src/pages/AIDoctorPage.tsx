@@ -96,7 +96,7 @@ export default function AIDoctorPage() {
     setIsActive(true);
     await startCamera();
     startListening();
-    const welcome: ChatMessage = { role: 'assistant', content: "Hello! I'm Dr. Mediredy, your AI medical assistant. You can speak to me or use the buttons to analyze an injury or medical report. How can I help you today?" };
+    const welcome: ChatMessage = { role: 'assistant', content: "Hello! I'm your Healtify AI doctor. You can speak to me or use the buttons to analyze an injury or medical report. How can I help you today?" };
     setMessages([welcome]);
     speakText(welcome.content);
   };
