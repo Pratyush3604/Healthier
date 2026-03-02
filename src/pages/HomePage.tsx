@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   Stethoscope, Activity, Camera, FileText, MessageCircle, Mic,
   BookOpen, Lightbulb, Phone, ArrowRight, Shield, Zap, Heart,
-  Sparkles, Apple, Dumbbell, Moon, Pill, Scan, Lock
+  Sparkles, Apple, Dumbbell, Moon, Pill, Scan, Lock, Calculator
 } from 'lucide-react';
 
 const features = [
@@ -19,6 +19,7 @@ const features = [
   { icon: Moon, title: 'Sleep Analysis', description: 'Track sleep patterns and get actionable improvement tips', link: '/sleep-analysis', gradient: 'from-indigo-500 to-violet-500' },
   { icon: Pill, title: 'Medicine Info', description: 'Learn about uses, side effects, and precautions of medications', link: '/medicine-info', gradient: 'from-teal-500 to-cyan-500' },
   { icon: BookOpen, title: 'First Aid Guide', description: '100+ step-by-step emergency first aid instructions', link: '/first-aid', gradient: 'from-rose-500 to-red-500' },
+  { icon: Calculator, title: 'BMI Calculator', description: 'Calculate BMI, daily calories, and water intake needs', link: '/bmi-calculator', gradient: 'from-sky-500 to-blue-500' },
   { icon: Lightbulb, title: 'Health Tips', description: '150+ wellness tips for nutrition, fitness, and mental health', link: '/health-tips', gradient: 'from-yellow-500 to-orange-500' },
   { icon: Phone, title: 'Emergency', description: 'Emergency numbers for 40+ countries with when-to-call guides', link: '/emergency', gradient: 'from-red-600 to-rose-600' },
 ];
@@ -88,7 +89,7 @@ export default function HomePage() {
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Everything You Need for <span className="gradient-text">Better Health</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">14 powerful tools for health monitoring, AI diagnostics, and wellness guidance</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">15 powerful tools for health monitoring, AI diagnostics, and wellness guidance</p>
           </motion.div>
 
           <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" variants={container} initial="hidden" whileInView="visible" viewport={{ once: true }}>

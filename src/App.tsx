@@ -20,6 +20,8 @@ import WorkoutPlannerPage from "@/pages/WorkoutPlannerPage";
 import SleepAnalysisPage from "@/pages/SleepAnalysisPage";
 import MedicineInfoPage from "@/pages/MedicineInfoPage";
 import SkinAnalyzerPage from "@/pages/SkinAnalyzerPage";
+import AuthPage from "@/pages/AuthPage";
+import BMICalculatorPage from "@/pages/BMICalculatorPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,7 @@ const App = () => (
         <Layout>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/symptoms" element={<SymptomsPage />} />
             <Route path="/vitals" element={<VitalsPage />} />
             <Route path="/injury" element={<InjuryPage />} />
@@ -44,6 +47,7 @@ const App = () => (
             <Route path="/workout-planner" element={<WorkoutPlannerPage />} />
             <Route path="/sleep-analysis" element={<SleepAnalysisPage />} />
             <Route path="/medicine-info" element={<MedicineInfoPage />} />
+            <Route path="/bmi-calculator" element={<BMICalculatorPage />} />
             <Route path="/first-aid" element={<FirstAidPage />} />
             <Route path="/health-tips" element={<HealthTipsPage />} />
             <Route path="/emergency" element={<EmergencyPage />} />
