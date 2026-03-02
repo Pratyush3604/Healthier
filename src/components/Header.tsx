@@ -5,7 +5,7 @@ import {
   Menu, X, Home, Stethoscope, Activity, 
   Camera, FileText, MessageCircle, Mic, BookOpen,
   Phone, Lightbulb, User, Search, Pill, Dumbbell,
-  Moon, Apple, Scan
+  Moon, Apple, Scan, Calculator, LogIn
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
@@ -27,6 +27,7 @@ const moreItems = [
   { path: '/workout-planner', label: 'Workout', icon: Dumbbell },
   { path: '/sleep-analysis', label: 'Sleep', icon: Moon },
   { path: '/medicine-info', label: 'Medicine', icon: Pill },
+  { path: '/bmi-calculator', label: 'BMI Calc', icon: Calculator },
   { path: '/first-aid', label: 'First Aid', icon: BookOpen },
   { path: '/health-tips', label: 'Tips', icon: Lightbulb },
   { path: '/emergency', label: 'Emergency', icon: Phone },
@@ -96,6 +97,9 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <Link to="/auth" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all">
+              <LogIn className="w-4 h-4" /><span className="hidden xl:inline">Login</span>
+            </Link>
             {/* Search */}
             <div className="relative">
               <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
