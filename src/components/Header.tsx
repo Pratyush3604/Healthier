@@ -1,36 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Menu, X, Home, Stethoscope, Activity, 
   Camera, FileText, MessageCircle, Mic, BookOpen,
   Phone, Lightbulb, User, Search, Pill, Dumbbell,
-  Moon, Apple, Scan, Calculator, LogIn
+  Moon, Apple, Scan, Calculator, LogIn, LogOut,
+  Droplets, LayoutDashboard, Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
 
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
+  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/symptoms', label: 'Symptoms', icon: Stethoscope },
   { path: '/vitals', label: 'Vitals', icon: Activity },
   { path: '/injury', label: 'Injury', icon: Camera },
   { path: '/skin-analyzer', label: 'Skin AI', icon: Scan },
   { path: '/reports', label: 'Reports', icon: FileText },
   { path: '/chat', label: 'Chat', icon: MessageCircle },
-  { path: '/ai-doctor', label: 'AI Doctor', icon: Mic },
 ];
 
 const moreItems = [
+  { path: '/ai-doctor', label: 'AI Doctor', icon: Mic },
   { path: '/diet-planner', label: 'Diet Plan', icon: Apple },
   { path: '/workout-planner', label: 'Workout', icon: Dumbbell },
   { path: '/sleep-analysis', label: 'Sleep', icon: Moon },
   { path: '/medicine-info', label: 'Medicine', icon: Pill },
   { path: '/bmi-calculator', label: 'BMI Calc', icon: Calculator },
+  { path: '/water-tracker', label: 'Water', icon: Droplets },
   { path: '/first-aid', label: 'First Aid', icon: BookOpen },
   { path: '/health-tips', label: 'Tips', icon: Lightbulb },
   { path: '/emergency', label: 'Emergency', icon: Phone },
+  { path: '/settings', label: 'Settings', icon: Settings },
   { path: '/about', label: 'About', icon: User },
 ];
 
@@ -40,11 +45,23 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [user, setUser] = useState<any>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
 
   const filteredNav = searchTerm
     ? allNav.filter(i => i.label.toLowerCase().includes(searchTerm.toLowerCase()))
     : [];
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-white/5">
@@ -97,9 +114,23 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link to="/auth" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all">
-              <LogIn className="w-4 h-4" /><span className="hidden xl:inline">Login</span>
-            </Link>
+            {/* Auth button */}
+            {user ? (
+              <div className="hidden sm:flex items-center gap-2">
+                <Link to="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all">
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="hidden xl:inline">Dashboard</span>
+                </Link>
+                <button onClick={handleLogout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all">
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link to="/auth" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all">
+                <LogIn className="w-4 h-4" /><span className="hidden xl:inline">Login</span>
+              </Link>
+            )}
+
             {/* Search */}
             <div className="relative">
               <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 rounded-lg hover:bg-white/5 transition-colors">

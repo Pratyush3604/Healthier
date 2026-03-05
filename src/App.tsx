@@ -22,6 +22,9 @@ import MedicineInfoPage from "@/pages/MedicineInfoPage";
 import SkinAnalyzerPage from "@/pages/SkinAnalyzerPage";
 import AuthPage from "@/pages/AuthPage";
 import BMICalculatorPage from "@/pages/BMICalculatorPage";
+import SettingsPage from "@/pages/SettingsPage";
+import WaterTrackerPage from "@/pages/WaterTrackerPage";
+import HealthDashboardPage from "@/pages/HealthDashboardPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/dashboard" element={<HealthDashboardPage />} />
             <Route path="/symptoms" element={<SymptomsPage />} />
             <Route path="/vitals" element={<VitalsPage />} />
             <Route path="/injury" element={<InjuryPage />} />
@@ -48,9 +52,11 @@ const App = () => (
             <Route path="/sleep-analysis" element={<SleepAnalysisPage />} />
             <Route path="/medicine-info" element={<MedicineInfoPage />} />
             <Route path="/bmi-calculator" element={<BMICalculatorPage />} />
+            <Route path="/water-tracker" element={<WaterTrackerPage />} />
             <Route path="/first-aid" element={<FirstAidPage />} />
             <Route path="/health-tips" element={<HealthTipsPage />} />
             <Route path="/emergency" element={<EmergencyPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
