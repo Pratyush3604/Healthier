@@ -8,9 +8,10 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useAIStream } from '@/hooks/useAIStream';
 import { AIResponseCard } from '@/components/AIResponseCard';
 import { PageHeader } from '@/components/PageHeader';
+import { ChipSelect } from '@/components/ChipSelect';
 import { cn } from '@/lib/utils';
 
-interface BPEntry { date: string; time: string; systolic: number; diastolic: number; heartRate?: number; notes: string; category: string; }
+interface BPEntry { date: string; time: string; systolic: number; diastolic: number; heartRate?: number; notes: string; category: string; arm: string; position: string; }
 
 const getBPCategory = (sys: number, dia: number) => {
   if (sys < 120 && dia < 80) return { label: 'Normal', color: 'text-success', bg: 'bg-success/10' };
@@ -25,6 +26,14 @@ export default function BloodPressurePage() {
   const [diastolic, setDiastolic] = useState('');
   const [heartRate, setHeartRate] = useState('');
   const [notes, setNotes] = useState('');
+  const [arm, setArm] = useState('left');
+  const [position, setPosition] = useState('sitting');
+  const [timeOfDay, setTimeOfDay] = useState('morning');
+  const [mealStatus, setMealStatus] = useState('fasting');
+  const [caffeine, setCaffeine] = useState('no');
+  const [exercise, setExercise] = useState('no');
+  const [stress, setStress] = useState('relaxed');
+  const [medications, setMedications] = useState('');
   const [history, setHistory] = useLocalStorage<BPEntry[]>('healtify-bp-history', []);
   const { toast } = useToast();
   const ai = useAIStream({ type: 'bp-analysis' });
@@ -39,7 +48,7 @@ export default function BloodPressurePage() {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       systolic: sys, diastolic: dia,
       heartRate: heartRate ? parseInt(heartRate) : undefined,
-      notes, category: getBPCategory(sys, dia).label,
+      notes, category: getBPCategory(sys, dia).label, arm, position,
     };
     setHistory(prev => [entry, ...prev.slice(0, 49)]);
     toast({ title: 'Logged', description: `${sys}/${dia} mmHg recorded.` });
@@ -48,8 +57,24 @@ export default function BloodPressurePage() {
 
   const handleAnalyze = async () => {
     if (history.length === 0) { toast({ title: 'No data', description: 'Log at least one reading first.', variant: 'destructive' }); return; }
-    const readings = history.slice(0, 10).map(h => `${h.date} ${h.time}: ${h.systolic}/${h.diastolic} mmHg ${h.heartRate ? `HR:${h.heartRate}` : ''} ${h.notes ? `(${h.notes})` : ''}`).join('\n');
-    const prompt = `Analyze these blood pressure readings:\n${readings}\n\nProvide:\n1. **Overall BP trend** analysis\n2. **Category breakdown** (normal/elevated/high)\n3. **Risk factors** to consider\n4. **Lifestyle modifications** (diet, exercise, stress)\n5. **DASH diet** overview\n6. **When to see a doctor**\n7. **Tips for accurate BP measurement**`;
+    const readings = history.slice(0, 10).map(h => `${h.date} ${h.time}: ${h.systolic}/${h.diastolic} mmHg ${h.heartRate ? `HR:${h.heartRate}` : ''} (${h.arm} arm, ${h.position}) ${h.notes ? `— ${h.notes}` : ''}`).join('\n');
+    const prompt = `Analyze these blood pressure readings:
+${readings}
+
+Context: Time of day: ${timeOfDay}, Meal status: ${mealStatus}, Caffeine: ${caffeine}, Recent exercise: ${exercise}, Stress: ${stress}
+${medications ? `Current BP medications: ${medications}` : ''}
+
+Provide detailed analysis:
+1. **Overall BP Trend** — improving, worsening, or stable
+2. **Category Breakdown** — normal/elevated/high distribution
+3. **Time-of-Day Patterns** — morning vs evening differences
+4. **Heart Rate Correlation** — relationship with BP
+5. **Risk Factors** to consider
+6. **Lifestyle Modifications** — DASH diet, exercise, stress management, sodium intake
+7. **Measurement Accuracy Tips** — proper technique
+8. **When to See a Doctor** — warning signs
+9. **Medication Considerations** — if applicable
+10. **7-Day BP Improvement Plan**`;
 
     try {
       await ai.stream([{ role: 'user', content: prompt }]);
@@ -62,18 +87,34 @@ export default function BloodPressurePage() {
         <PageHeader
           icon={<Heart className="h-8 w-8 text-primary-foreground" />}
           title="Blood Pressure Tracker"
-          description="Log readings, track trends & get AI insights"
+          description="Log readings with context, track trends & get AI insights"
           gradient="from-destructive to-accent"
         />
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
             <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Reading</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Systolic (top)</Label><Input type="number" placeholder="120" value={systolic} onChange={e => setSystolic(e.target.value)} className="mt-1.5 text-lg" /></div>
                 <div><Label>Diastolic (bottom)</Label><Input type="number" placeholder="80" value={diastolic} onChange={e => setDiastolic(e.target.value)} className="mt-1.5 text-lg" /></div>
               </div>
-              <div><Label>Heart Rate (optional)</Label><Input type="number" placeholder="72" value={heartRate} onChange={e => setHeartRate(e.target.value)} className="mt-1.5" /></div>
-              <div><Label>Notes (optional)</Label><Input placeholder="After exercise, resting, etc." value={notes} onChange={e => setNotes(e.target.value)} className="mt-1.5" /></div>
+              <div><Label>Heart Rate (bpm)</Label><Input type="number" placeholder="72" value={heartRate} onChange={e => setHeartRate(e.target.value)} className="mt-1.5" /></div>
+
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide pt-2">Measurement Context</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Arm</Label><ChipSelect options={['left', 'right']} value={arm} onChange={setArm} /></div>
+                <div><Label>Position</Label><ChipSelect options={['sitting', 'standing', 'lying-down']} value={position} onChange={setPosition} /></div>
+              </div>
+              <div><Label>Time of Day</Label><ChipSelect options={['morning', 'afternoon', 'evening', 'night']} value={timeOfDay} onChange={setTimeOfDay} /></div>
+              <div><Label>Meal Status</Label><ChipSelect options={['fasting', 'after-meal', 'between-meals']} value={mealStatus} onChange={setMealStatus} /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Had Caffeine?</Label><ChipSelect options={['no', 'yes-recently', 'yes-hours-ago']} value={caffeine} onChange={setCaffeine} /></div>
+                <div><Label>Recent Exercise?</Label><ChipSelect options={['no', 'light', 'intense']} value={exercise} onChange={setExercise} /></div>
+              </div>
+              <div><Label>Current Mood/Stress</Label><ChipSelect options={['relaxed', 'normal', 'stressed', 'anxious']} value={stress} onChange={setStress} /></div>
+              <div><Label>BP Medications (if any)</Label><Input placeholder="Amlodipine, Losartan..." value={medications} onChange={e => setMedications(e.target.value)} className="mt-1.5" /></div>
+              <div><Label>Notes</Label><Input placeholder="After walking, felt dizzy, etc." value={notes} onChange={e => setNotes(e.target.value)} className="mt-1.5" /></div>
+
               {currentCategory && (
                 <div className={cn("flex items-center gap-2 px-4 py-3 rounded-xl border", currentCategory.bg)}>
                   <Heart className={cn("w-5 h-5", currentCategory.color)} />
@@ -114,10 +155,9 @@ export default function BloodPressurePage() {
               icon={<TrendingUp className="h-5 w-5 text-primary" />}
               title="BP Analysis"
               maxHeight="400px"
-              showDisclaimer={false}
-              emptyIcon={null}
-              emptyTitle=""
-              emptyDescription=""
+              showDisclaimer={!!ai.response}
+              disclaimerText="Consult your doctor for persistent high BP. Home readings should complement, not replace, clinical measurements."
+              emptyIcon={null} emptyTitle="" emptyDescription=""
             />
 
             <div className="bg-card rounded-2xl p-6 border border-border">
@@ -139,12 +179,6 @@ export default function BloodPressurePage() {
                 <p className="text-sm text-muted-foreground text-center py-8">No readings logged yet</p>
               )}
             </div>
-
-            {(ai.response || history.length > 0) && (
-              <AIResponseCard content={null} isLoading={false} showDisclaimer={true}
-                disclaimerText="Consult your doctor for persistent high BP. Home readings should complement, not replace, clinical measurements."
-                emptyIcon={null} emptyTitle="" emptyDescription="" />
-            )}
           </div>
         </div>
       </div>

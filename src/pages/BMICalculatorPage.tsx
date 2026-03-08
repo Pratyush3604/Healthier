@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, Droplets, Flame, TrendingUp, Scale, Activity } from 'lucide-react';
+import { Calculator, Droplets, Flame, TrendingUp, Scale, Activity, Ruler, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,22 +10,12 @@ import { ChipSelect } from '@/components/ChipSelect';
 import { cn } from '@/lib/utils';
 
 interface BMIResult {
-  bmi: number;
-  category: string;
-  color: string;
-  water: number;
-  calories: number;
-  idealWeightLow: number;
-  idealWeightHigh: number;
-  bodyFatEstimate: string;
+  bmi: number; category: string; color: string; water: number; calories: number;
+  idealWeightLow: number; idealWeightHigh: number; bodyFatEstimate: string;
+  bmr: number; proteinNeed: number; waistRatio: string;
 }
 
-interface BMIHistory {
-  date: string;
-  bmi: number;
-  weight: number;
-  category: string;
-}
+interface BMIHistory { date: string; bmi: number; weight: number; category: string; }
 
 export default function BMICalculatorPage() {
   const [weight, setWeight] = useState('');
@@ -33,6 +23,12 @@ export default function BMICalculatorPage() {
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('male');
   const [activity, setActivity] = useState('moderate');
+  const [waist, setWaist] = useState('');
+  const [hip, setHip] = useState('');
+  const [neck, setNeck] = useState('');
+  const [wrist, setWrist] = useState('');
+  const [bodyType, setBodyType] = useState('mesomorph');
+  const [goal, setGoal] = useState('maintain');
   const [result, setResult] = useState<BMIResult | null>(null);
   const [, setBmiStorage] = useLocalStorage<{ bmi: string }>('healtify-bmi', { bmi: '--' });
   const [history, setHistory] = useLocalStorage<BMIHistory[]>('healtify-bmi-history', []);
@@ -46,9 +42,7 @@ export default function BMICalculatorPage() {
   ];
 
   const calculate = () => {
-    const w = parseFloat(weight);
-    const h = parseFloat(height) / 100;
-    const a = parseInt(age);
+    const w = parseFloat(weight), h = parseFloat(height) / 100, a = parseInt(age);
     if (!w || !h || !a) return;
 
     const bmi = w / (h * h);
@@ -62,22 +56,31 @@ export default function BMICalculatorPage() {
       ? 10 * w + 6.25 * parseFloat(height) - 5 * a + 5
       : 10 * w + 6.25 * parseFloat(height) - 5 * a - 161;
 
-    const actFactor = activities.find(a => a.key === activity)?.factor || 1.55;
+    const actFactor = activities.find(x => x.key === activity)?.factor || 1.55;
     const calories = Math.round(bmr * actFactor);
     const water = Math.round(w * 0.033 * 10) / 10;
     const idealWeightLow = Math.round(18.5 * h * h * 10) / 10;
     const idealWeightHigh = Math.round(24.9 * h * h * 10) / 10;
+    const proteinNeed = Math.round(w * (goal === 'muscle' ? 2.0 : goal === 'lose' ? 1.6 : 1.2));
+
     const bodyFatEstimate = gender === 'male'
       ? bmi < 18.5 ? '8-12%' : bmi < 25 ? '13-20%' : bmi < 30 ? '21-28%' : '28%+'
       : bmi < 18.5 ? '15-20%' : bmi < 25 ? '21-28%' : bmi < 30 ? '29-35%' : '35%+';
 
-    const res = { bmi: Math.round(bmi * 10) / 10, category, color, water, calories, idealWeightLow, idealWeightHigh, bodyFatEstimate };
+    let waistRatio = '—';
+    if (waist && hip) {
+      const ratio = parseFloat(waist) / parseFloat(hip);
+      waistRatio = ratio.toFixed(2);
+    }
+
+    const res: BMIResult = {
+      bmi: Math.round(bmi * 10) / 10, category, color, water, calories,
+      idealWeightLow, idealWeightHigh, bodyFatEstimate, bmr: Math.round(bmr),
+      proteinNeed, waistRatio,
+    };
     setResult(res);
     setBmiStorage({ bmi: String(res.bmi) });
-    setHistory(prev => [
-      { date: new Date().toISOString().split('T')[0], bmi: res.bmi, weight: w, category },
-      ...prev.slice(0, 19),
-    ]);
+    setHistory(prev => [{ date: new Date().toISOString().split('T')[0], bmi: res.bmi, weight: w, category }, ...prev.slice(0, 19)]);
   };
 
   return (
@@ -86,13 +89,14 @@ export default function BMICalculatorPage() {
         <PageHeader
           icon={<Calculator className="h-8 w-8 text-primary-foreground" />}
           title="Health Calculator"
-          description="BMI, daily calories, water intake & ideal weight range"
+          description="BMI, BMR, daily calories, protein needs, water intake & body composition"
           gradient="from-secondary to-primary"
           showEmergency={false}
         />
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-5">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Core Measurements</h3>
             <div className="grid grid-cols-2 gap-4">
               <div><Label>Weight (kg)</Label><Input type="number" placeholder="70" value={weight} onChange={e => setWeight(e.target.value)} /></div>
               <div><Label>Height (cm)</Label><Input type="number" placeholder="175" value={height} onChange={e => setHeight(e.target.value)} /></div>
@@ -101,6 +105,21 @@ export default function BMICalculatorPage() {
               <div><Label>Age</Label><Input type="number" placeholder="25" value={age} onChange={e => setAge(e.target.value)} /></div>
               <div><Label>Gender</Label><ChipSelect options={['male', 'female']} value={gender} onChange={setGender} /></div>
             </div>
+
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide pt-2">Body Measurements (optional)</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label>Waist (cm)</Label><Input type="number" placeholder="80" value={waist} onChange={e => setWaist(e.target.value)} /></div>
+              <div><Label>Hip (cm)</Label><Input type="number" placeholder="95" value={hip} onChange={e => setHip(e.target.value)} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label>Neck (cm)</Label><Input type="number" placeholder="38" value={neck} onChange={e => setNeck(e.target.value)} /></div>
+              <div><Label>Wrist (cm)</Label><Input type="number" placeholder="17" value={wrist} onChange={e => setWrist(e.target.value)} /></div>
+            </div>
+
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide pt-2">Lifestyle</h3>
+            <div><Label>Body Type</Label><ChipSelect options={['ectomorph', 'mesomorph', 'endomorph']} value={bodyType} onChange={setBodyType} /></div>
+            <div><Label>Goal</Label><ChipSelect options={['lose', 'maintain', 'muscle']} value={goal} onChange={setGoal} formatLabel={v => v === 'lose' ? 'Lose Weight' : v === 'maintain' ? 'Maintain' : 'Build Muscle'} /></div>
+
             <div>
               <Label>Activity Level</Label>
               <div className="space-y-2 mt-2">
@@ -144,7 +163,12 @@ export default function BMICalculatorPage() {
                   <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
                     <Flame className="h-7 w-7 text-warning mx-auto mb-2" />
                     <p className="text-2xl font-bold font-display">{result.calories}</p>
-                    <p className="text-sm text-muted-foreground">Daily Calories</p>
+                    <p className="text-sm text-muted-foreground">Daily Calories (TDEE)</p>
+                  </div>
+                  <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
+                    <Activity className="h-7 w-7 text-accent mx-auto mb-2" />
+                    <p className="text-2xl font-bold font-display">{result.bmr}</p>
+                    <p className="text-sm text-muted-foreground">BMR (Basal)</p>
                   </div>
                   <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
                     <Droplets className="h-7 w-7 text-primary mx-auto mb-2" />
@@ -157,17 +181,34 @@ export default function BMICalculatorPage() {
                     <p className="text-sm text-muted-foreground">Ideal Weight (kg)</p>
                   </div>
                   <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
-                    <Activity className="h-7 w-7 text-accent mx-auto mb-2" />
+                    <Ruler className="h-7 w-7 text-secondary mx-auto mb-2" />
                     <p className="text-2xl font-bold font-display">{result.bodyFatEstimate}</p>
                     <p className="text-sm text-muted-foreground">Est. Body Fat</p>
                   </div>
+                  <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
+                    <Dumbbell className="h-7 w-7 text-warning mx-auto mb-2" />
+                    <p className="text-2xl font-bold font-display">{result.proteinNeed}g</p>
+                    <p className="text-sm text-muted-foreground">Daily Protein</p>
+                  </div>
                 </div>
+
+                {result.waistRatio !== '—' && (
+                  <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
+                    <p className="text-sm text-muted-foreground mb-1">Waist-to-Hip Ratio</p>
+                    <p className="text-3xl font-bold font-display">{result.waistRatio}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {gender === 'male'
+                        ? parseFloat(result.waistRatio) < 0.9 ? 'Low risk' : parseFloat(result.waistRatio) < 1.0 ? 'Moderate risk' : 'High risk'
+                        : parseFloat(result.waistRatio) < 0.8 ? 'Low risk' : parseFloat(result.waistRatio) < 0.85 ? 'Moderate risk' : 'High risk'}
+                    </p>
+                  </div>
+                )}
               </motion.div>
             ) : (
               <div className="bg-card rounded-2xl p-12 border border-border text-center">
                 <Calculator className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Enter Your Details</h3>
-                <p className="text-muted-foreground">Fill in the form to calculate BMI, calorie needs, and water intake</p>
+                <p className="text-muted-foreground">Fill in the form to calculate BMI, calorie needs, protein, and water intake</p>
               </div>
             )}
 

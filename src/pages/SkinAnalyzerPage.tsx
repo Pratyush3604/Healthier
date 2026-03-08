@@ -2,7 +2,12 @@ import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Scan, Camera, Upload, X, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { PageHeader } from '@/components/PageHeader';
+import { ChipSelect } from '@/components/ChipSelect';
+import { AIResponseCard } from '@/components/AIResponseCard';
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
 
@@ -11,6 +16,16 @@ export default function SkinAnalyzerPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [skinType, setSkinType] = useState('normal');
+  const [location, setLocation] = useState('');
+  const [duration, setDuration] = useState('today');
+  const [itching, setItching] = useState('no');
+  const [pain, setPain] = useState('no');
+  const [changed, setChanged] = useState('no');
+  const [age, setAge] = useState('');
+  const [allergies, setAllergies] = useState('');
+  const [sunExposure, setSunExposure] = useState('moderate');
+  const [skinProducts, setSkinProducts] = useState('');
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,12 +62,13 @@ export default function SkinAnalyzerPage() {
     if (!image) return;
     setIsLoading(true); setAnalysis(null);
     try {
+      const context = `Skin type: ${skinType}. Location: ${location || 'not specified'}. Duration: ${duration}. Itching: ${itching}. Pain: ${pain}. Changed recently: ${changed}. Age: ${age || 'not specified'}. Sun exposure: ${sunExposure}. ${allergies ? `Allergies: ${allergies}` : ''} ${skinProducts ? `Products used: ${skinProducts}` : ''}`;
       const response = await fetch(ANALYZE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ imageBase64: image, type: 'skin' }),
+        body: JSON.stringify({ imageBase64: image, type: 'skin', context }),
       });
-      if (response.status === 429) { toast({ title: 'Rate Limited', description: 'Please wait a moment.', variant: 'destructive' }); return; }
+      if (response.status === 429) { toast({ title: 'Rate Limited', variant: 'destructive' }); return; }
       if (!response.ok) throw new Error('Failed');
       const data = await response.json();
       if (data.error) throw new Error(data.error);
@@ -64,17 +80,17 @@ export default function SkinAnalyzerPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-fuchsia-500 to-pink-500">
-            <Scan className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="font-display text-3xl font-bold mb-2">AI Skin Analyzer</h1>
-          <p className="text-muted-foreground">Upload a photo of a skin condition for AI-powered analysis</p>
-        </div>
+      <div className="max-w-5xl mx-auto">
+        <PageHeader
+          icon={<Scan className="h-8 w-8 text-primary-foreground" />}
+          title="AI Skin Analyzer"
+          description="Upload a photo with context for detailed skin condition analysis"
+          gradient="from-accent to-secondary"
+        />
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
+            {/* Camera/Upload */}
             <div className="bg-card rounded-2xl border border-border shadow-soft overflow-hidden">
               {cameraActive && (
                 <div className="relative aspect-video bg-black">
@@ -104,6 +120,26 @@ export default function SkinAnalyzerPage() {
                 </div>
               )}
             </div>
+
+            {/* Skin Context */}
+            <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Skin Details (improves accuracy)</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Age</Label><Input type="number" placeholder="30" value={age} onChange={e => setAge(e.target.value)} /></div>
+                <div><Label>Body Location</Label><Input placeholder="Face, arm, back..." value={location} onChange={e => setLocation(e.target.value)} /></div>
+              </div>
+              <div><Label>Skin Type</Label><ChipSelect options={['dry', 'normal', 'oily', 'combination', 'sensitive']} value={skinType} onChange={setSkinType} /></div>
+              <div><Label>How Long Have You Had This?</Label><ChipSelect options={['today', '2-3 days', '1 week', '2+ weeks', '1+ month', 'years']} value={duration} onChange={setDuration} /></div>
+              <div className="grid grid-cols-3 gap-3">
+                <div><Label>Itching?</Label><ChipSelect options={['no', 'mild', 'severe']} value={itching} onChange={setItching} /></div>
+                <div><Label>Painful?</Label><ChipSelect options={['no', 'mild', 'severe']} value={pain} onChange={setPain} /></div>
+                <div><Label>Changed?</Label><ChipSelect options={['no', 'growing', 'spreading']} value={changed} onChange={setChanged} /></div>
+              </div>
+              <div><Label>Sun Exposure</Label><ChipSelect options={['minimal', 'moderate', 'heavy']} value={sunExposure} onChange={setSunExposure} /></div>
+              <div><Label>Known Skin Allergies</Label><Input placeholder="Latex, nickel, fragrances..." value={allergies} onChange={e => setAllergies(e.target.value)} /></div>
+              <div><Label>Skincare Products Used</Label><Input placeholder="Retinol, benzoyl peroxide, sunscreen..." value={skinProducts} onChange={e => setSkinProducts(e.target.value)} /></div>
+            </div>
+
             {image && (
               <div className="flex gap-3">
                 <Button onClick={handleAnalyze} disabled={isLoading} className="flex-1" size="lg">
@@ -115,18 +151,16 @@ export default function SkinAnalyzerPage() {
           </div>
 
           <div className="space-y-4">
-            {analysis ? (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl p-6 border border-border shadow-soft">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2"><Scan className="h-5 w-5 text-primary" />Skin Analysis</h3>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{analysis}</p>
-              </motion.div>
-            ) : (
-              <div className="bg-card rounded-2xl p-6 border border-border shadow-soft text-center">
-                <Scan className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                <h3 className="font-semibold mb-2">No Image Analyzed</h3>
-                <p className="text-sm text-muted-foreground">Upload or capture an image to get skin condition analysis</p>
-              </div>
-            )}
+            <AIResponseCard
+              content={analysis}
+              isLoading={isLoading}
+              icon={<Scan className="h-5 w-5 text-primary" />}
+              title="Skin Analysis"
+              emptyIcon={<Scan className="h-16 w-16" />}
+              emptyTitle="No Image Analyzed"
+              emptyDescription="Upload or capture a skin image, fill in details, then analyze"
+              showDisclaimer={false}
+            />
             <div className="flex items-start gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
               <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
               <div className="text-sm text-muted-foreground">
@@ -136,7 +170,7 @@ export default function SkinAnalyzerPage() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
