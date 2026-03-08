@@ -4,7 +4,8 @@ import {
   Stethoscope, Activity, Camera, FileText, MessageCircle, Mic,
   BookOpen, Lightbulb, Phone, ArrowRight, Shield, Zap, Heart,
   Sparkles, Apple, Dumbbell, Moon, Pill, Scan, Lock, Calculator,
-  Droplets, BookMarked, ClipboardList, TrendingUp
+  Droplets, BookMarked, ClipboardList, TrendingUp, Brain,
+  Baby, UserCheck, Plane, Syringe, Monitor, Wind, Star
 } from 'lucide-react';
 
 const features = [
@@ -17,12 +18,24 @@ const features = [
   { icon: Mic, title: 'Voice Doctor', description: 'Voice consultation with TTS', link: '/ai-doctor', color: 'text-secondary' },
   { icon: Apple, title: 'Diet Planner', description: 'Personalized 7-day meal plans', link: '/diet-planner', color: 'text-success' },
   { icon: Dumbbell, title: 'Workout Planner', description: 'Custom exercise routines', link: '/workout-planner', color: 'text-warning' },
-  { icon: Dumbbell, title: 'Exercise Library', description: '106 exercises with full instructions', link: '/exercise-library', color: 'text-accent' },
-  { icon: Moon, title: 'Sleep Analysis', description: 'Track sleep & get tips', link: '/sleep-analysis', color: 'text-secondary' },
+  { icon: Dumbbell, title: 'Exercise Library', description: '106 exercises with instructions', link: '/exercise-library', color: 'text-accent' },
+  { icon: Moon, title: 'Sleep Analysis', description: 'Track sleep & get AI tips', link: '/sleep-analysis', color: 'text-secondary' },
   { icon: Pill, title: 'Medicine Info', description: 'Uses, side effects & precautions', link: '/medicine-info', color: 'text-primary' },
-  { icon: BookOpen, title: 'First Aid Guide', description: '100+ emergency instructions', link: '/first-aid', color: 'text-destructive' },
+  { icon: BookOpen, title: 'First Aid Guide', description: '60+ emergency instructions', link: '/first-aid', color: 'text-destructive' },
   { icon: Calculator, title: 'BMI Calculator', description: 'BMI, calories & ideal weight', link: '/bmi-calculator', color: 'text-secondary' },
   { icon: Droplets, title: 'Water Tracker', description: 'Track daily intake & streaks', link: '/water-tracker', color: 'text-primary' },
+  { icon: Heart, title: 'Blood Pressure', description: 'Log & analyze BP trends', link: '/blood-pressure', color: 'text-destructive' },
+  { icon: Brain, title: 'Stress Check', description: 'Mental wellness assessment', link: '/stress-check', color: 'text-accent' },
+  { icon: Heart, title: 'Period Tracker', description: 'Cycle predictions & symptom relief', link: '/period-tracker', color: 'text-accent' },
+  { icon: Shield, title: "Men's Health", description: 'Vitality & testosterone assessment', link: '/mens-health', color: 'text-secondary' },
+  { icon: Baby, title: 'Child Fever', description: 'Pediatric fever management', link: '/child-fever', color: 'text-accent' },
+  { icon: UserCheck, title: 'Fall Risk', description: 'Senior fall risk assessment', link: '/fall-risk', color: 'text-warning' },
+  { icon: Plane, title: 'Travel Health', description: 'Vaccines & safety for travelers', link: '/travel-health', color: 'text-primary' },
+  { icon: Activity, title: 'Diabetes Risk', description: 'Type 2 diabetes risk calculator', link: '/diabetes-risk', color: 'text-warning' },
+  { icon: Syringe, title: 'Vaccine Scheduler', description: 'Track & plan vaccinations', link: '/vaccine-scheduler', color: 'text-success' },
+  { icon: Monitor, title: 'Posture Corrector', description: 'Exercises & ergonomic tips', link: '/posture-corrector', color: 'text-primary' },
+  { icon: Wind, title: 'Quit Smoking', description: 'Personalized cessation plan', link: '/smoking-cessation', color: 'text-success' },
+  { icon: Star, title: 'Wellness Quiz', description: 'Holistic 8-dimension assessment', link: '/wellness-quiz', color: 'text-accent' },
   { icon: ClipboardList, title: 'Med Reminders', description: 'Never miss a medication dose', link: '/medication-reminder', color: 'text-success' },
   { icon: BookMarked, title: 'Health Journal', description: 'Track mood & energy daily', link: '/health-journal', color: 'text-accent' },
   { icon: TrendingUp, title: 'Health Reports', description: 'All data aggregated', link: '/health-reports', color: 'text-primary' },
@@ -31,7 +44,7 @@ const features = [
 ];
 
 const stats = [
-  { value: '20+', label: 'Health Tools', icon: Sparkles },
+  { value: '32', label: 'Health Tools', icon: Sparkles },
   { value: '24/7', label: 'Available', icon: Zap },
   { value: 'Free', label: 'To Use', icon: Heart },
   { value: 'Private', label: '& Secure', icon: Lock },
@@ -67,7 +80,7 @@ export default function HomePage() {
             <motion.div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 border border-primary/15 mb-8"
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-medium text-primary">20 Health Tools — Powered by AI</span>
+              <span className="text-xs font-medium text-primary">32 Health Tools — Powered by AI</span>
             </motion.div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.05] tracking-tight">
@@ -90,7 +103,6 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* Stats */}
           <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16 max-w-2xl mx-auto" variants={container} initial="hidden" animate="visible">
             {stats.map((s, i) => {
               const Icon = s.icon;
@@ -133,9 +145,7 @@ export default function HomePage() {
       <section className="py-20 border-t border-border">
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3">
-              All Your Health Tools
-            </h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3">All Your Health Tools</h2>
             <p className="text-muted-foreground">{features.length} powerful tools for health, fitness & wellness</p>
           </motion.div>
 
@@ -146,7 +156,7 @@ export default function HomePage() {
                 <motion.div key={i} variants={item}>
                   <Link to={f.link} className="block bg-card rounded-2xl border border-border p-5 hover:border-primary/20 transition-all duration-300 group h-full">
                     <div className="flex items-start gap-4">
-                      <div className={`w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
+                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                         <Icon className={`w-5 h-5 ${f.color}`} />
                       </div>
                       <div className="min-w-0">
