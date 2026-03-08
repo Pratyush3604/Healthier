@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dumbbell, Search, Filter, ChevronDown, ChevronUp, Star, Clock, Flame, Target, ArrowLeft } from 'lucide-react';
+import { Dumbbell, Search, Filter, ChevronDown, ChevronUp, Star, Clock, Flame, Target, X, Zap, Shield } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -23,164 +23,156 @@ interface Exercise {
   emoji: string;
 }
 
+// ===== EXERCISE DATA =====
 const exercises: Exercise[] = [
-  // CHEST (12)
-  { name: 'Push-Up', muscle: 'Chest', secondary: 'Triceps, Shoulders', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3-4', reps: '10-20', restSec: 60, calories: 8, emoji: '💪', instructions: ['Start in plank position with hands shoulder-width apart', 'Keep body in a straight line from head to heels', 'Lower chest to the floor by bending elbows', 'Push back up to starting position', 'Exhale on the way up, inhale on the way down'], tips: ['Keep core tight throughout', 'Don\'t flare elbows out too wide', 'Scale with knee push-ups if needed'] },
-  { name: 'Bench Press', muscle: 'Chest', secondary: 'Triceps, Shoulders', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '8-12', restSec: 90, calories: 10, emoji: '🏋️', instructions: ['Lie on bench with eyes under the bar', 'Grip bar slightly wider than shoulder-width', 'Unrack and lower bar to mid-chest', 'Press bar back up to lockout', 'Keep feet flat on the floor'], tips: ['Retract shoulder blades for stability', 'Use a spotter for heavy sets', 'Control the descent — don\'t bounce'] },
-  { name: 'Incline Dumbbell Press', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3-4', reps: '10-12', restSec: 75, calories: 9, emoji: '📐', instructions: ['Set bench to 30-45 degree incline', 'Hold dumbbells at chest level with palms forward', 'Press dumbbells up and slightly inward', 'Lower with control to chest level', 'Squeeze chest at the top'], tips: ['Don\'t set incline too high — targets shoulders more', 'Keep wrists straight', 'Full range of motion is key'] },
-  { name: 'Dumbbell Fly', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 60, calories: 7, emoji: '🦅', instructions: ['Lie on flat bench holding dumbbells above chest', 'Slight bend in elbows throughout', 'Lower arms out to sides in wide arc', 'Feel deep stretch in chest', 'Bring dumbbells back together squeezing chest'], tips: ['Use lighter weight than pressing movements', 'Don\'t go too deep — risk of shoulder injury', 'Focus on the squeeze at the top'] },
-  { name: 'Cable Crossover', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 60, calories: 7, emoji: '🔗', instructions: ['Set pulleys to high position', 'Step forward with one foot for stability', 'Pull handles down and together in front of chest', 'Squeeze chest hard at bottom', 'Return slowly to start'], tips: ['Keep slight bend in elbows', 'Lean slightly forward', 'Control the negative'] },
-  { name: 'Decline Push-Up', muscle: 'Chest', secondary: 'Shoulders, Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '10-15', restSec: 60, calories: 9, emoji: '⬇️', instructions: ['Place feet on elevated surface (bench/step)', 'Hands on floor shoulder-width apart', 'Lower chest toward floor', 'Push back up maintaining body alignment', 'Keep core engaged'], tips: ['Higher elevation = more upper chest emphasis', 'Start with low elevation and progress', 'Keep hips from sagging'] },
-  { name: 'Chest Dip', muscle: 'Chest', secondary: 'Triceps, Shoulders', difficulty: 'Advanced', equipment: 'Bodyweight', sets: '3-4', reps: '8-12', restSec: 90, calories: 10, emoji: '🤸', instructions: ['Grip parallel bars and lift body', 'Lean forward slightly (30 degrees)', 'Lower body by bending elbows to 90 degrees', 'Push back up to full extension', 'Keep shoulders down and back'], tips: ['Lean forward for more chest, upright for more triceps', 'Don\'t go too deep if shoulders hurt', 'Add weight belt when bodyweight becomes easy'] },
-  { name: 'Landmine Press', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 75, calories: 8, emoji: '💣', instructions: ['Place one end of barbell in corner or landmine attachment', 'Hold the other end at chest height', 'Press the bar up and forward', 'Lower with control', 'Alternate arms or use both hands'], tips: ['Great for shoulder-friendly pressing', 'Engages core heavily', 'Can be done standing or kneeling'] },
-  { name: 'Pec Deck Machine', muscle: 'Chest', difficulty: 'Beginner', equipment: 'Machine', sets: '3', reps: '12-15', restSec: 60, calories: 6, emoji: '🦾', instructions: ['Sit with back flat against pad', 'Place forearms against arm pads', 'Bring pads together in front of chest', 'Squeeze and hold for 1 second', 'Return slowly to start position'], tips: ['Don\'t let arms go too far back', 'Focus on squeezing chest, not pushing with arms', 'Keep shoulders relaxed'] },
-  { name: 'Diamond Push-Up', muscle: 'Chest', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-15', restSec: 60, calories: 9, emoji: '💎', instructions: ['Place hands together forming diamond shape with thumbs and index fingers', 'Assume push-up position', 'Lower chest to hands', 'Push back up squeezing inner chest and triceps', 'Keep elbows close to body'], tips: ['Harder than regular push-ups', 'Great for inner chest and triceps', 'Modify on knees if needed'] },
-  { name: 'Svend Press', muscle: 'Chest', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🔘', instructions: ['Hold a plate or light dumbbell between palms at chest level', 'Press arms straight out in front of you', 'Squeeze palms together hard throughout', 'Bring back to chest', 'Feel the chest contraction'], tips: ['Use light weight — it\'s about the squeeze', 'Great finisher exercise', 'Keep constant tension'] },
-  { name: 'Floor Press', muscle: 'Chest', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '4', reps: '8-12', restSec: 75, calories: 8, emoji: '🏠', instructions: ['Lie on floor with knees bent', 'Hold dumbbells above chest', 'Lower until triceps touch the floor', 'Pause briefly then press back up', 'Great for lockout strength'], tips: ['Reduces range of motion — less shoulder stress', 'Pause at bottom eliminates stretch reflex', 'Good home alternative to bench press'] },
+  // CHEST
+  { name: 'Push-Up', muscle: 'Chest', secondary: 'Triceps, Shoulders', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3-4', reps: '10-20', restSec: 60, calories: 8, emoji: '💪', instructions: ['Start in plank with hands shoulder-width', 'Keep body straight head to heels', 'Lower chest to floor bending elbows', 'Push back up to start', 'Exhale up, inhale down'], tips: ['Keep core tight', 'Don\'t flare elbows wide', 'Scale with knee push-ups'] },
+  { name: 'Bench Press', muscle: 'Chest', secondary: 'Triceps, Shoulders', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '8-12', restSec: 90, calories: 10, emoji: '🏋️', instructions: ['Lie on bench, eyes under bar', 'Grip wider than shoulder-width', 'Unrack, lower to mid-chest', 'Press to lockout', 'Feet flat on floor'], tips: ['Retract shoulder blades', 'Use spotter for heavy sets', 'Control the descent'] },
+  { name: 'Incline Dumbbell Press', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3-4', reps: '10-12', restSec: 75, calories: 9, emoji: '📐', instructions: ['Bench at 30-45° incline', 'Dumbbells at chest, palms forward', 'Press up and slightly inward', 'Lower with control', 'Squeeze at top'], tips: ['Don\'t set too steep', 'Keep wrists straight', 'Full range of motion'] },
+  { name: 'Dumbbell Fly', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 60, calories: 7, emoji: '🦅', instructions: ['Lie flat, dumbbells above chest', 'Slight elbow bend throughout', 'Lower arms in wide arc', 'Feel deep chest stretch', 'Squeeze together at top'], tips: ['Lighter weight than presses', 'Don\'t go too deep', 'Focus on the squeeze'] },
+  { name: 'Cable Crossover', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 60, calories: 7, emoji: '🔗', instructions: ['Pulleys at high position', 'Step forward for stability', 'Pull handles down and together', 'Squeeze chest at bottom', 'Return slowly'], tips: ['Slight elbow bend', 'Lean slightly forward', 'Control the negative'] },
+  { name: 'Decline Push-Up', muscle: 'Chest', secondary: 'Shoulders, Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '10-15', restSec: 60, calories: 9, emoji: '⬇️', instructions: ['Feet on elevated surface', 'Hands shoulder-width on floor', 'Lower chest to floor', 'Push back up aligned', 'Core engaged'], tips: ['Higher = more upper chest', 'Start low, progress up', 'Don\'t let hips sag'] },
+  { name: 'Chest Dip', muscle: 'Chest', secondary: 'Triceps, Shoulders', difficulty: 'Advanced', equipment: 'Bodyweight', sets: '3-4', reps: '8-12', restSec: 90, calories: 10, emoji: '🤸', instructions: ['Grip parallel bars', 'Lean forward ~30°', 'Lower to 90° elbows', 'Push to full extension', 'Shoulders down and back'], tips: ['Forward lean = more chest', 'Don\'t go too deep', 'Add weight belt when ready'] },
+  { name: 'Landmine Press', muscle: 'Chest', secondary: 'Shoulders', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 75, calories: 8, emoji: '💣', instructions: ['Bar end in corner/landmine', 'Hold at chest height', 'Press up and forward', 'Lower with control', 'Alternate or both hands'], tips: ['Shoulder-friendly pressing', 'Heavy core engagement', 'Standing or kneeling'] },
+  { name: 'Pec Deck Machine', muscle: 'Chest', difficulty: 'Beginner', equipment: 'Machine', sets: '3', reps: '12-15', restSec: 60, calories: 6, emoji: '🦾', instructions: ['Back flat against pad', 'Forearms on arm pads', 'Bring pads together', 'Squeeze 1 second', 'Return slowly'], tips: ['Don\'t go too far back', 'Squeeze chest not arms', 'Relax shoulders'] },
+  { name: 'Diamond Push-Up', muscle: 'Chest', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-15', restSec: 60, calories: 9, emoji: '💎', instructions: ['Diamond hand position', 'Push-up position', 'Lower chest to hands', 'Push up squeezing triceps', 'Elbows close to body'], tips: ['Harder than regular', 'Great inner chest + triceps', 'Modify on knees'] },
+  { name: 'Svend Press', muscle: 'Chest', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🔘', instructions: ['Hold plate between palms at chest', 'Press straight out', 'Squeeze palms hard throughout', 'Bring back to chest', 'Feel contraction'], tips: ['Light weight — about the squeeze', 'Great finisher', 'Constant tension'] },
+  { name: 'Floor Press', muscle: 'Chest', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '4', reps: '8-12', restSec: 75, calories: 8, emoji: '🏠', instructions: ['Lie on floor, knees bent', 'Dumbbells above chest', 'Lower until triceps touch floor', 'Pause then press up', 'Great lockout strength'], tips: ['Less shoulder stress', 'Eliminates stretch reflex', 'Good home alternative'] },
 
-  // BACK (12)
-  { name: 'Pull-Up', muscle: 'Back', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Pull-up Bar', sets: '3-4', reps: '6-12', restSec: 90, calories: 10, emoji: '🧗', instructions: ['Grip bar slightly wider than shoulder-width, palms facing away', 'Hang with arms fully extended', 'Pull body up until chin is over the bar', 'Lower slowly with control', 'Avoid swinging or kipping'], tips: ['Use assisted machine or bands if needed', 'Focus on pulling elbows down, not hands up', 'Squeeze lats at the top'] },
-  { name: 'Bent-Over Row', muscle: 'Back', secondary: 'Biceps, Core', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '8-12', restSec: 90, calories: 10, emoji: '🚣', instructions: ['Hinge at hips with slight knee bend', 'Grip barbell shoulder-width apart', 'Pull bar to lower chest/upper abs', 'Squeeze shoulder blades together at top', 'Lower with control'], tips: ['Keep back flat — don\'t round', 'About 45-degree torso angle', 'Don\'t use momentum'] },
-  { name: 'Lat Pulldown', muscle: 'Back', secondary: 'Biceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3-4', reps: '10-12', restSec: 75, calories: 8, emoji: '⬇️', instructions: ['Sit at lat pulldown machine, thighs secured under pads', 'Grip bar wider than shoulder-width', 'Pull bar down to upper chest', 'Lean back slightly', 'Return bar slowly overhead'], tips: ['Don\'t pull behind the neck — injury risk', 'Focus on lat contraction, not arm pulling', 'Full extension at top for stretch'] },
-  { name: 'Single-Arm Dumbbell Row', muscle: 'Back', secondary: 'Biceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '10-12 each', restSec: 60, calories: 8, emoji: '💪', instructions: ['Place one knee and hand on bench', 'Hold dumbbell in opposite hand, arm hanging straight', 'Pull dumbbell to hip/waist level', 'Squeeze lat at top', 'Lower with control'], tips: ['Keep torso parallel to floor', 'Don\'t rotate trunk', 'Full range of motion'] },
-  { name: 'Seated Cable Row', muscle: 'Back', secondary: 'Biceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '10-12', restSec: 60, calories: 7, emoji: '🪝', instructions: ['Sit at cable row station, feet on footplates', 'Grab V-bar or close-grip handle', 'Pull handle to lower chest/abdomen', 'Squeeze shoulder blades together', 'Extend arms fully on the return'], tips: ['Keep chest tall throughout', 'Don\'t lean back excessively', 'Pause at contraction'] },
-  { name: 'Deadlift', muscle: 'Back', secondary: 'Legs, Core, Glutes', difficulty: 'Advanced', equipment: 'Barbell', sets: '3-5', reps: '3-6', restSec: 120, calories: 15, emoji: '🔥', instructions: ['Stand with feet hip-width, bar over mid-foot', 'Hinge and grip bar just outside knees', 'Keep chest up, back flat', 'Drive through heels and extend hips', 'Stand tall at top, reverse the movement'], tips: ['Never round your back', 'The bar should stay close to your body', 'Start light and perfect form first'] },
-  { name: 'T-Bar Row', muscle: 'Back', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '8-12', restSec: 90, calories: 10, emoji: '🔩', instructions: ['Straddle the T-bar or landmine setup', 'Grip handles with both hands', 'Bend at hips, keep back flat', 'Pull weight to chest', 'Lower with control'], tips: ['Great for building back thickness', 'Keep core braced', 'Don\'t jerk the weight'] },
-  { name: 'Face Pull', muscle: 'Back', secondary: 'Shoulders', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '15-20', restSec: 45, calories: 5, emoji: '🎯', instructions: ['Set cable pulley to face height', 'Use rope attachment', 'Pull rope toward face, separating hands', 'Squeeze rear delts and upper back', 'Return slowly'], tips: ['Essential for shoulder health', 'Keep elbows high', 'Use light weight — it\'s a corrective exercise'] },
-  { name: 'Chin-Up', muscle: 'Back', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Pull-up Bar', sets: '3', reps: '6-10', restSec: 90, calories: 10, emoji: '🔝', instructions: ['Grip bar shoulder-width with palms facing you', 'Hang with full arm extension', 'Pull up until chin clears the bar', 'Lower with control', 'Avoid swinging'], tips: ['More bicep involvement than pull-ups', 'Great for bicep development too', 'Use bands for assistance if needed'] },
-  { name: 'Inverted Row', muscle: 'Back', secondary: 'Biceps, Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10-15', restSec: 60, calories: 7, emoji: '🔄', instructions: ['Set bar at waist height on rack or Smith machine', 'Hang underneath with arms extended, heels on floor', 'Pull chest to bar', 'Squeeze shoulder blades at top', 'Lower with control'], tips: ['Great pull-up progression exercise', 'Walk feet further out to increase difficulty', 'Keep body straight like a plank'] },
-  { name: 'Straight-Arm Pulldown', muscle: 'Back', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 6, emoji: '📏', instructions: ['Stand facing cable machine, bar at top', 'Grip bar with straight arms', 'Pull bar down to thighs in an arc', 'Squeeze lats hard at bottom', 'Return slowly overhead'], tips: ['Keep arms nearly straight throughout', 'Lean slightly forward', 'Great lat isolation exercise'] },
-  { name: 'Superman Hold', muscle: 'Back', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10-15', restSec: 45, calories: 5, emoji: '🦸', instructions: ['Lie face down on the floor', 'Extend arms overhead', 'Simultaneously lift arms, chest, and legs off floor', 'Hold for 2-3 seconds', 'Lower back down with control'], tips: ['Don\'t hyperextend neck — look at floor', 'Great for lower back strength', 'Can hold for time instead of reps'] },
+  // BACK
+  { name: 'Pull-Up', muscle: 'Back', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Pull-up Bar', sets: '3-4', reps: '6-12', restSec: 90, calories: 10, emoji: '🧗', instructions: ['Grip wider than shoulders, palms away', 'Hang fully extended', 'Pull chin over bar', 'Lower slowly', 'No swinging'], tips: ['Use bands if needed', 'Pull elbows down not hands', 'Squeeze lats at top'] },
+  { name: 'Bent-Over Row', muscle: 'Back', secondary: 'Biceps, Core', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '8-12', restSec: 90, calories: 10, emoji: '🚣', instructions: ['Hinge at hips, slight knee bend', 'Grip shoulder-width', 'Pull to lower chest', 'Squeeze shoulder blades', 'Lower with control'], tips: ['Keep back flat', '45° torso angle', 'No momentum'] },
+  { name: 'Lat Pulldown', muscle: 'Back', secondary: 'Biceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3-4', reps: '10-12', restSec: 75, calories: 8, emoji: '⬇️', instructions: ['Thighs under pads', 'Wide overhand grip', 'Pull to upper chest', 'Lean back slightly', 'Return slowly'], tips: ['Never behind neck', 'Focus on lats', 'Full extension at top'] },
+  { name: 'Single-Arm DB Row', muscle: 'Back', secondary: 'Biceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '10-12 each', restSec: 60, calories: 8, emoji: '💪', instructions: ['Knee and hand on bench', 'DB in opposite hand hanging', 'Pull to hip level', 'Squeeze lat at top', 'Lower controlled'], tips: ['Torso parallel to floor', 'Don\'t rotate trunk', 'Full ROM'] },
+  { name: 'Seated Cable Row', muscle: 'Back', secondary: 'Biceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '10-12', restSec: 60, calories: 7, emoji: '🪝', instructions: ['Feet on plates', 'V-bar or close grip', 'Pull to abdomen', 'Squeeze blades', 'Full extension'], tips: ['Chest tall', 'Don\'t lean back much', 'Pause at contraction'] },
+  { name: 'Deadlift', muscle: 'Back', secondary: 'Legs, Core, Glutes', difficulty: 'Advanced', equipment: 'Barbell', sets: '3-5', reps: '3-6', restSec: 120, calories: 15, emoji: '🔥', instructions: ['Feet hip-width, bar over mid-foot', 'Grip just outside knees', 'Chest up, back flat', 'Drive through heels', 'Stand tall, reverse'], tips: ['Never round back', 'Bar stays close', 'Start light, perfect form'] },
+  { name: 'T-Bar Row', muscle: 'Back', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '8-12', restSec: 90, calories: 10, emoji: '🔩', instructions: ['Straddle T-bar', 'Grip handles', 'Hinge, back flat', 'Pull to chest', 'Lower controlled'], tips: ['Builds back thickness', 'Core braced', 'No jerking'] },
+  { name: 'Face Pull', muscle: 'Back', secondary: 'Shoulders', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '15-20', restSec: 45, calories: 5, emoji: '🎯', instructions: ['Cable at face height', 'Rope attachment', 'Pull toward face, separate hands', 'Squeeze rear delts', 'Return slowly'], tips: ['Essential for shoulder health', 'Elbows high', 'Light weight'] },
+  { name: 'Chin-Up', muscle: 'Back', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Pull-up Bar', sets: '3', reps: '6-10', restSec: 90, calories: 10, emoji: '🔝', instructions: ['Shoulder-width, palms facing you', 'Full extension hang', 'Pull chin over bar', 'Lower controlled', 'No swinging'], tips: ['More bicep than pull-ups', 'Great arm builder', 'Bands for assist'] },
+  { name: 'Inverted Row', muscle: 'Back', secondary: 'Biceps, Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10-15', restSec: 60, calories: 7, emoji: '🔄', instructions: ['Bar at waist height', 'Hang under, heels on floor', 'Pull chest to bar', 'Squeeze blades', 'Lower controlled'], tips: ['Pull-up progression', 'Feet further = harder', 'Plank body line'] },
+  { name: 'Straight-Arm Pulldown', muscle: 'Back', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 6, emoji: '📏', instructions: ['Stand facing cable, bar at top', 'Straight arms grip', 'Pull bar to thighs in arc', 'Squeeze lats hard', 'Return overhead'], tips: ['Arms nearly straight', 'Lean slightly forward', 'Great lat isolation'] },
+  { name: 'Superman Hold', muscle: 'Back', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10-15', restSec: 45, calories: 5, emoji: '🦸', instructions: ['Lie face down', 'Arms overhead', 'Lift arms, chest, legs off floor', 'Hold 2-3 seconds', 'Lower controlled'], tips: ['Look at floor, don\'t extend neck', 'Great lower back', 'Hold for time option'] },
 
-  // SHOULDERS (10)
-  { name: 'Overhead Press', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '6-10', restSec: 90, calories: 9, emoji: '⬆️', instructions: ['Stand with bar at shoulder height', 'Grip slightly wider than shoulder-width', 'Press bar overhead to full lockout', 'Move head through as bar passes face', 'Lower back to shoulders'], tips: ['Brace core tight', 'Don\'t lean back excessively', 'Full lockout at top'] },
-  { name: 'Lateral Raise', muscle: 'Shoulders', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3-4', reps: '12-15', restSec: 45, calories: 6, emoji: '🦅', instructions: ['Stand with dumbbells at sides', 'Raise arms out to sides until parallel with floor', 'Slight bend in elbows', 'Lower slowly with control', 'Lead with elbows, not hands'], tips: ['Use light weight — shoulders are small muscles', 'Don\'t swing or use momentum', 'Think of pouring water from a pitcher at the top'] },
-  { name: 'Front Raise', muscle: 'Shoulders', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🙋', instructions: ['Hold dumbbells in front of thighs', 'Raise one or both arms straight ahead to shoulder height', 'Keep slight bend in elbows', 'Lower with control', 'Alternate arms or do both together'], tips: ['Don\'t go above shoulder height', 'Keep core braced', 'Use light weight'] },
-  { name: 'Arnold Press', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 75, calories: 8, emoji: '💪', instructions: ['Start with dumbbells at chest, palms facing you', 'Press up while rotating palms to face forward', 'Full lockout at top', 'Reverse the rotation on the way down', 'Smooth continuous motion'], tips: ['Invented by Arnold Schwarzenegger', 'Hits all three delt heads', 'Don\'t rush the rotation'] },
-  { name: 'Reverse Fly', muscle: 'Shoulders', secondary: 'Back', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🦋', instructions: ['Bend forward at hips holding dumbbells', 'Raise arms out to sides squeezing rear delts', 'Pause at the top', 'Lower slowly', 'Keep slight bend in elbows'], tips: ['Focus on rear delts squeezing', 'Great for posture improvement', 'Use light weight'] },
-  { name: 'Upright Row', muscle: 'Shoulders', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 7, emoji: '🔼', instructions: ['Hold barbell with narrow grip in front of thighs', 'Pull bar straight up along body to chin', 'Keep elbows above the bar', 'Lower with control', 'Lead with elbows'], tips: ['Wider grip is easier on shoulders', 'Don\'t pull above chin', 'If shoulders hurt, substitute with lateral raises'] },
-  { name: 'Dumbbell Shoulder Press', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3-4', reps: '8-12', restSec: 75, calories: 8, emoji: '🔝', instructions: ['Sit or stand holding dumbbells at shoulder height', 'Press dumbbells overhead', 'Touch dumbbells lightly at the top', 'Lower to shoulder level', 'Keep core engaged'], tips: ['Allows more natural range of motion than barbell', 'Seated version reduces cheating', 'Don\'t lock elbows aggressively'] },
-  { name: 'Pike Push-Up', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '🔺', instructions: ['Start in downward dog position — hips high', 'Hands shoulder-width apart', 'Bend elbows and lower head toward floor', 'Push back up to start', 'Keep hips high throughout'], tips: ['Great handstand push-up progression', 'Elevate feet for more difficulty', 'Head should go between hands'] },
-  { name: 'Cable Lateral Raise', muscle: 'Shoulders', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🔗', instructions: ['Stand sideways to low cable pulley', 'Grab handle with far hand', 'Raise arm out to side to shoulder height', 'Lower with control', 'Switch sides'], tips: ['Constant tension throughout range', 'Better than dumbbells for constant resistance', 'Great for shoulder development'] },
-  { name: 'Handstand Push-Up', muscle: 'Shoulders', secondary: 'Triceps, Core', difficulty: 'Advanced', equipment: 'Bodyweight', sets: '3', reps: '3-8', restSec: 120, calories: 12, emoji: '🤸', instructions: ['Kick up into handstand against wall', 'Hands shoulder-width apart', 'Lower head to floor by bending elbows', 'Push back up to full lockout', 'Keep core extremely tight'], tips: ['Master pike push-ups first', 'Use wall for balance', 'Place a pillow under head for safety'] },
+  // SHOULDERS
+  { name: 'Overhead Press', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '6-10', restSec: 90, calories: 9, emoji: '⬆️', instructions: ['Bar at shoulder height', 'Slightly wider grip', 'Press overhead to lockout', 'Head through as bar passes', 'Lower to shoulders'], tips: ['Brace core', 'Don\'t lean back', 'Full lockout'] },
+  { name: 'Lateral Raise', muscle: 'Shoulders', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3-4', reps: '12-15', restSec: 45, calories: 6, emoji: '🦅', instructions: ['DBs at sides', 'Raise to parallel', 'Slight elbow bend', 'Lower slowly', 'Lead with elbows'], tips: ['Light weight', 'No swing/momentum', 'Pour water at top'] },
+  { name: 'Front Raise', muscle: 'Shoulders', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🙋', instructions: ['DBs in front of thighs', 'Raise to shoulder height', 'Slight elbow bend', 'Lower controlled', 'Alternate or together'], tips: ['Not above shoulders', 'Core braced', 'Light weight'] },
+  { name: 'Arnold Press', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 75, calories: 8, emoji: '💪', instructions: ['DBs at chest, palms facing you', 'Press up rotating palms forward', 'Full lockout', 'Reverse rotation down', 'Smooth motion'], tips: ['Invented by Arnold', 'Hits all 3 delt heads', 'Don\'t rush rotation'] },
+  { name: 'Reverse Fly', muscle: 'Shoulders', secondary: 'Back', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🦋', instructions: ['Bend forward holding DBs', 'Raise to sides squeezing rear delts', 'Pause at top', 'Lower slowly', 'Slight elbow bend'], tips: ['Focus on rear delt squeeze', 'Great for posture', 'Use light weight'] },
+  { name: 'Upright Row', muscle: 'Shoulders', secondary: 'Biceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 7, emoji: '🔼', instructions: ['Narrow grip, bar at thighs', 'Pull straight up to chin', 'Elbows above bar', 'Lower controlled', 'Lead with elbows'], tips: ['Wider grip easier on shoulders', 'Not above chin', 'Sub lateral raises if pain'] },
+  { name: 'DB Shoulder Press', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3-4', reps: '8-12', restSec: 75, calories: 8, emoji: '🔝', instructions: ['DBs at shoulder height', 'Press overhead', 'Touch at top', 'Lower to shoulders', 'Core engaged'], tips: ['More natural ROM', 'Seated reduces cheating', 'Don\'t lock aggressively'] },
+  { name: 'Pike Push-Up', muscle: 'Shoulders', secondary: 'Triceps', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '🔺', instructions: ['Downward dog position', 'Hands shoulder-width', 'Lower head toward floor', 'Push back up', 'Hips stay high'], tips: ['Handstand push-up progression', 'Elevate feet for harder', 'Head between hands'] },
+  { name: 'Cable Lateral Raise', muscle: 'Shoulders', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🔗', instructions: ['Sideways to low pulley', 'Far hand grabs handle', 'Raise to shoulder height', 'Lower controlled', 'Switch sides'], tips: ['Constant tension', 'Better than DBs for resistance curve', 'Great development'] },
+  { name: 'Handstand Push-Up', muscle: 'Shoulders', secondary: 'Triceps, Core', difficulty: 'Advanced', equipment: 'Bodyweight', sets: '3', reps: '3-8', restSec: 120, calories: 12, emoji: '🤸', instructions: ['Kick into wall handstand', 'Hands shoulder-width', 'Lower head to floor', 'Push to lockout', 'Core extremely tight'], tips: ['Master pikes first', 'Wall for balance', 'Pillow under head'] },
 
-  // BICEPS (8)
-  { name: 'Barbell Curl', muscle: 'Biceps', difficulty: 'Beginner', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '💪', instructions: ['Stand holding barbell with underhand grip', 'Keep elbows pinned to sides', 'Curl bar up to shoulder level', 'Squeeze biceps at top', 'Lower slowly — fight the weight down'], tips: ['Don\'t swing body for momentum', 'Keep wrists straight', 'EZ-bar is easier on wrists'] },
-  { name: 'Hammer Curl', muscle: 'Biceps', secondary: 'Forearms', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🔨', instructions: ['Hold dumbbells with palms facing each other (neutral grip)', 'Curl dumbbells up keeping neutral grip throughout', 'Squeeze at top', 'Lower with control', 'Can alternate or do simultaneously'], tips: ['Targets brachialis and forearms too', 'Keep elbows stationary', 'Great for overall arm thickness'] },
-  { name: 'Incline Dumbbell Curl', muscle: 'Biceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '📐', instructions: ['Set bench to 45-degree incline', 'Let arms hang straight down with dumbbells', 'Curl weights up, keeping upper arms still', 'Squeeze at top', 'Lower fully for maximum stretch'], tips: ['Amazing stretch on the long head of biceps', 'Don\'t swing — strict form', 'Use lighter weight than standing curls'] },
-  { name: 'Concentration Curl', muscle: 'Biceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🧘', instructions: ['Sit on bench, lean forward', 'Brace elbow against inner thigh', 'Curl dumbbell up squeezing bicep hard', 'Hold peak contraction 1-2 seconds', 'Lower slowly'], tips: ['Isolates the bicep completely', 'Perfect for peak contraction', 'Don\'t rush the reps'] },
-  { name: 'Cable Curl', muscle: 'Biceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🔗', instructions: ['Attach straight bar to low cable', 'Stand upright gripping bar underhand', 'Curl bar up keeping elbows stationary', 'Squeeze at top', 'Lower with control'], tips: ['Constant tension throughout', 'Great finisher exercise', 'Try different attachments — rope, EZ-bar'] },
-  { name: 'Preacher Curl', muscle: 'Biceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🛐', instructions: ['Sit at preacher bench, upper arms on pad', 'Grip EZ-bar with underhand grip', 'Curl bar up to shoulder level', 'Lower slowly — full extension', 'Don\'t bounce at bottom'], tips: ['Eliminates all cheating', 'Great for bicep peak', 'Don\'t hyperextend elbows at bottom'] },
-  { name: 'Spider Curl', muscle: 'Biceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🕷️', instructions: ['Lean chest against incline bench (facing the bench)', 'Arms hang straight down', 'Curl dumbbells up squeezing biceps', 'Lower fully', 'Keep upper arms perpendicular to floor'], tips: ['Extreme peak contraction', 'No momentum possible', 'Use lighter weight'] },
-  { name: 'Zottman Curl', muscle: 'Biceps', secondary: 'Forearms', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🔄', instructions: ['Curl dumbbells up with palms facing up (supinated)', 'At the top, rotate palms to face down (pronated)', 'Lower slowly with palms facing down', 'Rotate back to palms up at bottom', 'Repeat'], tips: ['Trains both biceps and forearms', 'The negative with pronated grip targets forearms', 'Use moderate weight'] },
+  // BICEPS
+  { name: 'Barbell Curl', muscle: 'Biceps', difficulty: 'Beginner', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '💪', instructions: ['Underhand grip', 'Elbows pinned to sides', 'Curl to shoulders', 'Squeeze at top', 'Lower slowly'], tips: ['No body swing', 'Straight wrists', 'EZ-bar for comfort'] },
+  { name: 'Hammer Curl', muscle: 'Biceps', secondary: 'Forearms', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🔨', instructions: ['Neutral grip (palms facing)', 'Curl up keeping neutral', 'Squeeze at top', 'Lower controlled', 'Alternate or together'], tips: ['Targets brachialis too', 'Elbows stationary', 'Great arm thickness'] },
+  { name: 'Incline DB Curl', muscle: 'Biceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '📐', instructions: ['45° incline bench', 'Arms hang straight', 'Curl up, upper arms still', 'Squeeze at top', 'Full stretch at bottom'], tips: ['Amazing long head stretch', 'Strict form', 'Lighter than standing'] },
+  { name: 'Concentration Curl', muscle: 'Biceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🧘', instructions: ['Sit, lean forward', 'Elbow against inner thigh', 'Curl squeezing hard', 'Hold peak 1-2s', 'Lower slowly'], tips: ['Complete isolation', 'Perfect peak contraction', 'Don\'t rush'] },
+  { name: 'Cable Curl', muscle: 'Biceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🔗', instructions: ['Bar on low cable', 'Stand upright, underhand grip', 'Curl keeping elbows still', 'Squeeze at top', 'Lower controlled'], tips: ['Constant tension', 'Great finisher', 'Try different attachments'] },
+  { name: 'Preacher Curl', muscle: 'Biceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🛐', instructions: ['Upper arms on preacher pad', 'EZ-bar underhand', 'Curl to shoulders', 'Full extension down', 'No bouncing'], tips: ['Eliminates cheating', 'Great for peak', 'Don\'t hyperextend'] },
+  { name: 'Spider Curl', muscle: 'Biceps', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🕷️', instructions: ['Chest against incline bench', 'Arms hang straight', 'Curl squeezing', 'Lower fully', 'Arms perpendicular'], tips: ['Extreme peak contraction', 'No momentum possible', 'Lighter weight'] },
+  { name: 'Zottman Curl', muscle: 'Biceps', secondary: 'Forearms', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🔄', instructions: ['Curl up palms up', 'Rotate palms down at top', 'Lower slowly palms down', 'Rotate back at bottom', 'Repeat'], tips: ['Trains both biceps + forearms', 'Negative targets forearms', 'Moderate weight'] },
 
-  // TRICEPS (8)
-  { name: 'Tricep Dip', muscle: 'Triceps', secondary: 'Chest, Shoulders', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 75, calories: 9, emoji: '⬇️', instructions: ['Grip parallel bars, lift body up', 'Keep torso upright (lean forward = more chest)', 'Lower body bending elbows to 90 degrees', 'Push back up to lockout', 'Keep shoulders down'], tips: ['Upright torso = more triceps', 'Don\'t go too deep if shoulders hurt', 'Add weight when bodyweight is easy'] },
-  { name: 'Skull Crusher', muscle: 'Triceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 7, emoji: '💀', instructions: ['Lie on bench holding EZ-bar overhead', 'Keep upper arms vertical', 'Lower bar to forehead by bending elbows', 'Extend arms back to start', 'Keep elbows in — don\'t flare'], tips: ['Use EZ-bar for wrist comfort', 'Can lower to behind head for more stretch', 'Control the descent carefully'] },
-  { name: 'Tricep Pushdown', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '⬇️', instructions: ['Attach bar or rope to high cable', 'Stand with elbows at sides', 'Push handle down to full extension', 'Squeeze triceps at bottom', 'Return to 90-degree elbow position'], tips: ['Keep elbows pinned to sides', 'Don\'t lean forward excessively', 'Rope attachment allows more contraction'] },
-  { name: 'Overhead Tricep Extension', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🔝', instructions: ['Hold dumbbell with both hands overhead', 'Lower weight behind head by bending elbows', 'Keep upper arms close to ears', 'Extend back up to start', 'Squeeze at top'], tips: ['Great stretch on long head of triceps', 'Keep core braced', 'Can use cable for constant tension'] },
-  { name: 'Close-Grip Bench Press', muscle: 'Triceps', secondary: 'Chest', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3-4', reps: '8-10', restSec: 75, calories: 9, emoji: '🏋️', instructions: ['Lie on bench, grip bar shoulder-width or slightly narrower', 'Unrack bar and lower to lower chest', 'Keep elbows close to body', 'Press back up to lockout', 'Focus on tricep contraction'], tips: ['Don\'t go too narrow — wrist strain', 'Shoulder-width grip is fine', 'Touch lower on chest than regular bench'] },
-  { name: 'Kickback', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🦵', instructions: ['Bend forward at hips, upper arm parallel to floor', 'Extend forearm back until arm is straight', 'Squeeze tricep at full extension', 'Lower slowly', 'Keep upper arm still'], tips: ['Use light weight and focus on contraction', 'Don\'t swing', 'Peak contraction exercise'] },
-  { name: 'Bench Dip', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Bench', sets: '3', reps: '12-15', restSec: 60, calories: 7, emoji: '🪑', instructions: ['Place hands on edge of bench behind you', 'Extend legs out in front', 'Lower body by bending elbows to 90 degrees', 'Push back up', 'Keep back close to bench'], tips: ['Bend knees to make easier', 'Don\'t go too deep', 'Keep shoulders down'] },
-  { name: 'Diamond Push-Up (Tricep Focus)', muscle: 'Triceps', secondary: 'Chest', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '💎', instructions: ['Form diamond with hands under chest', 'Perform push-up keeping elbows close to body', 'Lower chest to hands', 'Push up focusing on tricep engagement', 'Full lockout at top'], tips: ['One of the best bodyweight tricep exercises', 'Harder than regular push-ups', 'Great for home workouts'] },
+  // TRICEPS
+  { name: 'Tricep Dip', muscle: 'Triceps', secondary: 'Chest, Shoulders', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 75, calories: 9, emoji: '⬇️', instructions: ['Parallel bars, lift body', 'Stay upright', 'Lower to 90° elbows', 'Push to lockout', 'Shoulders down'], tips: ['Upright = more triceps', 'Don\'t go too deep', 'Add weight when easy'] },
+  { name: 'Skull Crusher', muscle: 'Triceps', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3', reps: '10-12', restSec: 60, calories: 7, emoji: '💀', instructions: ['Lie on bench, EZ-bar overhead', 'Upper arms vertical', 'Lower to forehead', 'Extend to start', 'Elbows in'], tips: ['EZ-bar for wrists', 'Behind head for more stretch', 'Control descent'] },
+  { name: 'Tricep Pushdown', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '⬇️', instructions: ['Bar/rope on high cable', 'Elbows at sides', 'Push to full extension', 'Squeeze triceps', 'Return to 90°'], tips: ['Elbows pinned', 'Don\'t lean forward', 'Rope allows more squeeze'] },
+  { name: 'Overhead Tricep Extension', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 60, calories: 6, emoji: '🔝', instructions: ['DB with both hands overhead', 'Lower behind head', 'Upper arms near ears', 'Extend up', 'Squeeze at top'], tips: ['Great long head stretch', 'Core braced', 'Cable works too'] },
+  { name: 'Close-Grip Bench', muscle: 'Triceps', secondary: 'Chest', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3-4', reps: '8-10', restSec: 75, calories: 9, emoji: '🏋️', instructions: ['Shoulder-width grip', 'Lower to lower chest', 'Elbows close to body', 'Press to lockout', 'Focus on triceps'], tips: ['Don\'t go too narrow', 'Shoulder-width is fine', 'Touch lower chest'] },
+  { name: 'Kickback', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 45, calories: 5, emoji: '🦵', instructions: ['Bend forward, upper arm parallel', 'Extend forearm back', 'Squeeze at full extension', 'Lower slowly', 'Upper arm still'], tips: ['Light weight, focus contraction', 'Don\'t swing', 'Peak contraction exercise'] },
+  { name: 'Bench Dip', muscle: 'Triceps', difficulty: 'Beginner', equipment: 'Bench', sets: '3', reps: '12-15', restSec: 60, calories: 7, emoji: '🪑', instructions: ['Hands on bench edge behind', 'Legs extended', 'Lower bending to 90°', 'Push back up', 'Back close to bench'], tips: ['Bend knees = easier', 'Don\'t go too deep', 'Shoulders down'] },
+  { name: 'Diamond Push-Up (Tri)', muscle: 'Triceps', secondary: 'Chest', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '💎', instructions: ['Diamond hands under chest', 'Push-up, elbows close', 'Lower to hands', 'Push up focusing triceps', 'Full lockout'], tips: ['Best bodyweight tricep move', 'Harder than regular', 'Great for home'] },
 
-  // LEGS (12)
-  { name: 'Barbell Squat', muscle: 'Legs', secondary: 'Core, Glutes', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '6-10', restSec: 120, calories: 15, emoji: '🏋️', instructions: ['Place bar on upper back (traps)', 'Feet shoulder-width apart, toes slightly out', 'Sit back and down — knees track over toes', 'Descend until thighs are parallel or below', 'Drive up through heels'], tips: ['King of all exercises', 'Keep chest up and core braced', 'Don\'t let knees cave inward'] },
-  { name: 'Leg Press', muscle: 'Legs', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'Machine', sets: '4', reps: '10-15', restSec: 90, calories: 10, emoji: '🦵', instructions: ['Sit in leg press machine, feet shoulder-width on platform', 'Release safety and lower platform', 'Bend knees to 90 degrees', 'Press platform away', 'Don\'t lock knees fully at top'], tips: ['Foot position changes emphasis', 'High and wide = more glutes', 'Don\'t round lower back at bottom'] },
-  { name: 'Romanian Deadlift', muscle: 'Legs', secondary: 'Back, Glutes', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3-4', reps: '8-12', restSec: 90, calories: 10, emoji: '🇷🇴', instructions: ['Hold barbell at hip level, feet hip-width', 'Slight bend in knees throughout', 'Hinge at hips pushing butt back', 'Lower bar along legs until hamstring stretch', 'Return to standing by driving hips forward'], tips: ['Bar stays close to legs', 'Feel the stretch in hamstrings', 'Don\'t round your back'] },
-  { name: 'Lunges', muscle: 'Legs', secondary: 'Glutes, Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '12 each leg', restSec: 60, calories: 8, emoji: '🚶', instructions: ['Stand upright, feet together', 'Step forward with one leg', 'Lower back knee toward floor', 'Both knees at 90 degrees', 'Push back to start, alternate legs'], tips: ['Keep torso upright', 'Front knee doesn\'t pass toes', 'Add dumbbells for progression'] },
-  { name: 'Leg Extension', muscle: 'Legs', difficulty: 'Beginner', equipment: 'Machine', sets: '3', reps: '12-15', restSec: 45, calories: 6, emoji: '🦿', instructions: ['Sit in machine, ankle pad on shins', 'Extend legs to straight position', 'Squeeze quads hard at top', 'Hold 1 second', 'Lower with control'], tips: ['Don\'t use momentum', 'Great quad isolation', 'Pause at top for peak contraction'] },
-  { name: 'Leg Curl', muscle: 'Legs', difficulty: 'Beginner', equipment: 'Machine', sets: '3', reps: '12-15', restSec: 45, calories: 6, emoji: '🔄', instructions: ['Lie face down on leg curl machine', 'Ankle pad behind ankles', 'Curl weight up toward glutes', 'Squeeze hamstrings at top', 'Lower with control'], tips: ['Don\'t lift hips off pad', 'Full range of motion', 'Great hamstring isolation'] },
-  { name: 'Bulgarian Split Squat', muscle: 'Legs', secondary: 'Glutes', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12 each', restSec: 75, calories: 9, emoji: '🇧🇬', instructions: ['Stand in front of bench, place rear foot on it', 'Hold dumbbells at sides', 'Lower back knee toward floor', 'Front knee bends to 90 degrees', 'Push through front heel to stand'], tips: ['Amazing single-leg exercise', 'Fix imbalances between legs', 'Lean slightly forward for more quad'] },
-  { name: 'Wall Sit', muscle: 'Legs', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '30-60 sec', restSec: 60, calories: 5, emoji: '🧱', instructions: ['Lean back against wall', 'Slide down until thighs parallel to floor', 'Knees at 90 degrees', 'Hold the position', 'Keep back flat against wall'], tips: ['Great endurance exercise', 'Add weight on thighs for more difficulty', 'Breathe normally throughout'] },
-  { name: 'Goblet Squat', muscle: 'Legs', secondary: 'Core', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 60, calories: 8, emoji: '🏆', instructions: ['Hold dumbbell vertically at chest', 'Feet shoulder-width, toes slightly out', 'Squat down keeping weight at chest', 'Go as deep as comfortable', 'Stand back up'], tips: ['Great for learning squat form', 'The weight acts as a counterbalance', 'Keep elbows between knees'] },
-  { name: 'Step-Up', muscle: 'Legs', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10-12 each', restSec: 60, calories: 7, emoji: '🪜', instructions: ['Stand facing bench or box', 'Step up with one foot, drive body up', 'Stand fully on top of box', 'Step back down with control', 'Alternate legs'], tips: ['Higher box = more glute activation', 'Drive through the heel of the working leg', 'Add dumbbells for progression'] },
-  { name: 'Calf Raise', muscle: 'Calves', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '4', reps: '15-20', restSec: 45, calories: 4, emoji: '🦶', instructions: ['Stand on edge of step or flat ground', 'Rise up on toes as high as possible', 'Hold peak contraction 1-2 seconds', 'Lower heels below step for stretch', 'Repeat'], tips: ['Calves respond to high reps', 'Both straight-leg and bent-knee versions', 'Pause at top and bottom'] },
-  { name: 'Hip Thrust', muscle: 'Glutes', secondary: 'Legs', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3-4', reps: '10-12', restSec: 75, calories: 9, emoji: '🍑', instructions: ['Sit on floor with upper back against bench', 'Roll barbell over hips (use pad for comfort)', 'Drive hips up until body forms straight line', 'Squeeze glutes hard at top', 'Lower with control'], tips: ['Best exercise for glute development', 'Feet shoulder-width apart', 'Don\'t hyperextend lower back'] },
+  // LEGS
+  { name: 'Barbell Squat', muscle: 'Legs', secondary: 'Core, Glutes', difficulty: 'Intermediate', equipment: 'Barbell', sets: '4', reps: '6-10', restSec: 120, calories: 15, emoji: '🏋️', instructions: ['Bar on upper traps', 'Feet shoulder-width, toes out', 'Sit back and down', 'Thighs parallel or below', 'Drive through heels'], tips: ['King of exercises', 'Chest up, core braced', 'Knees track over toes'] },
+  { name: 'Leg Press', muscle: 'Legs', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'Machine', sets: '4', reps: '10-15', restSec: 90, calories: 10, emoji: '🦵', instructions: ['Feet shoulder-width on platform', 'Release safety', 'Bend to 90°', 'Press away', 'Don\'t lock fully'], tips: ['Foot position changes emphasis', 'High/wide = more glutes', 'Don\'t round lower back'] },
+  { name: 'Romanian Deadlift', muscle: 'Legs', secondary: 'Back, Glutes', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3-4', reps: '8-12', restSec: 90, calories: 10, emoji: '🇷🇴', instructions: ['Bar at hips, feet hip-width', 'Slight knee bend', 'Hinge pushing butt back', 'Lower along legs', 'Drive hips forward'], tips: ['Bar stays close', 'Feel hamstring stretch', 'Don\'t round back'] },
+  { name: 'Lunges', muscle: 'Legs', secondary: 'Glutes, Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '12 each', restSec: 60, calories: 8, emoji: '🚶', instructions: ['Stand feet together', 'Step forward', 'Lower back knee to floor', 'Both knees at 90°', 'Push back, alternate'], tips: ['Torso upright', 'Front knee over toes', 'Add DBs to progress'] },
+  { name: 'Leg Extension', muscle: 'Legs', difficulty: 'Beginner', equipment: 'Machine', sets: '3', reps: '12-15', restSec: 45, calories: 6, emoji: '🦿', instructions: ['Ankle pad on shins', 'Extend legs straight', 'Squeeze quads hard', 'Hold 1 second', 'Lower controlled'], tips: ['No momentum', 'Great quad isolation', 'Pause at top'] },
+  { name: 'Leg Curl', muscle: 'Legs', difficulty: 'Beginner', equipment: 'Machine', sets: '3', reps: '12-15', restSec: 45, calories: 6, emoji: '🔄', instructions: ['Face down, pad behind ankles', 'Curl toward glutes', 'Squeeze hamstrings', 'Lower controlled', 'Full ROM'], tips: ['Don\'t lift hips', 'Full range', 'Great ham isolation'] },
+  { name: 'Bulgarian Split Squat', muscle: 'Legs', secondary: 'Glutes', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12 each', restSec: 75, calories: 9, emoji: '🇧🇬', instructions: ['Rear foot on bench', 'DBs at sides', 'Lower back knee to floor', 'Front knee to 90°', 'Push through front heel'], tips: ['Amazing single-leg', 'Fixes imbalances', 'Lean forward = more quad'] },
+  { name: 'Wall Sit', muscle: 'Legs', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '30-60s', restSec: 60, calories: 5, emoji: '🧱', instructions: ['Lean against wall', 'Slide to parallel thighs', 'Knees at 90°', 'Hold position', 'Back flat on wall'], tips: ['Endurance exercise', 'Add weight for harder', 'Breathe normally'] },
+  { name: 'Goblet Squat', muscle: 'Legs', secondary: 'Core', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '12-15', restSec: 60, calories: 8, emoji: '🏆', instructions: ['DB vertical at chest', 'Shoulder-width, toes out', 'Squat deep', 'Weight at chest', 'Stand up'], tips: ['Learn squat form', 'Weight counterbalances', 'Elbows between knees'] },
+  { name: 'Step-Up', muscle: 'Legs', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10-12 each', restSec: 60, calories: 7, emoji: '🪜', instructions: ['Face bench/box', 'Step up with one foot', 'Stand fully on top', 'Step back down', 'Alternate legs'], tips: ['Higher = more glutes', 'Drive through heel', 'Add DBs to progress'] },
+  { name: 'Calf Raise', muscle: 'Calves', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '4', reps: '15-20', restSec: 45, calories: 4, emoji: '🦶', instructions: ['Stand on step edge', 'Rise on toes high', 'Hold 1-2 seconds', 'Lower heels below step', 'Repeat'], tips: ['High reps work best', 'Straight + bent knee versions', 'Pause top and bottom'] },
+  { name: 'Hip Thrust', muscle: 'Glutes', secondary: 'Legs', difficulty: 'Intermediate', equipment: 'Barbell', sets: '3-4', reps: '10-12', restSec: 75, calories: 9, emoji: '🍑', instructions: ['Upper back against bench', 'Bar over hips with pad', 'Drive hips up', 'Squeeze glutes at top', 'Lower controlled'], tips: ['Best glute exercise', 'Shoulder-width feet', 'Don\'t hyperextend'] },
 
-  // CORE (10)
-  { name: 'Plank', muscle: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '30-60 sec', restSec: 45, calories: 5, emoji: '🧘', instructions: ['Forearms and toes on the floor', 'Body forms straight line', 'Engage core — pull belly button to spine', 'Keep hips level — don\'t sag or pike', 'Breathe normally and hold'], tips: ['Quality over duration', 'Squeeze everything — glutes, quads, core', 'Build up time gradually'] },
-  { name: 'Bicycle Crunch', muscle: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '20 each side', restSec: 45, calories: 6, emoji: '🚲', instructions: ['Lie on back, hands behind head', 'Lift shoulders off floor', 'Bring right elbow to left knee while extending right leg', 'Alternate sides in pedaling motion', 'Don\'t pull on neck'], tips: ['Slow and controlled > fast', 'Really twist and squeeze obliques', 'Keep lower back pressed to floor'] },
-  { name: 'Russian Twist', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '20 total', restSec: 45, calories: 6, emoji: '🇷🇺', instructions: ['Sit with knees bent, lean back slightly', 'Lift feet off floor (or keep planted for easier version)', 'Rotate torso side to side', 'Touch floor on each side with hands or weight', 'Keep chest up'], tips: ['Add weight to increase difficulty', 'Control the rotation — don\'t rush', 'Great for obliques'] },
-  { name: 'Hanging Leg Raise', muscle: 'Core', difficulty: 'Advanced', equipment: 'Pull-up Bar', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '🦵', instructions: ['Hang from pull-up bar with full extension', 'Keep legs straight (or bend knees for easier version)', 'Raise legs to parallel or above', 'Lower slowly with control', 'Don\'t swing'], tips: ['One of the best ab exercises', 'Bent knee version for beginners', 'Think of curling pelvis up'] },
-  { name: 'Dead Bug', muscle: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10 each side', restSec: 45, calories: 5, emoji: '🪲', instructions: ['Lie on back, arms extended to ceiling', 'Knees bent at 90 degrees, shins parallel to floor', 'Extend opposite arm and leg simultaneously', 'Keep lower back pressed to floor', 'Return and repeat other side'], tips: ['Excellent for core stability', 'If back lifts off floor, you\'ve gone too far', 'Breathe out as you extend'] },
-  { name: 'Mountain Climber', muscle: 'Core', secondary: 'Cardio', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '30 sec', restSec: 45, calories: 10, emoji: '⛰️', instructions: ['Start in push-up position', 'Drive one knee toward chest', 'Quickly switch legs', 'Keep hips low and core tight', 'Maintain fast pace'], tips: ['Great for cardio and core', 'Don\'t let hips bounce up', 'Scale speed to your fitness level'] },
-  { name: 'Ab Rollout', muscle: 'Core', difficulty: 'Advanced', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '🛞', instructions: ['Kneel on floor holding ab wheel or barbell', 'Roll forward extending body toward floor', 'Go as far as you can maintain tension', 'Pull back to starting position using abs', 'Keep core tight throughout'], tips: ['Extremely effective core exercise', 'Don\'t let lower back sag', 'Start with small range of motion'] },
-  { name: 'Pallof Press', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Cable', sets: '3', reps: '10-12 each side', restSec: 45, calories: 5, emoji: '🎯', instructions: ['Stand sideways to cable machine at chest height', 'Hold handle at chest with both hands', 'Press handle straight out in front', 'Resist the rotation — core fights the pull', 'Return to chest and repeat'], tips: ['Anti-rotation exercise — trains core stability', 'Great for sports performance', 'Keep hips and shoulders square'] },
-  { name: 'Side Plank', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '30-45 sec each', restSec: 45, calories: 5, emoji: '↗️', instructions: ['Lie on side, forearm on floor under shoulder', 'Stack feet or stagger them', 'Lift hips creating straight line from head to feet', 'Hold position', 'Don\'t let hips drop'], tips: ['Great for obliques and hip stability', 'Add hip dips for more difficulty', 'Keep top hip stacked over bottom'] },
-  { name: 'V-Up', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '12-15', restSec: 45, calories: 7, emoji: '✌️', instructions: ['Lie flat on back, arms overhead', 'Simultaneously lift legs and torso', 'Reach hands toward feet forming V shape', 'Balance briefly on sit bones', 'Lower back to start with control'], tips: ['Keep legs straight if possible', 'Bend knees for easier version', 'Don\'t use momentum'] },
+  // CORE
+  { name: 'Plank', muscle: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '30-60s', restSec: 45, calories: 5, emoji: '🧘', instructions: ['Forearms + toes on floor', 'Straight line head to heels', 'Pull belly button to spine', 'Don\'t sag or pike', 'Breathe normally'], tips: ['Quality > duration', 'Squeeze everything', 'Build up gradually'] },
+  { name: 'Bicycle Crunch', muscle: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '20 each', restSec: 45, calories: 6, emoji: '🚲', instructions: ['Lie back, hands behind head', 'Shoulders off floor', 'Elbow to opposite knee', 'Alternate pedaling', 'Don\'t pull neck'], tips: ['Slow > fast', 'Really twist obliques', 'Lower back pressed down'] },
+  { name: 'Russian Twist', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '20 total', restSec: 45, calories: 6, emoji: '🇷🇺', instructions: ['Sit, lean back slightly', 'Feet off floor or planted', 'Rotate torso side to side', 'Touch floor each side', 'Chest up'], tips: ['Add weight for harder', 'Control rotation', 'Great obliques'] },
+  { name: 'Hanging Leg Raise', muscle: 'Core', difficulty: 'Advanced', equipment: 'Pull-up Bar', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '🦵', instructions: ['Hang fully extended', 'Straight legs or bent', 'Raise to parallel or above', 'Lower slowly', 'No swinging'], tips: ['One of the best', 'Bent knees = beginner', 'Curl pelvis up'] },
+  { name: 'Dead Bug', muscle: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '10 each', restSec: 45, calories: 5, emoji: '🪲', instructions: ['Back on floor, arms to ceiling', 'Knees 90°, shins parallel', 'Extend opposite arm + leg', 'Keep back pressed down', 'Return, other side'], tips: ['Excellent stability', 'If back lifts, reduce ROM', 'Exhale as you extend'] },
+  { name: 'Mountain Climber', muscle: 'Core', secondary: 'Cardio', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '30s', restSec: 45, calories: 10, emoji: '⛰️', instructions: ['Push-up position', 'Drive knee to chest', 'Quickly switch legs', 'Hips low, core tight', 'Fast pace'], tips: ['Cardio + core', 'Don\'t bounce hips', 'Scale speed'] },
+  { name: 'Ab Rollout', muscle: 'Core', difficulty: 'Advanced', equipment: 'Bodyweight', sets: '3', reps: '8-12', restSec: 60, calories: 8, emoji: '🛞', instructions: ['Kneel with ab wheel/barbell', 'Roll forward extending', 'Go as far as you can', 'Pull back using abs', 'Core tight throughout'], tips: ['Extremely effective', 'Don\'t let back sag', 'Start small ROM'] },
+  { name: 'Pallof Press', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Cable', sets: '3', reps: '10-12 each', restSec: 45, calories: 5, emoji: '🎯', instructions: ['Sideways to cable at chest height', 'Hold handle at chest', 'Press straight out', 'Resist rotation', 'Return to chest'], tips: ['Anti-rotation training', 'Great for sports', 'Hips + shoulders square'] },
+  { name: 'Side Plank', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '30-45s each', restSec: 45, calories: 5, emoji: '↗️', instructions: ['Side, forearm on floor', 'Stack or stagger feet', 'Lift hips straight line', 'Hold', 'Don\'t drop hips'], tips: ['Obliques + hip stability', 'Add hip dips for harder', 'Top hip over bottom'] },
+  { name: 'V-Up', muscle: 'Core', difficulty: 'Intermediate', equipment: 'Bodyweight', sets: '3', reps: '12-15', restSec: 45, calories: 7, emoji: '✌️', instructions: ['Flat on back, arms overhead', 'Lift legs + torso together', 'Reach hands to feet', 'Balance on sit bones', 'Lower controlled'], tips: ['Straight legs if possible', 'Bend knees = easier', 'No momentum'] },
 
-  // GLUTES (6)
-  { name: 'Glute Bridge', muscle: 'Glutes', secondary: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '15-20', restSec: 45, calories: 5, emoji: '🌉', instructions: ['Lie on back, knees bent, feet flat on floor', 'Drive hips up squeezing glutes at top', 'Create straight line from knees to shoulders', 'Hold top position 2 seconds', 'Lower slowly'], tips: ['Great activation exercise', 'Single-leg version for more challenge', 'Don\'t hyperextend back'] },
-  { name: 'Sumo Deadlift', muscle: 'Glutes', secondary: 'Legs, Back', difficulty: 'Advanced', equipment: 'Barbell', sets: '4', reps: '6-8', restSec: 120, calories: 14, emoji: '🏋️', instructions: ['Wide stance, toes pointed out 45 degrees', 'Grip bar between legs shoulder-width', 'Push knees out over toes', 'Lift by extending hips and knees', 'Lock out at top'], tips: ['More glute and inner thigh than conventional', 'Keep chest up', 'Push floor apart with feet'] },
-  { name: 'Cable Pull-Through', muscle: 'Glutes', secondary: 'Legs', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 60, calories: 6, emoji: '🔗', instructions: ['Stand facing away from low cable with rope between legs', 'Hinge at hips, push butt back', 'Feel stretch in hamstrings and glutes', 'Drive hips forward squeezing glutes', 'Stand tall at top'], tips: ['Great hip hinge learning tool', 'Keep arms straight — power comes from hips', 'Squeeze glutes hard at lockout'] },
-  { name: 'Donkey Kick', muscle: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '15 each', restSec: 45, calories: 5, emoji: '🫏', instructions: ['Start on hands and knees', 'Keep knee bent at 90 degrees', 'Lift one leg up driving foot toward ceiling', 'Squeeze glute at top', 'Lower and repeat'], tips: ['Don\'t arch lower back', 'Keep hips square — don\'t rotate', 'Add ankle weight for resistance'] },
-  { name: 'Fire Hydrant', muscle: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '15 each', restSec: 45, calories: 5, emoji: '🚒', instructions: ['Start on hands and knees', 'Keep knee bent at 90 degrees', 'Lift leg out to the side', 'Raise until thigh is parallel with floor', 'Lower and repeat'], tips: ['Targets outer glutes (gluteus medius)', 'Great for hip stability', 'Keep core engaged'] },
-  { name: 'Frog Pump', muscle: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '20-30', restSec: 45, calories: 5, emoji: '🐸', instructions: ['Lie on back, soles of feet together, knees out', 'Drive hips up squeezing glutes', 'This position removes hamstring involvement', 'Pulse at top for maximum activation', 'Lower and repeat'], tips: ['Incredible glute isolation', 'No equipment needed', 'Great as a warm-up exercise'] },
+  // GLUTES
+  { name: 'Glute Bridge', muscle: 'Glutes', secondary: 'Core', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '15-20', restSec: 45, calories: 5, emoji: '🌉', instructions: ['Back on floor, knees bent', 'Drive hips up squeezing', 'Straight line knees to shoulders', 'Hold 2 seconds', 'Lower slowly'], tips: ['Great activation', 'Single-leg for harder', 'Don\'t hyperextend'] },
+  { name: 'Sumo Deadlift', muscle: 'Glutes', secondary: 'Legs, Back', difficulty: 'Advanced', equipment: 'Barbell', sets: '4', reps: '6-8', restSec: 120, calories: 14, emoji: '🏋️', instructions: ['Wide stance, toes 45°', 'Grip between legs', 'Knees out over toes', 'Extend hips and knees', 'Lock out at top'], tips: ['More glute + inner thigh', 'Chest up', 'Push floor apart'] },
+  { name: 'Cable Pull-Through', muscle: 'Glutes', secondary: 'Legs', difficulty: 'Beginner', equipment: 'Cable', sets: '3', reps: '12-15', restSec: 60, calories: 6, emoji: '🔗', instructions: ['Away from low cable, rope between legs', 'Hinge at hips', 'Feel hamstring stretch', 'Drive hips forward', 'Stand tall'], tips: ['Hip hinge learning tool', 'Arms straight', 'Squeeze at lockout'] },
+  { name: 'Donkey Kick', muscle: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '15 each', restSec: 45, calories: 5, emoji: '🫏', instructions: ['Hands and knees', 'Knee bent 90°', 'Lift leg, foot to ceiling', 'Squeeze glute at top', 'Lower repeat'], tips: ['Don\'t arch back', 'Hips square', 'Add ankle weight'] },
+  { name: 'Fire Hydrant', muscle: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '15 each', restSec: 45, calories: 5, emoji: '🚒', instructions: ['Hands and knees', 'Knee bent 90°', 'Lift leg to side', 'Thigh parallel to floor', 'Lower repeat'], tips: ['Outer glutes', 'Hip stability', 'Core engaged'] },
+  { name: 'Frog Pump', muscle: 'Glutes', difficulty: 'Beginner', equipment: 'Bodyweight', sets: '3', reps: '20-30', restSec: 45, calories: 5, emoji: '🐸', instructions: ['Back on floor, soles together, knees out', 'Drive hips up', 'Removes hamstring involvement', 'Pulse at top', 'Lower repeat'], tips: ['Incredible isolation', 'No equipment needed', 'Great warm-up'] },
 
-  // FOREARMS (4)
-  { name: 'Wrist Curl', muscle: 'Forearms', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '15-20', restSec: 45, calories: 3, emoji: '🤲', instructions: ['Sit with forearms on thighs, wrists hanging over knees', 'Hold dumbbells with palms up', 'Curl wrists up', 'Lower slowly', 'Full range of motion'], tips: ['Use light weight — forearms are small muscles', 'Both palms-up and palms-down versions', 'High reps work best for forearms'] },
-  { name: 'Reverse Wrist Curl', muscle: 'Forearms', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '15-20', restSec: 45, calories: 3, emoji: '🔄', instructions: ['Same as wrist curl but palms face down', 'Extend wrists upward', 'Lower slowly', 'Feel the top of the forearm working', 'Full range of motion'], tips: ['Targets wrist extensors', 'Prevents imbalances', 'Use lighter weight than regular wrist curls'] },
-  { name: 'Farmer\'s Walk', muscle: 'Forearms', secondary: 'Core, Full Body', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '30-60 sec', restSec: 60, calories: 8, emoji: '🚶', instructions: ['Hold heavy dumbbells at sides', 'Stand tall — shoulders back, core tight', 'Walk with controlled steps', 'Maintain grip throughout', 'Set down carefully when finished'], tips: ['Amazing for grip strength and overall conditioning', 'Go as heavy as you can hold', 'Keep shoulders packed down'] },
-  { name: 'Dead Hang', muscle: 'Forearms', secondary: 'Back', difficulty: 'Beginner', equipment: 'Pull-up Bar', sets: '3', reps: '20-60 sec', restSec: 60, calories: 3, emoji: '🦥', instructions: ['Grip pull-up bar with overhand grip', 'Hang with arms fully extended', 'Keep shoulders engaged (not fully relaxed)', 'Hold as long as possible', 'Step down safely'], tips: ['Builds grip strength and decompresses spine', 'Great for shoulder health', 'Challenge yourself to increase hang time'] },
+  // FOREARMS
+  { name: 'Wrist Curl', muscle: 'Forearms', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '15-20', restSec: 45, calories: 3, emoji: '🤲', instructions: ['Forearms on thighs, wrists over knees', 'Palms up with DBs', 'Curl wrists up', 'Lower slowly', 'Full ROM'], tips: ['Light weight', 'Both palms-up and down', 'High reps best'] },
+  { name: 'Reverse Wrist Curl', muscle: 'Forearms', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '15-20', restSec: 45, calories: 3, emoji: '🔄', instructions: ['Same position, palms down', 'Extend wrists up', 'Lower slowly', 'Feel top of forearm', 'Full ROM'], tips: ['Targets extensors', 'Prevents imbalances', 'Lighter than regular'] },
+  { name: 'Farmer\'s Walk', muscle: 'Forearms', secondary: 'Core, Full Body', difficulty: 'Beginner', equipment: 'Dumbbells', sets: '3', reps: '30-60s', restSec: 60, calories: 8, emoji: '🚶', instructions: ['Hold heavy DBs at sides', 'Tall posture, core tight', 'Walk controlled steps', 'Maintain grip', 'Set down carefully'], tips: ['Amazing grip + conditioning', 'Go as heavy as possible', 'Shoulders packed down'] },
+  { name: 'Dead Hang', muscle: 'Forearms', secondary: 'Back', difficulty: 'Beginner', equipment: 'Pull-up Bar', sets: '3', reps: '20-60s', restSec: 60, calories: 3, emoji: '🦥', instructions: ['Overhand grip on bar', 'Hang fully extended', 'Shoulders engaged', 'Hold as long as possible', 'Step down safely'], tips: ['Grip strength + spine decompression', 'Shoulder health', 'Increase hang time'] },
 
-  // CARDIO (8)
-  { name: 'Jumping Jacks', muscle: 'Cardio', secondary: 'Full Body', difficulty: 'Beginner', equipment: 'None', sets: '3', reps: '30 sec', restSec: 30, calories: 10, emoji: '⭐', instructions: ['Stand with feet together, arms at sides', 'Jump feet out wide while raising arms overhead', 'Jump back to start', 'Maintain rhythm', 'Land softly'], tips: ['Great warm-up exercise', 'Low impact version — step out instead of jump', 'Keep a steady pace'] },
-  { name: 'Burpee', muscle: 'Cardio', secondary: 'Full Body', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '10-15', restSec: 60, calories: 15, emoji: '🔥', instructions: ['Stand, then squat down placing hands on floor', 'Jump feet back to plank position', 'Perform a push-up (optional)', 'Jump feet forward to hands', 'Explosively jump up with arms overhead'], tips: ['The ultimate full-body conditioning exercise', 'Modify by stepping back instead of jumping', 'Focus on form as you fatigue'] },
-  { name: 'High Knees', muscle: 'Cardio', secondary: 'Core', difficulty: 'Beginner', equipment: 'None', sets: '3', reps: '30 sec', restSec: 30, calories: 12, emoji: '🦵', instructions: ['Stand in place', 'Drive one knee up to hip height', 'Quickly alternate to other knee', 'Pump arms like sprinting', 'Stay on balls of feet'], tips: ['Great for warm-up or HIIT', 'Engage core throughout', 'Aim for speed'] },
-  { name: 'Box Jump', muscle: 'Cardio', secondary: 'Legs', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '8-12', restSec: 60, calories: 10, emoji: '📦', instructions: ['Stand in front of sturdy box or platform', 'Swing arms and explosively jump onto box', 'Land softly with both feet', 'Stand fully on top', 'Step down (don\'t jump down)'], tips: ['Start with lower box height', 'Focus on soft landings', 'Step down to protect knees and Achilles'] },
-  { name: 'Jump Rope', muscle: 'Cardio', secondary: 'Calves', difficulty: 'Beginner', equipment: 'None', sets: '3', reps: '60 sec', restSec: 45, calories: 14, emoji: '🪢', instructions: ['Hold rope handles at hip level', 'Swing rope overhead and jump as it passes under', 'Jump just high enough to clear the rope', 'Land on balls of feet', 'Keep elbows close to body'], tips: ['One of the best cardio exercises', 'Great for coordination', 'Builds calf endurance'] },
-  { name: 'Sprint Intervals', muscle: 'Cardio', secondary: 'Legs', difficulty: 'Advanced', equipment: 'None', sets: '6-10', reps: '20-30 sec sprint', restSec: 60, calories: 20, emoji: '🏃', instructions: ['Warm up thoroughly first', 'Sprint at 90-100% effort for 20-30 seconds', 'Walk or jog for 60 seconds rest', 'Repeat for designated rounds', 'Cool down with easy walking'], tips: ['Most efficient fat-burning cardio', 'Always warm up first', 'Start with fewer rounds and build up'] },
-  { name: 'Bear Crawl', muscle: 'Cardio', secondary: 'Core, Shoulders', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '30 sec', restSec: 45, calories: 10, emoji: '🐻', instructions: ['Start on hands and knees', 'Lift knees slightly off ground', 'Move opposite hand and foot forward together', 'Keep hips low and stable', 'Continue crawling forward'], tips: ['Incredible core and coordination exercise', 'Keep knees close to ground', 'Try going backwards for extra challenge'] },
-  { name: 'Skater Jumps', muscle: 'Cardio', secondary: 'Legs, Glutes', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '20 total', restSec: 45, calories: 10, emoji: '⛸️', instructions: ['Stand on one leg', 'Jump laterally to the other leg', 'Land softly on outside leg', 'Touch floor with opposite hand', 'Immediately jump back to other side'], tips: ['Great for lateral stability and agility', 'Land softly and control balance', 'Mimic speed skating motion'] },
+  // CARDIO
+  { name: 'Jumping Jacks', muscle: 'Cardio', secondary: 'Full Body', difficulty: 'Beginner', equipment: 'None', sets: '3', reps: '30s', restSec: 30, calories: 10, emoji: '⭐', instructions: ['Feet together, arms at sides', 'Jump feet wide, arms overhead', 'Jump back to start', 'Maintain rhythm', 'Land softly'], tips: ['Great warm-up', 'Step out for low impact', 'Steady pace'] },
+  { name: 'Burpee', muscle: 'Cardio', secondary: 'Full Body', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '10-15', restSec: 60, calories: 15, emoji: '🔥', instructions: ['Squat, hands on floor', 'Jump to plank', 'Push-up optional', 'Jump feet to hands', 'Jump up arms overhead'], tips: ['Ultimate conditioning', 'Step back to modify', 'Form > speed'] },
+  { name: 'High Knees', muscle: 'Cardio', secondary: 'Core', difficulty: 'Beginner', equipment: 'None', sets: '3', reps: '30s', restSec: 30, calories: 12, emoji: '🦵', instructions: ['Stand in place', 'Drive knee to hip height', 'Quickly alternate', 'Pump arms', 'Balls of feet'], tips: ['Warm-up or HIIT', 'Core engaged', 'Speed focus'] },
+  { name: 'Box Jump', muscle: 'Cardio', secondary: 'Legs', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '8-12', restSec: 60, calories: 10, emoji: '📦', instructions: ['Face sturdy box', 'Swing arms, jump up', 'Land softly both feet', 'Stand on top', 'Step down'], tips: ['Start low', 'Soft landings', 'Step down to protect joints'] },
+  { name: 'Jump Rope', muscle: 'Cardio', secondary: 'Calves', difficulty: 'Beginner', equipment: 'None', sets: '3', reps: '60s', restSec: 45, calories: 14, emoji: '🪢', instructions: ['Handles at hips', 'Swing overhead, jump under', 'Just high enough to clear', 'Balls of feet', 'Elbows close'], tips: ['One of the best cardio', 'Great coordination', 'Calf endurance'] },
+  { name: 'Sprint Intervals', muscle: 'Cardio', secondary: 'Legs', difficulty: 'Advanced', equipment: 'None', sets: '6-10', reps: '20-30s', restSec: 60, calories: 20, emoji: '🏃', instructions: ['Warm up thoroughly', 'Sprint 90-100% effort', 'Walk/jog 60s rest', 'Repeat', 'Cool down walking'], tips: ['Most efficient fat burning', 'Always warm up', 'Build up rounds'] },
+  { name: 'Bear Crawl', muscle: 'Cardio', secondary: 'Core, Shoulders', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '30s', restSec: 45, calories: 10, emoji: '🐻', instructions: ['Hands and knees', 'Lift knees slightly', 'Move opposite hand + foot', 'Hips low and stable', 'Crawl forward'], tips: ['Core + coordination', 'Knees close to ground', 'Try backwards'] },
+  { name: 'Skater Jumps', muscle: 'Cardio', secondary: 'Legs, Glutes', difficulty: 'Intermediate', equipment: 'None', sets: '3', reps: '20 total', restSec: 45, calories: 10, emoji: '⛸️', instructions: ['Stand on one leg', 'Jump laterally', 'Land on outside leg', 'Touch floor opposite hand', 'Jump back'], tips: ['Lateral stability', 'Soft landing', 'Speed skating motion'] },
 
-  // FLEXIBILITY & MOBILITY (10)
-  { name: 'Downward Dog', muscle: 'Flexibility', secondary: 'Shoulders, Calves', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-60 sec', restSec: 15, calories: 3, emoji: '🐕', instructions: ['Start on hands and knees', 'Push hips up and back forming inverted V', 'Straighten legs, press heels toward floor', 'Arms shoulder-width, fingers spread', 'Relax head between arms'], tips: ['Foundational yoga pose', 'Pedal feet to warm up calves', 'Don\'t force heels to ground'] },
-  { name: 'Pigeon Pose', muscle: 'Flexibility', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-60 sec each', restSec: 15, calories: 2, emoji: '🐦', instructions: ['From all fours, bring right knee forward behind right wrist', 'Extend left leg straight back', 'Keep hips square to the floor', 'Walk hands forward to deepen stretch', 'Switch sides'], tips: ['Amazing hip opener', 'Use a pillow under hip if needed', 'Don\'t force the stretch'] },
-  { name: 'Cat-Cow Stretch', muscle: 'Flexibility', secondary: 'Core, Back', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '10 cycles', restSec: 15, calories: 2, emoji: '🐱', instructions: ['Start on hands and knees', 'Cow: Drop belly, lift chest and tailbone, look up', 'Cat: Round back, tuck chin, pull belly in', 'Flow between positions with breath', 'Inhale for cow, exhale for cat'], tips: ['Great spinal mobility exercise', 'Perfect warm-up for any workout', 'Move with your breath'] },
-  { name: 'World\'s Greatest Stretch', muscle: 'Flexibility', secondary: 'Full Body', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '5 each side', restSec: 15, calories: 3, emoji: '🌍', instructions: ['Step into deep lunge position', 'Place inside hand on floor', 'Rotate torso and reach outside arm to ceiling', 'Hold and feel the stretch through hip, torso, and chest', 'Return and switch sides'], tips: ['Opens up everything — hips, thoracic spine, shoulders', 'Best single mobility drill', 'Do before every workout'] },
-  { name: 'Hip Flexor Stretch', muscle: 'Flexibility', secondary: 'Legs', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-45 sec each', restSec: 15, calories: 2, emoji: '🦵', instructions: ['Kneel on one knee in lunge position', 'Push hips forward gently', 'Feel stretch in front of back hip', 'Keep torso upright', 'Switch sides'], tips: ['Essential for anyone who sits a lot', 'Squeeze back glute for deeper stretch', 'Raise same-side arm overhead for more stretch'] },
-  { name: 'Hamstring Stretch', muscle: 'Flexibility', secondary: 'Back', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-45 sec each', restSec: 15, calories: 2, emoji: '🧘', instructions: ['Sit on floor with one leg extended', 'Bend other leg with foot against inner thigh', 'Reach forward toward extended foot', 'Keep back straight — hinge at hips', 'Feel stretch along back of thigh'], tips: ['Don\'t bounce', 'Flex foot for deeper hamstring stretch', 'Breathe deeply and relax into it'] },
-  { name: 'Thoracic Spine Rotation', muscle: 'Flexibility', secondary: 'Core', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '10 each side', restSec: 15, calories: 2, emoji: '🔄', instructions: ['Lie on side with knees bent at 90 degrees', 'Stack knees together', 'Rotate top arm and torso to opposite side', 'Follow hand with eyes', 'Return and repeat'], tips: ['Critical for upper back mobility', 'Keep knees stacked and still', 'Breathe out as you rotate open'] },
-  { name: 'Child\'s Pose', muscle: 'Flexibility', secondary: 'Back', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-60 sec', restSec: 15, calories: 2, emoji: '🧒', instructions: ['Kneel on floor, big toes together', 'Sit back on heels', 'Walk hands forward, lowering chest to floor', 'Rest forehead on floor', 'Arms extended or alongside body'], tips: ['Ultimate rest and recovery pose', 'Great for lower back relief', 'Widen knees for deeper hip stretch'] },
-  { name: 'Foam Roll (IT Band)', muscle: 'Flexibility', secondary: 'Legs', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '60 sec each', restSec: 15, calories: 2, emoji: '🧻', instructions: ['Lie on side with foam roller under outer thigh', 'Support body with arms and opposite foot', 'Roll slowly from hip to just above knee', 'Pause on tender spots for 20-30 seconds', 'Switch sides'], tips: ['Can be uncomfortable — that\'s normal', 'Don\'t roll directly on joints', 'Essential for runners and cyclists'] },
-  { name: 'Neck Stretch', muscle: 'Flexibility', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '20 sec each', restSec: 10, calories: 1, emoji: '🦒', instructions: ['Sit or stand tall', 'Tilt head to one side bringing ear toward shoulder', 'Gently press with same-side hand', 'Hold stretch', 'Repeat other side, then do forward chin tuck'], tips: ['Be very gentle with neck stretches', 'Never force or bounce', 'Essential for desk workers'] },
+  // FLEXIBILITY
+  { name: 'Downward Dog', muscle: 'Flexibility', secondary: 'Shoulders, Calves', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-60s', restSec: 15, calories: 3, emoji: '🐕', instructions: ['Hands and knees', 'Push hips up and back', 'Inverted V shape', 'Heels toward floor', 'Relax head'], tips: ['Foundational yoga pose', 'Pedal feet to warm up', 'Don\'t force heels'] },
+  { name: 'Pigeon Pose', muscle: 'Flexibility', secondary: 'Glutes', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-60s each', restSec: 15, calories: 2, emoji: '🐦', instructions: ['Right knee behind right wrist', 'Left leg straight back', 'Hips square', 'Walk hands forward', 'Switch sides'], tips: ['Amazing hip opener', 'Pillow under hip', 'Don\'t force it'] },
+  { name: 'Cat-Cow Stretch', muscle: 'Flexibility', secondary: 'Core, Back', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '10 cycles', restSec: 15, calories: 2, emoji: '🐱', instructions: ['Hands and knees', 'Cow: belly down, look up', 'Cat: round back, chin tuck', 'Flow with breath', 'Inhale cow, exhale cat'], tips: ['Great spinal mobility', 'Perfect warm-up', 'Move with breath'] },
+  { name: 'World\'s Greatest Stretch', muscle: 'Flexibility', secondary: 'Full Body', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '5 each side', restSec: 15, calories: 3, emoji: '🌍', instructions: ['Deep lunge', 'Inside hand on floor', 'Rotate, reach outside arm up', 'Hold and feel stretch', 'Switch sides'], tips: ['Opens everything', 'Best single mobility drill', 'Do before every workout'] },
+  { name: 'Hip Flexor Stretch', muscle: 'Flexibility', secondary: 'Legs', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-45s each', restSec: 15, calories: 2, emoji: '🦵', instructions: ['Kneel in lunge', 'Push hips forward', 'Feel front of back hip stretch', 'Torso upright', 'Switch sides'], tips: ['Essential for desk workers', 'Squeeze back glute deeper', 'Arm overhead for more'] },
+  { name: 'Hamstring Stretch', muscle: 'Flexibility', secondary: 'Back', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-45s each', restSec: 15, calories: 2, emoji: '🧘', instructions: ['Sit, one leg extended', 'Other foot against inner thigh', 'Reach toward foot', 'Hinge at hips', 'Feel back of thigh'], tips: ['Don\'t bounce', 'Flex foot deeper stretch', 'Breathe and relax'] },
+  { name: 'Thoracic Rotation', muscle: 'Flexibility', secondary: 'Core', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '10 each', restSec: 15, calories: 2, emoji: '🔄', instructions: ['Lie on side, knees bent 90°', 'Stack knees', 'Rotate top arm to other side', 'Follow with eyes', 'Return repeat'], tips: ['Upper back mobility', 'Knees stay stacked', 'Breathe out rotating'] },
+  { name: 'Child\'s Pose', muscle: 'Flexibility', secondary: 'Back', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '30-60s', restSec: 15, calories: 2, emoji: '🧒', instructions: ['Kneel, big toes together', 'Sit back on heels', 'Walk hands forward', 'Forehead on floor', 'Arms extended or alongside'], tips: ['Rest and recovery pose', 'Lower back relief', 'Widen knees for hips'] },
+  { name: 'Foam Roll IT Band', muscle: 'Flexibility', secondary: 'Legs', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '60s each', restSec: 15, calories: 2, emoji: '🧻', instructions: ['Side on foam roller, outer thigh', 'Support with arms + foot', 'Roll hip to above knee', 'Pause on tender spots', 'Switch sides'], tips: ['Uncomfortable is normal', 'Not on joints', 'Essential for runners'] },
+  { name: 'Neck Stretch', muscle: 'Flexibility', difficulty: 'Beginner', equipment: 'None', sets: '1', reps: '20s each', restSec: 10, calories: 1, emoji: '🦒', instructions: ['Sit or stand tall', 'Tilt ear to shoulder', 'Gentle hand pressure', 'Hold', 'Repeat other side + chin tuck'], tips: ['Be very gentle', 'Never force or bounce', 'Essential for desk workers'] },
 
-  // FULL BODY (6)
-  { name: 'Turkish Get-Up', muscle: 'Full Body', secondary: 'Core, Shoulders', difficulty: 'Advanced', equipment: 'Kettlebell', sets: '3', reps: '3 each side', restSec: 90, calories: 10, emoji: '🇹🇷', instructions: ['Lie on back holding kettlebell overhead with one arm', 'Roll to elbow, then to hand', 'Bridge hips up and sweep leg under', 'Kneel, then stand up — all while keeping weight overhead', 'Reverse the steps to lie back down'], tips: ['Learn each step individually first', 'Use light weight or no weight initially', 'Tests mobility, stability, and strength'] },
-  { name: 'Thruster', muscle: 'Full Body', secondary: 'Shoulders, Legs', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 75, calories: 12, emoji: '🚀', instructions: ['Hold dumbbells at shoulder height', 'Perform a front squat', 'As you stand, use momentum to press overhead', 'Lock out at top', 'Lower dumbbells back to shoulders and squat again'], tips: ['Incredibly efficient full-body movement', 'Breathe in on squat, out on press', 'Keep core tight throughout'] },
-  { name: 'Clean and Press', muscle: 'Full Body', secondary: 'Shoulders, Back', difficulty: 'Advanced', equipment: 'Barbell', sets: '4', reps: '5-8', restSec: 120, calories: 14, emoji: '🏋️', instructions: ['Start with barbell on floor', 'Perform explosive pull to shoulder height (clean)', 'Catch bar at shoulders in front rack position', 'Press bar overhead', 'Lower to shoulders then to floor'], tips: ['Olympic lifting technique required', 'Start with just the bar', 'Get coaching on form'] },
-  { name: 'Kettlebell Swing', muscle: 'Full Body', secondary: 'Glutes, Core', difficulty: 'Intermediate', equipment: 'Kettlebell', sets: '3-4', reps: '15-20', restSec: 60, calories: 12, emoji: '🔔', instructions: ['Stand with feet wider than shoulder-width', 'Hold kettlebell with both hands', 'Hinge at hips and swing KB between legs', 'Drive hips forward explosively swinging KB to chest height', 'Control the backswing'], tips: ['Power comes from hips, NOT arms', 'Keep back flat and core braced', 'Don\'t squat — it\'s a hip hinge'] },
-  { name: 'Man Maker', muscle: 'Full Body', difficulty: 'Advanced', equipment: 'Dumbbells', sets: '3', reps: '6-8', restSec: 90, calories: 15, emoji: '💀', instructions: ['Start standing holding dumbbells', 'Place dumbbells down and jump to plank', 'Perform a push-up', 'Row each dumbbell (renegade row)', 'Jump feet to hands and perform a thruster'], tips: ['The hardest exercise on this list', 'Use light dumbbells — it\'s brutal', 'Rest as needed between reps'] },
-  { name: 'Battle Ropes', muscle: 'Full Body', secondary: 'Core, Shoulders', difficulty: 'Intermediate', equipment: 'None', sets: '4', reps: '30 sec', restSec: 45, calories: 14, emoji: '🪢', instructions: ['Grip rope ends in each hand, athletic stance', 'Create alternating waves by rapidly raising and lowering arms', 'Keep core tight and knees slightly bent', 'Maintain consistent wave amplitude', 'Try different patterns — alternating, double, slams'], tips: ['Incredible conditioning tool', 'Keep waves going all the way to anchor point', 'Experiment with different movements'] },
+  // FULL BODY
+  { name: 'Turkish Get-Up', muscle: 'Full Body', secondary: 'Core, Shoulders', difficulty: 'Advanced', equipment: 'Kettlebell', sets: '3', reps: '3 each', restSec: 90, calories: 10, emoji: '🇹🇷', instructions: ['Lie back, KB overhead one arm', 'Roll to elbow then hand', 'Bridge hips, sweep leg', 'Kneel then stand', 'Reverse to lie down'], tips: ['Learn each step solo', 'Start with no weight', 'Tests everything'] },
+  { name: 'Thruster', muscle: 'Full Body', secondary: 'Shoulders, Legs', difficulty: 'Intermediate', equipment: 'Dumbbells', sets: '3', reps: '10-12', restSec: 75, calories: 12, emoji: '🚀', instructions: ['DBs at shoulders', 'Front squat', 'Use momentum to press overhead', 'Lock out at top', 'Lower to squat again'], tips: ['Incredibly efficient', 'Breathe: in squat, out press', 'Core tight'] },
+  { name: 'Clean and Press', muscle: 'Full Body', secondary: 'Shoulders, Back', difficulty: 'Advanced', equipment: 'Barbell', sets: '4', reps: '5-8', restSec: 120, calories: 14, emoji: '🏋️', instructions: ['Bar on floor', 'Explosive pull to shoulders', 'Catch in front rack', 'Press overhead', 'Lower to floor'], tips: ['Olympic technique needed', 'Start with just bar', 'Get coaching'] },
+  { name: 'Kettlebell Swing', muscle: 'Full Body', secondary: 'Glutes, Core', difficulty: 'Intermediate', equipment: 'Kettlebell', sets: '3-4', reps: '15-20', restSec: 60, calories: 12, emoji: '🔔', instructions: ['Wide stance', 'Both hands on KB', 'Hinge, swing between legs', 'Drive hips forward explosively', 'Control backswing'], tips: ['Power from hips NOT arms', 'Back flat, core braced', 'It\'s a hip hinge not squat'] },
+  { name: 'Man Maker', muscle: 'Full Body', difficulty: 'Advanced', equipment: 'Dumbbells', sets: '3', reps: '6-8', restSec: 90, calories: 15, emoji: '💀', instructions: ['Standing with DBs', 'Place down, jump to plank', 'Push-up', 'Renegade row each side', 'Jump up, thruster'], tips: ['Hardest exercise here', 'Light DBs — it\'s brutal', 'Rest between reps'] },
+  { name: 'Battle Ropes', muscle: 'Full Body', secondary: 'Core, Shoulders', difficulty: 'Intermediate', equipment: 'None', sets: '4', reps: '30s', restSec: 45, calories: 14, emoji: '🪢', instructions: ['Grip rope ends, athletic stance', 'Alternating waves rapidly', 'Core tight, knees bent', 'Consistent amplitude', 'Try different patterns'], tips: ['Incredible conditioning', 'Waves to anchor point', 'Experiment with movements'] },
 ];
 
 const muscleGroups: MuscleGroup[] = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Legs', 'Core', 'Glutes', 'Calves', 'Forearms', 'Full Body', 'Cardio', 'Flexibility'];
 const difficulties: Difficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
-const muscleColors: Record<string, string> = {
-  Chest: 'from-red-500 to-pink-500',
-  Back: 'from-blue-500 to-indigo-500',
-  Shoulders: 'from-orange-500 to-amber-500',
-  Biceps: 'from-purple-500 to-violet-500',
-  Triceps: 'from-fuchsia-500 to-pink-500',
-  Legs: 'from-emerald-500 to-teal-500',
-  Core: 'from-yellow-500 to-orange-500',
-  Glutes: 'from-rose-500 to-red-500',
-  Calves: 'from-teal-500 to-cyan-500',
-  Forearms: 'from-amber-500 to-yellow-500',
-  'Full Body': 'from-violet-500 to-purple-500',
-  Cardio: 'from-cyan-500 to-blue-500',
-  Flexibility: 'from-green-500 to-emerald-500',
+
+const difficultyConfig: Record<Difficulty, { color: string; icon: typeof Zap }> = {
+  Beginner: { color: 'bg-success/15 text-success border-success/20', icon: Shield },
+  Intermediate: { color: 'bg-warning/15 text-warning border-warning/20', icon: Zap },
+  Advanced: { color: 'bg-destructive/15 text-destructive border-destructive/20', icon: Flame },
 };
 
-const container = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.03 } } };
-const item = { hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0 } };
+const container = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.02 } } };
+const item = { hidden: { opacity: 0, scale: 0.97 }, visible: { opacity: 1, scale: 1 } };
 
 export default function ExerciseLibraryPage() {
   const [search, setSearch] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleGroup | 'All'>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | 'All'>('All');
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
   const filtered = useMemo(() => {
@@ -198,170 +190,175 @@ export default function ExerciseLibraryPage() {
     return counts;
   }, []);
 
+  const clearFilters = () => {
+    setSelectedMuscle('All');
+    setSelectedDifficulty('All');
+    setSearch('');
+  };
+
+  const hasFilters = selectedMuscle !== 'All' || selectedDifficulty !== 'All' || search;
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-500 to-orange-500">
-            <Dumbbell className="h-8 w-8 text-white" />
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-7xl mx-auto">
+        {/* Hero Header */}
+        <div className="relative mb-10 overflow-hidden rounded-3xl bg-card border border-border p-8 md:p-12">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Dumbbell className="h-5 w-5 text-primary" />
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">{exercises.length} Exercises</span>
+            </div>
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Exercise Library</h1>
+            <p className="text-muted-foreground max-w-xl text-lg">
+              Every exercise with step-by-step instructions, target muscles, difficulty levels, and pro tips.
+            </p>
           </div>
-          <h1 className="font-display text-3xl font-bold mb-2">Exercise Library</h1>
-          <p className="text-muted-foreground">{exercises.length} exercises with step-by-step instructions, muscle groups & tips</p>
+
+          {/* Muscle group quick stats */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            {muscleGroups.map(m => (
+              <button key={m} onClick={() => { setSelectedMuscle(m === selectedMuscle ? 'All' : m); setShowFilters(true); }}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${selectedMuscle === m ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'}`}>
+                {m}
+                <span className={`text-[10px] ${selectedMuscle === m ? 'text-primary-foreground/70' : 'text-muted-foreground/60'}`}>{muscleCount[m] || 0}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Search + Filter Toggle */}
+        {/* Search + Controls */}
         <div className="flex gap-3 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search exercises, muscle groups..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder="Search exercises..." value={search} onChange={e => setSearch(e.target.value)}
+              className="pl-10 h-11 bg-card border-border" />
           </div>
-          <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="gap-2">
-            <Filter className="w-4 h-4" /> Filters
-            {(selectedMuscle !== 'All' || selectedDifficulty !== 'All') && (
-              <span className="w-2 h-2 rounded-full bg-primary" />
-            )}
+          <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="gap-2 h-11 px-4">
+            <Filter className="w-4 h-4" />
+            <span className="hidden sm:inline">Filters</span>
+            {hasFilters && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
           </Button>
+          {hasFilters && (
+            <Button variant="ghost" onClick={clearFilters} className="gap-1 h-11 text-muted-foreground">
+              <X className="w-4 h-4" /> Clear
+            </Button>
+          )}
         </div>
 
-        {/* Filters */}
+        {/* Difficulty filter */}
         <AnimatePresence>
           {showFilters && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-              className="mb-6 space-y-4 overflow-hidden">
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground mb-2">Muscle Group</p>
-                <div className="flex flex-wrap gap-2">
-                  <button onClick={() => setSelectedMuscle('All')}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${selectedMuscle === 'All' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                    All ({exercises.length})
-                  </button>
-                  {muscleGroups.map(m => (
-                    <button key={m} onClick={() => setSelectedMuscle(m)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${selectedMuscle === m ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                      {m} ({muscleCount[m] || 0})
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground mb-2">Difficulty</p>
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
+              <div className="bg-card rounded-xl border border-border p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Difficulty</p>
                 <div className="flex gap-2">
                   <button onClick={() => setSelectedDifficulty('All')}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${selectedDifficulty === 'All' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                    All
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedDifficulty === 'All' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>
+                    All Levels
                   </button>
-                  {difficulties.map(d => (
-                    <button key={d} onClick={() => setSelectedDifficulty(d)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${selectedDifficulty === d ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                      {d}
-                    </button>
-                  ))}
+                  {difficulties.map(d => {
+                    const cfg = difficultyConfig[d];
+                    const Icon = cfg.icon;
+                    return (
+                      <button key={d} onClick={() => setSelectedDifficulty(d)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${selectedDifficulty === d ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>
+                        <Icon className="w-3.5 h-3.5" />{d}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Results count */}
-        <p className="text-sm text-muted-foreground mb-4">{filtered.length} exercises found</p>
+        {/* Results */}
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-muted-foreground">{filtered.length} exercise{filtered.length !== 1 ? 's' : ''}</p>
+        </div>
 
-        {/* Exercise Grid */}
-        <motion.div className="space-y-3" variants={container} initial="hidden" animate="visible" key={`${selectedMuscle}-${selectedDifficulty}-${search}`}>
-          {filtered.map((ex, i) => {
-            const isExpanded = expandedIndex === i;
-            const gradient = muscleColors[ex.muscle] || 'from-primary to-secondary';
+        {/* Exercise Cards — Grid Layout */}
+        <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" variants={container} initial="hidden" animate="visible"
+          key={`${selectedMuscle}-${selectedDifficulty}-${search}`}>
+          {filtered.map((ex) => {
+            const isExpanded = expandedExercise === ex.name;
+            const diffCfg = difficultyConfig[ex.difficulty];
+            const DiffIcon = diffCfg.icon;
             return (
-              <motion.div key={ex.name} variants={item}
-                className="bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/20 transition-all">
-                {/* Header row */}
-                <button onClick={() => setExpandedIndex(isExpanded ? null : i)}
-                  className="w-full flex items-center gap-4 p-4 text-left">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${gradient} shrink-0 text-2xl`}>
-                    {ex.emoji}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm sm:text-base truncate">{ex.name}</h3>
-                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{ex.muscle}</span>
-                      {ex.secondary && <span className="text-xs text-muted-foreground hidden sm:inline">+ {ex.secondary}</span>}
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${ex.difficulty === 'Beginner' ? 'bg-success/15 text-success' : ex.difficulty === 'Intermediate' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'}`}>
-                        {ex.difficulty}
+              <motion.div key={ex.name} variants={item} layout>
+                <div className={`bg-card rounded-2xl border border-border overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-1 ring-primary/30' : 'hover:border-primary/20'}`}>
+                  {/* Card Header */}
+                  <button onClick={() => setExpandedExercise(isExpanded ? null : ex.name)}
+                    className="w-full p-5 text-left">
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="text-3xl">{ex.emoji}</span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${diffCfg.color}`}>
+                        <DiffIcon className="w-3 h-3" />{ex.difficulty}
                       </span>
                     </div>
-                  </div>
-                  <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground shrink-0">
-                    <div className="flex items-center gap-1"><Target className="w-3 h-3" />{ex.sets}×{ex.reps}</div>
-                    <div className="flex items-center gap-1"><Clock className="w-3 h-3" />{ex.restSec}s rest</div>
-                    <div className="flex items-center gap-1"><Flame className="w-3 h-3" />~{ex.calories} cal</div>
-                  </div>
-                  {isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground shrink-0" /> : <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0" />}
-                </button>
+                    <h3 className="font-display font-bold text-base mb-1.5">{ex.name}</h3>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-xs px-2 py-0.5 rounded-md bg-primary/10 text-primary font-medium">{ex.muscle}</span>
+                      {ex.secondary && <span className="text-[11px] text-muted-foreground">+ {ex.secondary}</span>}
+                    </div>
+                    <div className="flex items-center gap-3 mt-3 text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1"><Target className="w-3 h-3" />{ex.sets}×{ex.reps}</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ex.restSec}s</span>
+                      <span className="flex items-center gap-1"><Flame className="w-3 h-3" />{ex.calories}cal</span>
+                      <span className="flex items-center gap-1"><Dumbbell className="w-3 h-3" />{ex.equipment}</span>
+                    </div>
+                  </button>
 
-                {/* Expanded detail */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden">
-                      <div className="px-4 pb-5 pt-1 space-y-4 border-t border-border">
-                        {/* Quick stats for mobile */}
-                        <div className="flex sm:hidden gap-3 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1"><Target className="w-3 h-3" />{ex.sets}×{ex.reps}</div>
-                          <div className="flex items-center gap-1"><Clock className="w-3 h-3" />{ex.restSec}s rest</div>
-                          <div className="flex items-center gap-1"><Flame className="w-3 h-3" />~{ex.calories} cal</div>
-                        </div>
-
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          {/* Info cards */}
-                          <div className="space-y-3">
-                            <div className="bg-muted/30 rounded-xl p-4">
-                              <h4 className="text-sm font-semibold mb-1 flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Targets</h4>
-                              <p className="text-sm text-muted-foreground"><strong>Primary:</strong> {ex.muscle}</p>
-                              {ex.secondary && <p className="text-sm text-muted-foreground"><strong>Secondary:</strong> {ex.secondary}</p>}
-                            </div>
-                            <div className="bg-muted/30 rounded-xl p-4">
-                              <h4 className="text-sm font-semibold mb-1 flex items-center gap-2"><Dumbbell className="w-4 h-4 text-primary" /> Equipment</h4>
-                              <p className="text-sm text-muted-foreground">{ex.equipment}</p>
-                            </div>
-                            <div className="bg-muted/30 rounded-xl p-4">
-                              <h4 className="text-sm font-semibold mb-1 flex items-center gap-2"><Star className="w-4 h-4 text-warning" /> Pro Tips</h4>
-                              <ul className="space-y-1">
-                                {ex.tips.map((tip, j) => (
-                                  <li key={j} className="text-sm text-muted-foreground flex items-start gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-warning mt-1.5 shrink-0" />{tip}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-
+                  {/* Expanded Content */}
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden">
+                        <div className="px-5 pb-5 space-y-4 border-t border-border pt-4">
                           {/* Instructions */}
-                          <div className="bg-muted/30 rounded-xl p-4">
-                            <h4 className="text-sm font-semibold mb-3">Step-by-Step Instructions</h4>
-                            <ol className="space-y-2">
+                          <div>
+                            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Instructions</h4>
+                            <ol className="space-y-1.5">
                               {ex.instructions.map((step, j) => (
-                                <li key={j} className="flex items-start gap-3 text-sm text-muted-foreground">
-                                  <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">{j + 1}</span>
+                                <li key={j} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                                  <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">{j + 1}</span>
                                   {step}
                                 </li>
                               ))}
                             </ol>
                           </div>
+
+                          {/* Tips */}
+                          <div>
+                            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+                              <Star className="w-3 h-3 text-warning" /> Pro Tips
+                            </h4>
+                            <ul className="space-y-1">
+                              {ex.tips.map((tip, j) => (
+                                <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                  <span className="w-1 h-1 rounded-full bg-warning mt-2 shrink-0" />{tip}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.div>
             );
           })}
         </motion.div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-16">
-            <Dumbbell className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No exercises found</h3>
-            <p className="text-muted-foreground">Try different search terms or filters</p>
+          <div className="text-center py-20">
+            <Dumbbell className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-1">No exercises found</h3>
+            <p className="text-sm text-muted-foreground">Try different search terms or filters</p>
           </div>
         )}
       </motion.div>
