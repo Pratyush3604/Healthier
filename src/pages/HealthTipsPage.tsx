@@ -149,6 +149,31 @@ const tips = [
   { icon: Apple, title: 'Avoid Late-Night Eating', tip: 'Stop eating 3 hours before bed. Late eating disrupts sleep and digestion.', color: 'from-indigo-400 to-purple-400', category: 'Nutrition' },
   { icon: Shield, title: 'Sun Safety for Kids', tip: 'Keep babies under 6 months out of direct sun. Use kid-safe SPF 30+ sunscreen.', color: 'from-yellow-400 to-orange-400', category: 'Children' },
   { icon: Heart, title: 'Forgive Yourself', tip: 'Self-compassion is linked to lower anxiety and depression. Be kind to yourself.', color: 'from-pink-400 to-rose-400', category: 'Mental Health' },
+  // Women's Health
+  { icon: Heart, title: 'Regular Screenings', tip: 'Women should get mammograms starting at 40, Pap smears at 21, bone density at 65.', color: 'from-pink-500 to-rose-500', category: "Women's Health" },
+  { icon: Pill, title: 'Iron & Folate', tip: 'Women of childbearing age need extra iron and folate. Eat leafy greens and legumes.', color: 'from-pink-400 to-rose-400', category: "Women's Health" },
+  { icon: Dumbbell, title: 'Pelvic Floor Exercises', tip: 'Kegel exercises strengthen pelvic muscles. Do 3 sets of 10 daily.', color: 'from-pink-500 to-fuchsia-500', category: "Women's Health" },
+  { icon: Brain, title: 'Hormonal Awareness', tip: 'Track your menstrual cycle. Changes in mood/energy are normal and manageable.', color: 'from-pink-400 to-violet-400', category: "Women's Health" },
+  // Men's Health
+  { icon: Heart, title: 'Prostate Health', tip: 'Men over 50 should discuss PSA testing with their doctor. Earlier if family history.', color: 'from-blue-500 to-indigo-500', category: "Men's Health" },
+  { icon: Dumbbell, title: 'Testosterone & Exercise', tip: 'Compound exercises like squats and deadlifts naturally boost testosterone levels.', color: 'from-blue-400 to-cyan-400', category: "Men's Health" },
+  { icon: Brain, title: 'Mental Health Stigma', tip: 'Men are less likely to seek help for depression. Talking to someone is strength, not weakness.', color: 'from-blue-500 to-violet-500', category: "Men's Health" },
+  { icon: Heart, title: 'Heart Disease Risk', tip: 'Men face higher heart disease risk earlier. Regular checkups after 35 are essential.', color: 'from-red-500 to-pink-500', category: "Men's Health" },
+  // Senior Health
+  { icon: Bone, title: 'Fall Prevention', tip: 'Remove tripping hazards, install grab bars, and do balance exercises to prevent falls.', color: 'from-gray-500 to-slate-500', category: 'Senior Health' },
+  { icon: Brain, title: 'Brain Games', tip: 'Crosswords, sudoku, and learning new skills help maintain cognitive function with age.', color: 'from-purple-500 to-indigo-500', category: 'Senior Health' },
+  { icon: Heart, title: 'Social Engagement', tip: 'Loneliness in seniors increases mortality risk by 26%. Stay socially connected.', color: 'from-pink-500 to-rose-500', category: 'Senior Health' },
+  { icon: Apple, title: 'Calcium & Vitamin D', tip: 'Seniors need 1200mg calcium and 800-1000 IU vitamin D daily for bone health.', color: 'from-orange-400 to-amber-400', category: 'Senior Health' },
+  // Travel Health
+  { icon: Shield, title: 'Travel Vaccinations', tip: 'Check CDC travel advisories 6 weeks before international trips for required vaccines.', color: 'from-teal-500 to-cyan-500', category: 'Travel Health' },
+  { icon: Droplets, title: 'Safe Drinking Water', tip: 'In developing countries, drink only bottled or purified water. Avoid ice in drinks.', color: 'from-blue-400 to-cyan-400', category: 'Travel Health' },
+  { icon: Thermometer, title: 'Jet Lag Management', tip: 'Adjust sleep schedule 2-3 days before travel. Stay hydrated and get sunlight on arrival.', color: 'from-orange-400 to-amber-400', category: 'Travel Health' },
+  { icon: Pill, title: 'Travel Med Kit', tip: 'Pack antihistamines, pain relievers, anti-diarrheal meds, and any prescriptions.', color: 'from-blue-500 to-indigo-500', category: 'Travel Health' },
+  // Workplace Wellness
+  { icon: Eye, title: 'Screen Break Rule', tip: 'Every 20 minutes, look at something 20 feet away for 20 seconds to reduce eye strain.', color: 'from-blue-400 to-teal-400', category: 'Workplace Wellness' },
+  { icon: Dumbbell, title: 'Desk Stretches', tip: 'Neck rolls, shoulder shrugs, and wrist circles every hour prevent repetitive strain.', color: 'from-green-400 to-emerald-400', category: 'Workplace Wellness' },
+  { icon: Brain, title: 'Work-Life Balance', tip: 'Set firm work-end times. Burnout increases heart disease risk by 23%.', color: 'from-violet-400 to-purple-400', category: 'Workplace Wellness' },
+  { icon: Lightbulb, title: 'Standing Desk Benefits', tip: 'Standing desks reduce back pain by 32% and increase productivity. Alternate sitting and standing.', color: 'from-amber-400 to-yellow-400', category: 'Workplace Wellness' },
 ];
 
 const tipCategories = [...new Set(tips.map(t => t.category))];
