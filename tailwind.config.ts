@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -26,7 +26,6 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -80,10 +79,10 @@ export default {
         "3xl": "calc(var(--radius) + 16px)",
       },
       boxShadow: {
-        glow: "var(--shadow-glow)",
-        soft: "var(--shadow-md)",
-        elevated: "var(--shadow-lg)",
-        floating: "var(--shadow-xl)",
+        glow: "0 0 24px hsla(160, 84%, 39%, 0.15)",
+        soft: "0 2px 12px rgba(0,0,0,0.08)",
+        elevated: "0 4px 24px rgba(0,0,0,0.12)",
+        floating: "0 8px 40px rgba(0,0,0,0.16)",
       },
       keyframes: {
         "accordion-down": {
@@ -106,21 +105,6 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
-        "slide-in-right": {
-          from: { opacity: "0", transform: "translateX(20px)" },
-          to: { opacity: "1", transform: "translateX(0)" },
-        },
-        shimmer: {
-          from: { backgroundPosition: "-200% 0" },
-          to: { backgroundPosition: "200% 0" },
-        },
-        heartbeat: {
-          "0%, 100%": { transform: "scale(1)" },
-          "14%": { transform: "scale(1.3)" },
-          "28%": { transform: "scale(1)" },
-          "42%": { transform: "scale(1.3)" },
-          "70%": { transform: "scale(1)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -128,9 +112,6 @@ export default {
         "fade-in": "fade-in 0.4s ease-out",
         "fade-in-up": "fade-in-up 0.5s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
-        "slide-in-right": "slide-in-right 0.4s ease-out",
-        shimmer: "shimmer 2s linear infinite",
-        heartbeat: "heartbeat 1.5s ease-in-out infinite",
       },
     },
   },
