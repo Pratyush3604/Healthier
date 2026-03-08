@@ -27,6 +27,8 @@ import WaterTrackerPage from "@/pages/WaterTrackerPage";
 import HealthDashboardPage from "@/pages/HealthDashboardPage";
 import MedicationReminderPage from "@/pages/MedicationReminderPage";
 import HealthJournalPage from "@/pages/HealthJournalPage";
+import ExerciseLibraryPage from "@/pages/ExerciseLibraryPage";
+import HealthReportsPage from "@/pages/HealthReportsPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +63,8 @@ const App = () => (
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/medication-reminder" element={<MedicationReminderPage />} />
             <Route path="/health-journal" element={<HealthJournalPage />} />
+            <Route path="/exercise-library" element={<ExerciseLibraryPage />} />
+            <Route path="/health-reports" element={<HealthReportsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
