@@ -29,6 +29,18 @@ import MedicationReminderPage from "@/pages/MedicationReminderPage";
 import HealthJournalPage from "@/pages/HealthJournalPage";
 import ExerciseLibraryPage from "@/pages/ExerciseLibraryPage";
 import HealthReportsPage from "@/pages/HealthReportsPage";
+import StressCheckPage from "@/pages/StressCheckPage";
+import PeriodTrackerPage from "@/pages/PeriodTrackerPage";
+import MensHealthPage from "@/pages/MensHealthPage";
+import ChildFeverPage from "@/pages/ChildFeverPage";
+import FallRiskPage from "@/pages/FallRiskPage";
+import TravelHealthPage from "@/pages/TravelHealthPage";
+import BloodPressurePage from "@/pages/BloodPressurePage";
+import DiabetesRiskPage from "@/pages/DiabetesRiskPage";
+import VaccineSchedulerPage from "@/pages/VaccineSchedulerPage";
+import PostureCorrectorPage from "@/pages/PostureCorrectorPage";
+import SmokingCessationPage from "@/pages/SmokingCessationPage";
+import WellnessQuizPage from "@/pages/WellnessQuizPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,6 +77,18 @@ const App = () => (
             <Route path="/health-journal" element={<HealthJournalPage />} />
             <Route path="/exercise-library" element={<ExerciseLibraryPage />} />
             <Route path="/health-reports" element={<HealthReportsPage />} />
+            <Route path="/stress-check" element={<StressCheckPage />} />
+            <Route path="/period-tracker" element={<PeriodTrackerPage />} />
+            <Route path="/mens-health" element={<MensHealthPage />} />
+            <Route path="/child-fever" element={<ChildFeverPage />} />
+            <Route path="/fall-risk" element={<FallRiskPage />} />
+            <Route path="/travel-health" element={<TravelHealthPage />} />
+            <Route path="/blood-pressure" element={<BloodPressurePage />} />
+            <Route path="/diabetes-risk" element={<DiabetesRiskPage />} />
+            <Route path="/vaccine-scheduler" element={<VaccineSchedulerPage />} />
+            <Route path="/posture-corrector" element={<PostureCorrectorPage />} />
+            <Route path="/smoking-cessation" element={<SmokingCessationPage />} />
+            <Route path="/wellness-quiz" element={<WellnessQuizPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -6,7 +6,9 @@ import {
   Camera, FileText, MessageCircle, Mic, BookOpen,
   Phone, Lightbulb, User, Search, Pill, Dumbbell,
   Moon, Apple, Scan, Calculator, LogIn, LogOut,
-  Droplets, LayoutDashboard, Settings, TrendingUp
+  Droplets, LayoutDashboard, Settings, TrendingUp,
+  Brain, Heart, Shield, Baby, UserCheck, Plane,
+  Syringe, Monitor, Wind, Star
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
@@ -33,6 +35,18 @@ const moreItems = [
   { path: '/medicine-info', label: 'Medicine', icon: Pill },
   { path: '/bmi-calculator', label: 'BMI', icon: Calculator },
   { path: '/water-tracker', label: 'Water', icon: Droplets },
+  { path: '/blood-pressure', label: 'Blood Pressure', icon: Heart },
+  { path: '/stress-check', label: 'Stress Check', icon: Brain },
+  { path: '/period-tracker', label: 'Period Tracker', icon: Heart },
+  { path: '/mens-health', label: "Men's Health", icon: Shield },
+  { path: '/child-fever', label: 'Child Fever', icon: Baby },
+  { path: '/fall-risk', label: 'Fall Risk', icon: UserCheck },
+  { path: '/travel-health', label: 'Travel Health', icon: Plane },
+  { path: '/diabetes-risk', label: 'Diabetes Risk', icon: Activity },
+  { path: '/vaccine-scheduler', label: 'Vaccines', icon: Syringe },
+  { path: '/posture-corrector', label: 'Posture', icon: Monitor },
+  { path: '/smoking-cessation', label: 'Quit Smoking', icon: Wind },
+  { path: '/wellness-quiz', label: 'Wellness Quiz', icon: Star },
   { path: '/medication-reminder', label: 'Med Reminders', icon: Pill },
   { path: '/health-journal', label: 'Journal', icon: BookOpen },
   { path: '/health-reports', label: 'Reports Hub', icon: TrendingUp },
@@ -71,7 +85,6 @@ export function Header() {
     <header className="sticky top-0 z-50 glass border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
             <HealtifyLogo size={32} />
             <div className="hidden sm:block">
@@ -80,7 +93,6 @@ export function Header() {
             </div>
           </Link>
 
-          {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-0.5">
             {navItems.map((navItem) => {
               const Icon = navItem.icon;
@@ -100,12 +112,11 @@ export function Header() {
               );
             })}
 
-            {/* More dropdown */}
             <div className="relative group">
               <button className="px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-all">
                 More
               </button>
-              <div className="absolute top-full right-0 mt-1.5 py-1.5 w-44 bg-card border border-border rounded-xl shadow-elevated opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute top-full right-0 mt-1.5 py-1.5 w-48 max-h-[70vh] overflow-y-auto bg-card border border-border rounded-xl shadow-elevated opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 {moreItems.map((navItem) => {
                   const Icon = navItem.icon;
                   return (
@@ -119,7 +130,6 @@ export function Header() {
             </div>
           </nav>
 
-          {/* Right side */}
           <div className="flex items-center gap-1.5">
             {user ? (
               <div className="hidden sm:flex items-center gap-1">
@@ -136,7 +146,6 @@ export function Header() {
               </Link>
             )}
 
-            {/* Search */}
             <div className="relative">
               <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
                 <Search className="w-4 h-4 text-muted-foreground" />
@@ -148,8 +157,8 @@ export function Header() {
                     <Input placeholder="Search features..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
                       className="h-9 text-sm bg-muted/50" autoFocus />
                     {filteredNav.length > 0 && (
-                      <div className="mt-1.5 space-y-0.5">
-                        {filteredNav.slice(0, 6).map(navItem => {
+                      <div className="mt-1.5 space-y-0.5 max-h-64 overflow-y-auto">
+                        {filteredNav.slice(0, 10).map(navItem => {
                           const Icon = navItem.icon;
                           return (
                             <Link key={navItem.path} to={navItem.path} onClick={() => { setSearchOpen(false); setSearchTerm(''); }}
@@ -172,12 +181,11 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
             className="lg:hidden border-t border-border bg-card">
-            <nav className="container mx-auto px-4 py-3 grid grid-cols-4 gap-1.5">
+            <nav className="container mx-auto px-4 py-3 grid grid-cols-4 gap-1.5 max-h-[70vh] overflow-y-auto">
               {allNav.map((navItem) => {
                 const Icon = navItem.icon;
                 const isActive = location.pathname === navItem.path;
