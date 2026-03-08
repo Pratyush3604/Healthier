@@ -32,6 +32,8 @@ const moreItems = [
   { path: '/medicine-info', label: 'Medicine', icon: Pill },
   { path: '/bmi-calculator', label: 'BMI Calc', icon: Calculator },
   { path: '/water-tracker', label: 'Water', icon: Droplets },
+  { path: '/medication-reminder', label: 'Med Reminders', icon: Pill },
+  { path: '/health-journal', label: 'Journal', icon: BookOpen },
   { path: '/first-aid', label: 'First Aid', icon: BookOpen },
   { path: '/health-tips', label: 'Tips', icon: Lightbulb },
   { path: '/emergency', label: 'Emergency', icon: Phone },

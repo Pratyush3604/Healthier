@@ -25,6 +25,8 @@ import BMICalculatorPage from "@/pages/BMICalculatorPage";
 import SettingsPage from "@/pages/SettingsPage";
 import WaterTrackerPage from "@/pages/WaterTrackerPage";
 import HealthDashboardPage from "@/pages/HealthDashboardPage";
+import MedicationReminderPage from "@/pages/MedicationReminderPage";
+import HealthJournalPage from "@/pages/HealthJournalPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +59,8 @@ const App = () => (
             <Route path="/health-tips" element={<HealthTipsPage />} />
             <Route path="/emergency" element={<EmergencyPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/medication-reminder" element={<MedicationReminderPage />} />
+            <Route path="/health-journal" element={<HealthJournalPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface LayoutProps {
   children: ReactNode;
@@ -49,7 +50,7 @@ export function Layout({ children }: LayoutProps) {
       
       <Header />
       <main className="flex-1 relative z-10">
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
       </main>
       <Footer />
     </div>
