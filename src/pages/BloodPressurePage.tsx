@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Loader2, AlertTriangle, Sparkles, TrendingUp, Plus, Clock } from 'lucide-react';
+import { Heart, Loader2, Sparkles, TrendingUp, Plus, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/medical-chat`;
+import { useAIStream } from '@/hooks/useAIStream';
+import { AIResponseCard } from '@/components/AIResponseCard';
+import { PageHeader } from '@/components/PageHeader';
+import { cn } from '@/lib/utils';
 
 interface BPEntry { date: string; time: string; systolic: number; diastolic: number; heartRate?: number; notes: string; category: string; }
 
@@ -25,9 +26,8 @@ export default function BloodPressurePage() {
   const [heartRate, setHeartRate] = useState('');
   const [notes, setNotes] = useState('');
   const [history, setHistory] = useLocalStorage<BPEntry[]>('healtify-bp-history', []);
-  const [analysis, setAnalysis] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const ai = useAIStream({ type: 'bp-analysis' });
 
   const currentCategory = systolic && diastolic ? getBPCategory(parseInt(systolic), parseInt(diastolic)) : null;
 
@@ -48,46 +48,23 @@ export default function BloodPressurePage() {
 
   const handleAnalyze = async () => {
     if (history.length === 0) { toast({ title: 'No data', description: 'Log at least one reading first.', variant: 'destructive' }); return; }
-    setIsLoading(true); setAnalysis(null);
     const readings = history.slice(0, 10).map(h => `${h.date} ${h.time}: ${h.systolic}/${h.diastolic} mmHg ${h.heartRate ? `HR:${h.heartRate}` : ''} ${h.notes ? `(${h.notes})` : ''}`).join('\n');
-    const prompt = `Analyze these blood pressure readings:\n${readings}\n\nProvide:\n1. Overall BP trend analysis\n2. Category breakdown (normal/elevated/high)\n3. Risk factors to consider\n4. Lifestyle modifications (diet, exercise, stress)\n5. DASH diet overview\n6. When to see a doctor\n7. Tips for accurate BP measurement`;
+    const prompt = `Analyze these blood pressure readings:\n${readings}\n\nProvide:\n1. **Overall BP trend** analysis\n2. **Category breakdown** (normal/elevated/high)\n3. **Risk factors** to consider\n4. **Lifestyle modifications** (diet, exercise, stress)\n5. **DASH diet** overview\n6. **When to see a doctor**\n7. **Tips for accurate BP measurement**`;
 
     try {
-      const response = await fetch(CHAT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], type: 'bp-analysis' }),
-      });
-      if (!response.ok || !response.body) throw new Error('Failed');
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '', fullContent = '';
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = buffer.indexOf('\n')) !== -1) {
-          let line = buffer.slice(0, idx); buffer = buffer.slice(idx + 1);
-          if (line.endsWith('\r')) line = line.slice(0, -1);
-          if (!line.startsWith('data: ') || line.trim() === '') continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') break;
-          try { const p = JSON.parse(jsonStr); const c = p.choices?.[0]?.delta?.content; if (c) { fullContent += c; setAnalysis(fullContent); } } catch { buffer = line + '\n' + buffer; break; }
-        }
-      }
+      await ai.stream([{ role: 'user', content: prompt }]);
     } catch { toast({ title: 'Error', variant: 'destructive' }); }
-    finally { setIsLoading(false); }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-500 to-rose-500"><Heart className="h-8 w-8 text-white" /></div>
-          <h1 className="font-display text-3xl font-bold mb-2">Blood Pressure Tracker</h1>
-          <p className="text-muted-foreground">Log readings, track trends & get AI insights</p>
-        </div>
+      <div className="max-w-5xl mx-auto">
+        <PageHeader
+          icon={<Heart className="h-8 w-8 text-primary-foreground" />}
+          title="Blood Pressure Tracker"
+          description="Log readings, track trends & get AI insights"
+          gradient="from-destructive to-accent"
+        />
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
             <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
@@ -98,20 +75,19 @@ export default function BloodPressurePage() {
               <div><Label>Heart Rate (optional)</Label><Input type="number" placeholder="72" value={heartRate} onChange={e => setHeartRate(e.target.value)} className="mt-1.5" /></div>
               <div><Label>Notes (optional)</Label><Input placeholder="After exercise, resting, etc." value={notes} onChange={e => setNotes(e.target.value)} className="mt-1.5" /></div>
               {currentCategory && (
-                <div className={`flex items-center gap-2 px-4 py-3 rounded-xl ${currentCategory.bg} border`}>
-                  <Heart className={`w-5 h-5 ${currentCategory.color}`} />
-                  <span className={`font-semibold ${currentCategory.color}`}>{systolic}/{diastolic} — {currentCategory.label}</span>
+                <div className={cn("flex items-center gap-2 px-4 py-3 rounded-xl border", currentCategory.bg)}>
+                  <Heart className={cn("w-5 h-5", currentCategory.color)} />
+                  <span className={cn("font-semibold", currentCategory.color)}>{systolic}/{diastolic} — {currentCategory.label}</span>
                 </div>
               )}
               <div className="flex gap-3">
                 <Button onClick={handleLog} className="flex-1"><Plus className="w-4 h-4 mr-2" />Log Reading</Button>
-                <Button onClick={handleAnalyze} variant="outline" disabled={history.length === 0 || isLoading} className="flex-1">
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="w-4 h-4 mr-2" />Analyze</>}
+                <Button onClick={handleAnalyze} variant="outline" disabled={history.length === 0 || ai.isLoading} className="flex-1">
+                  {ai.isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="w-4 h-4 mr-2" />Analyze</>}
                 </Button>
               </div>
             </div>
 
-            {/* BP Scale */}
             <div className="bg-card rounded-2xl p-5 border border-border">
               <h3 className="font-semibold mb-3">BP Categories</h3>
               <div className="space-y-2 text-sm">
@@ -122,7 +98,7 @@ export default function BloodPressurePage() {
                   { label: 'High (Stage 2)', range: '≥ 140 / ≥ 90', color: 'bg-destructive' },
                 ].map(c => (
                   <div key={c.label} className="flex items-center gap-3">
-                    <span className={`w-3 h-3 rounded-full ${c.color}`} />
+                    <span className={cn("w-3 h-3 rounded-full", c.color)} />
                     <span className="font-medium">{c.label}</span>
                     <span className="text-muted-foreground ml-auto">{c.range}</span>
                   </div>
@@ -132,12 +108,17 @@ export default function BloodPressurePage() {
           </div>
 
           <div className="space-y-4">
-            {analysis && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl p-6 border border-border shadow-soft max-h-[400px] overflow-y-auto">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2"><TrendingUp className="h-5 w-5 text-primary" />BP Analysis</h3>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{analysis}</p>
-              </motion.div>
-            )}
+            <AIResponseCard
+              content={ai.response}
+              isLoading={ai.isLoading}
+              icon={<TrendingUp className="h-5 w-5 text-primary" />}
+              title="BP Analysis"
+              maxHeight="400px"
+              showDisclaimer={false}
+              emptyIcon={null}
+              emptyTitle=""
+              emptyDescription=""
+            />
 
             <div className="bg-card rounded-2xl p-6 border border-border">
               <h3 className="font-semibold mb-3 flex items-center gap-2"><Clock className="w-5 h-5 text-primary" />Reading History</h3>
@@ -149,7 +130,7 @@ export default function BloodPressurePage() {
                       <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30 text-sm">
                         <span className="text-muted-foreground">{h.date} {h.time}</span>
                         <span className="font-medium">{h.systolic}/{h.diastolic}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${cat.bg} ${cat.color}`}>{cat.label}</span>
+                        <span className={cn("text-xs px-2 py-0.5 rounded-full", cat.bg, cat.color)}>{cat.label}</span>
                       </div>
                     );
                   })}
@@ -159,12 +140,14 @@ export default function BloodPressurePage() {
               )}
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-warning/5 border border-warning/20">
-              <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" /><p className="text-sm text-muted-foreground">Consult your doctor for persistent high BP. Home readings should complement, not replace, clinical measurements.</p>
-            </div>
+            {(ai.response || history.length > 0) && (
+              <AIResponseCard content={null} isLoading={false} showDisclaimer={true}
+                disclaimerText="Consult your doctor for persistent high BP. Home readings should complement, not replace, clinical measurements."
+                emptyIcon={null} emptyTitle="" emptyDescription="" />
+            )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
