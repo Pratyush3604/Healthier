@@ -1,48 +1,115 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Phone, AlertTriangle, Heart, Brain, Flame, Shield, Droplets, Zap, Thermometer, Baby, Bug, Wind, Pill } from 'lucide-react';
+import { Phone, AlertTriangle, Heart, Brain, Flame, Shield, Droplets, Zap, Thermometer, Baby, Bug, Wind, Pill, Search, Globe } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 const emergencyNumbers = [
-  { country: 'USA', number: '911', label: 'Emergency Services' },
-  { country: 'India', number: '112', label: 'National Emergency' },
-  { country: 'UK', number: '999', label: 'Emergency Services' },
-  { country: 'EU', number: '112', label: 'European Emergency' },
-  { country: 'Australia', number: '000', label: 'Emergency Services' },
-  { country: 'Canada', number: '911', label: 'Emergency Services' },
-  { country: 'Japan', number: '119', label: 'Fire/Ambulance' },
-  { country: 'China', number: '120', label: 'Ambulance' },
-  { country: 'Brazil', number: '192', label: 'SAMU (Ambulance)' },
-  { country: 'South Korea', number: '119', label: 'Fire/Ambulance' },
-  { country: 'Russia', number: '112', label: 'Emergency' },
-  { country: 'Mexico', number: '911', label: 'Emergency Services' },
-  { country: 'South Africa', number: '10177', label: 'Ambulance' },
-  { country: 'UAE', number: '999', label: 'Ambulance' },
-  { country: 'Saudi Arabia', number: '997', label: 'Ambulance' },
-  { country: 'Singapore', number: '995', label: 'Ambulance' },
-  { country: 'Malaysia', number: '999', label: 'Emergency' },
-  { country: 'Thailand', number: '1669', label: 'Ambulance' },
-  { country: 'Indonesia', number: '118', label: 'Ambulance' },
-  { country: 'Pakistan', number: '1122', label: 'Rescue (Punjab)' },
-  { country: 'Bangladesh', number: '999', label: 'Emergency' },
-  { country: 'Philippines', number: '911', label: 'Emergency' },
-  { country: 'Turkey', number: '112', label: 'Emergency' },
-  { country: 'Egypt', number: '123', label: 'Ambulance' },
-  { country: 'Nigeria', number: '112', label: 'Emergency' },
-  { country: 'Kenya', number: '999', label: 'Emergency' },
-  { country: 'New Zealand', number: '111', label: 'Emergency' },
-  { country: 'Germany', number: '112', label: 'Emergency' },
-  { country: 'France', number: '15', label: 'SAMU (Medical)' },
-  { country: 'Italy', number: '118', label: 'Ambulance' },
-  { country: 'Spain', number: '112', label: 'Emergency' },
-  { country: 'Netherlands', number: '112', label: 'Emergency' },
-  { country: 'Sweden', number: '112', label: 'Emergency' },
-  { country: 'Norway', number: '113', label: 'Ambulance' },
-  { country: 'Switzerland', number: '144', label: 'Ambulance' },
-  { country: 'Israel', number: '101', label: 'Magen David Adom' },
-  { country: 'Argentina', number: '107', label: 'SAME (Ambulance)' },
-  { country: 'Colombia', number: '123', label: 'Emergency' },
-  { country: 'Chile', number: '131', label: 'Ambulance' },
-  { country: 'Peru', number: '116', label: 'Emergency' },
+  // Americas
+  { country: 'USA', ambulance: '911', police: '911', fire: '911', continent: 'Americas' },
+  { country: 'Canada', ambulance: '911', police: '911', fire: '911', continent: 'Americas' },
+  { country: 'Mexico', ambulance: '065', police: '911', fire: '068', continent: 'Americas' },
+  { country: 'Brazil', ambulance: '192', police: '190', fire: '193', continent: 'Americas' },
+  { country: 'Argentina', ambulance: '107', police: '101', fire: '100', continent: 'Americas' },
+  { country: 'Colombia', ambulance: '123', police: '123', fire: '119', continent: 'Americas' },
+  { country: 'Chile', ambulance: '131', police: '133', fire: '132', continent: 'Americas' },
+  { country: 'Peru', ambulance: '116', police: '105', fire: '116', continent: 'Americas' },
+  { country: 'Venezuela', ambulance: '171', police: '171', fire: '171', continent: 'Americas' },
+  { country: 'Ecuador', ambulance: '911', police: '911', fire: '911', continent: 'Americas' },
+  { country: 'Cuba', ambulance: '104', police: '106', fire: '105', continent: 'Americas' },
+  { country: 'Jamaica', ambulance: '110', police: '119', fire: '110', continent: 'Americas' },
+  { country: 'Costa Rica', ambulance: '911', police: '911', fire: '911', continent: 'Americas' },
+  { country: 'Panama', ambulance: '911', police: '104', fire: '103', continent: 'Americas' },
+  { country: 'Uruguay', ambulance: '105', police: '911', fire: '104', continent: 'Americas' },
+  { country: 'Bolivia', ambulance: '118', police: '110', fire: '119', continent: 'Americas' },
+  { country: 'Paraguay', ambulance: '141', police: '911', fire: '132', continent: 'Americas' },
+  { country: 'Dominican Republic', ambulance: '911', police: '911', fire: '911', continent: 'Americas' },
+  { country: 'Guatemala', ambulance: '128', police: '120', fire: '122', continent: 'Americas' },
+  { country: 'Honduras', ambulance: '195', police: '199', fire: '198', continent: 'Americas' },
+  // Europe
+  { country: 'UK', ambulance: '999', police: '999', fire: '999', continent: 'Europe' },
+  { country: 'Germany', ambulance: '112', police: '110', fire: '112', continent: 'Europe' },
+  { country: 'France', ambulance: '15', police: '17', fire: '18', continent: 'Europe' },
+  { country: 'Italy', ambulance: '118', police: '113', fire: '115', continent: 'Europe' },
+  { country: 'Spain', ambulance: '112', police: '091', fire: '080', continent: 'Europe' },
+  { country: 'Netherlands', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Belgium', ambulance: '112', police: '101', fire: '112', continent: 'Europe' },
+  { country: 'Sweden', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Norway', ambulance: '113', police: '112', fire: '110', continent: 'Europe' },
+  { country: 'Denmark', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Finland', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Switzerland', ambulance: '144', police: '117', fire: '118', continent: 'Europe' },
+  { country: 'Austria', ambulance: '144', police: '133', fire: '122', continent: 'Europe' },
+  { country: 'Portugal', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Greece', ambulance: '166', police: '100', fire: '199', continent: 'Europe' },
+  { country: 'Ireland', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Poland', ambulance: '112', police: '997', fire: '998', continent: 'Europe' },
+  { country: 'Czech Republic', ambulance: '155', police: '158', fire: '150', continent: 'Europe' },
+  { country: 'Romania', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Hungary', ambulance: '104', police: '107', fire: '105', continent: 'Europe' },
+  { country: 'Croatia', ambulance: '194', police: '192', fire: '193', continent: 'Europe' },
+  { country: 'Iceland', ambulance: '112', police: '112', fire: '112', continent: 'Europe' },
+  { country: 'Luxembourg', ambulance: '112', police: '113', fire: '112', continent: 'Europe' },
+  { country: 'Russia', ambulance: '103', police: '102', fire: '101', continent: 'Europe' },
+  { country: 'Ukraine', ambulance: '103', police: '102', fire: '101', continent: 'Europe' },
+  { country: 'Turkey', ambulance: '112', police: '155', fire: '110', continent: 'Europe' },
+  { country: 'Serbia', ambulance: '194', police: '192', fire: '193', continent: 'Europe' },
+  { country: 'Bulgaria', ambulance: '150', police: '166', fire: '160', continent: 'Europe' },
+  { country: 'Slovakia', ambulance: '155', police: '158', fire: '150', continent: 'Europe' },
+  // Asia
+  { country: 'India', ambulance: '108', police: '100', fire: '101', continent: 'Asia' },
+  { country: 'China', ambulance: '120', police: '110', fire: '119', continent: 'Asia' },
+  { country: 'Japan', ambulance: '119', police: '110', fire: '119', continent: 'Asia' },
+  { country: 'South Korea', ambulance: '119', police: '112', fire: '119', continent: 'Asia' },
+  { country: 'Indonesia', ambulance: '118', police: '110', fire: '113', continent: 'Asia' },
+  { country: 'Thailand', ambulance: '1669', police: '191', fire: '199', continent: 'Asia' },
+  { country: 'Vietnam', ambulance: '115', police: '113', fire: '114', continent: 'Asia' },
+  { country: 'Philippines', ambulance: '911', police: '911', fire: '911', continent: 'Asia' },
+  { country: 'Malaysia', ambulance: '999', police: '999', fire: '994', continent: 'Asia' },
+  { country: 'Singapore', ambulance: '995', police: '999', fire: '995', continent: 'Asia' },
+  { country: 'Pakistan', ambulance: '115', police: '15', fire: '16', continent: 'Asia' },
+  { country: 'Bangladesh', ambulance: '999', police: '999', fire: '999', continent: 'Asia' },
+  { country: 'Sri Lanka', ambulance: '110', police: '119', fire: '110', continent: 'Asia' },
+  { country: 'Nepal', ambulance: '102', police: '100', fire: '101', continent: 'Asia' },
+  { country: 'Myanmar', ambulance: '192', police: '199', fire: '191', continent: 'Asia' },
+  { country: 'Cambodia', ambulance: '119', police: '117', fire: '118', continent: 'Asia' },
+  { country: 'Laos', ambulance: '195', police: '191', fire: '190', continent: 'Asia' },
+  { country: 'Mongolia', ambulance: '103', police: '102', fire: '101', continent: 'Asia' },
+  { country: 'Taiwan', ambulance: '119', police: '110', fire: '119', continent: 'Asia' },
+  { country: 'Hong Kong', ambulance: '999', police: '999', fire: '999', continent: 'Asia' },
+  // Middle East
+  { country: 'UAE', ambulance: '998', police: '999', fire: '997', continent: 'Middle East' },
+  { country: 'Saudi Arabia', ambulance: '997', police: '999', fire: '998', continent: 'Middle East' },
+  { country: 'Israel', ambulance: '101', police: '100', fire: '102', continent: 'Middle East' },
+  { country: 'Qatar', ambulance: '999', police: '999', fire: '999', continent: 'Middle East' },
+  { country: 'Kuwait', ambulance: '112', police: '112', fire: '112', continent: 'Middle East' },
+  { country: 'Bahrain', ambulance: '999', police: '999', fire: '999', continent: 'Middle East' },
+  { country: 'Oman', ambulance: '9999', police: '9999', fire: '9999', continent: 'Middle East' },
+  { country: 'Jordan', ambulance: '911', police: '911', fire: '911', continent: 'Middle East' },
+  { country: 'Lebanon', ambulance: '140', police: '112', fire: '175', continent: 'Middle East' },
+  { country: 'Iraq', ambulance: '122', police: '104', fire: '115', continent: 'Middle East' },
+  { country: 'Iran', ambulance: '115', police: '110', fire: '125', continent: 'Middle East' },
+  // Africa
+  { country: 'South Africa', ambulance: '10177', police: '10111', fire: '10177', continent: 'Africa' },
+  { country: 'Egypt', ambulance: '123', police: '122', fire: '180', continent: 'Africa' },
+  { country: 'Nigeria', ambulance: '112', police: '112', fire: '112', continent: 'Africa' },
+  { country: 'Kenya', ambulance: '999', police: '999', fire: '999', continent: 'Africa' },
+  { country: 'Ghana', ambulance: '193', police: '191', fire: '192', continent: 'Africa' },
+  { country: 'Tanzania', ambulance: '114', police: '112', fire: '114', continent: 'Africa' },
+  { country: 'Ethiopia', ambulance: '907', police: '991', fire: '939', continent: 'Africa' },
+  { country: 'Morocco', ambulance: '15', police: '19', fire: '15', continent: 'Africa' },
+  { country: 'Tunisia', ambulance: '190', police: '197', fire: '198', continent: 'Africa' },
+  { country: 'Uganda', ambulance: '112', police: '999', fire: '112', continent: 'Africa' },
+  { country: 'Rwanda', ambulance: '912', police: '112', fire: '112', continent: 'Africa' },
+  { country: 'Senegal', ambulance: '15', police: '17', fire: '18', continent: 'Africa' },
+  { country: 'Zimbabwe', ambulance: '994', police: '995', fire: '993', continent: 'Africa' },
+  // Oceania
+  { country: 'Australia', ambulance: '000', police: '000', fire: '000', continent: 'Oceania' },
+  { country: 'New Zealand', ambulance: '111', police: '111', fire: '111', continent: 'Oceania' },
+  { country: 'Fiji', ambulance: '911', police: '917', fire: '910', continent: 'Oceania' },
+  { country: 'Papua New Guinea', ambulance: '111', police: '112', fire: '110', continent: 'Oceania' },
 ];
+
+const continents = ['All', ...new Set(emergencyNumbers.map(e => e.continent))];
 
 const emergencySigns = [
   {
@@ -108,6 +175,15 @@ const emergencySigns = [
 ];
 
 export default function EmergencyPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedContinent, setSelectedContinent] = useState('All');
+
+  const filtered = emergencyNumbers.filter(e => {
+    const matchesSearch = !searchTerm || e.country.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesContinent = selectedContinent === 'All' || e.continent === selectedContinent;
+    return matchesSearch && matchesContinent;
+  });
+
   return (
     <div className="container mx-auto px-4 py-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
@@ -117,22 +193,54 @@ export default function EmergencyPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold">Emergency Contacts & Guide</h1>
-            <p className="text-muted-foreground">Know when and how to get emergency help — worldwide numbers & detailed guides</p>
+            <p className="text-muted-foreground">{emergencyNumbers.length} countries — Ambulance, Police & Fire numbers</p>
           </div>
         </div>
 
-        {/* Emergency Numbers — All Countries */}
+        {/* Emergency Numbers */}
         <div className="glass-card rounded-2xl p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><Shield className="w-5 h-5 text-primary" /> Emergency Numbers Worldwide ({emergencyNumbers.length} Countries)</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {emergencyNumbers.map((item, i) => (
-              <div key={i} className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center">
-                <p className="text-xs text-muted-foreground font-medium">{item.country}</p>
-                <p className="text-xl font-bold text-destructive">{item.number}</p>
-                <p className="text-[10px] text-muted-foreground">{item.label}</p>
-              </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2"><Globe className="w-5 h-5 text-primary" /> Emergency Numbers Worldwide</h2>
+            <div className="relative flex-1 max-w-xs">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search country..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            {continents.map(c => (
+              <button key={c} onClick={() => setSelectedContinent(c)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${selectedContinent === c ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                {c} {c !== 'All' ? `(${emergencyNumbers.filter(e => e.continent === c).length})` : `(${emergencyNumbers.length})`}
+              </button>
             ))}
           </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left py-2 px-3 font-semibold text-muted-foreground">Country</th>
+                  <th className="text-center py-2 px-3 font-semibold text-destructive">🚑 Ambulance</th>
+                  <th className="text-center py-2 px-3 font-semibold text-secondary">👮 Police</th>
+                  <th className="text-center py-2 px-3 font-semibold text-warning">🚒 Fire</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((e, i) => (
+                  <tr key={i} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                    <td className="py-2.5 px-3 font-medium">{e.country}</td>
+                    <td className="py-2.5 px-3 text-center font-bold text-destructive">{e.ambulance}</td>
+                    <td className="py-2.5 px-3 text-center font-bold text-secondary">{e.police}</td>
+                    <td className="py-2.5 px-3 text-center font-bold text-warning">{e.fire}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {filtered.length === 0 && (
+            <p className="text-center text-muted-foreground py-8">No countries found matching "{searchTerm}"</p>
+          )}
         </div>
 
         {/* When to Call — Detailed */}
@@ -141,7 +249,7 @@ export default function EmergencyPage() {
           {emergencySigns.map((item, index) => {
             const Icon = item.icon;
             return (
-              <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}
+              <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}
                 className="glass-card rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${item.color}`}>
@@ -181,7 +289,7 @@ export default function EmergencyPage() {
           <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-3" />
           <h3 className="text-xl font-bold text-destructive mb-2">Don't Hesitate to Call</h3>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            If you're unsure whether it's an emergency, it's always better to call and let professionals assess the situation. 
+            If you're unsure whether it's an emergency, it's always better to call and let professionals assess the situation.
             Emergency dispatchers are trained to help you determine the right level of care. <strong>You will never be penalized for calling when in doubt.</strong>
           </p>
         </div>

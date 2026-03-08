@@ -69,7 +69,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-8 border-t border-white/5">
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Healtify. Created by Pratyush Dalmia.</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Healtify — Made with ❤️ by Pratyush Dalmia</p>
           <div className="flex items-center gap-4">
             <a href="mailto:pratyush3604@gmail.com" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email"><Mail className="w-5 h-5" /></a>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub"><Github className="w-5 h-5" /></a>
