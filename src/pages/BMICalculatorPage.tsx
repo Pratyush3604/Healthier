@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, Droplets, Flame, TrendingUp, Scale, Activity, Ruler } from 'lucide-react';
+import { Calculator, Droplets, Flame, TrendingUp, Scale, Activity, Ruler, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
