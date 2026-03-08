@@ -1,15 +1,16 @@
+import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Github, Mail, AlertTriangle } from 'lucide-react';
+import { Github, Mail, AlertTriangle, Heart } from 'lucide-react';
 import { HealtifyLogo } from './HealtifyLogo';
 
-export function Footer() {
+export const Footer = forwardRef<HTMLElement>((_, ref) => {
   return (
-    <footer className="relative z-10 border-t border-white/5 mt-auto">
+    <footer ref={ref} className="relative z-10 border-t border-border mt-auto">
       <div className="bg-warning/5 border-b border-warning/20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
-            <p className="text-sm text-warning/80">
+            <p className="text-sm text-muted-foreground">
               <strong className="text-warning">Medical Disclaimer:</strong> Healtify provides general health information only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider.
             </p>
           </div>
@@ -26,21 +27,21 @@ export function Footer() {
                 <span className="text-xs text-muted-foreground block -mt-1">AI Health Assistant</span>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground max-w-md">
-              Your intelligent health companion powered by cutting-edge AI. Get preliminary assessments, first aid guidance, and wellness tips.
+            <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+              Your intelligent health companion powered by cutting-edge AI. Get preliminary assessments, first aid guidance, and wellness tools — available 24/7.
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">Features</h4>
+            <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">Core Tools</h4>
             <ul className="space-y-2">
               {[
                 { to: '/symptoms', label: 'Symptom Checker' },
+                { to: '/chat', label: 'AI Chat' },
                 { to: '/vitals', label: 'Vital Signs' },
-                { to: '/injury', label: 'Injury Detection' },
                 { to: '/skin-analyzer', label: 'Skin Analyzer' },
                 { to: '/diet-planner', label: 'Diet Planner' },
-                { to: '/workout-planner', label: 'Workout Planner' },
+                { to: '/bmi-calculator', label: 'BMI Calculator' },
               ].map(link => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">{link.label}</Link>
@@ -50,13 +51,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">More</h4>
+            <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">Wellness</h4>
             <ul className="space-y-2">
               {[
-                { to: '/chat', label: 'AI Chat' },
-                { to: '/ai-doctor', label: 'Voice Consultation' },
                 { to: '/sleep-analysis', label: 'Sleep Analysis' },
-                { to: '/medicine-info', label: 'Medicine Info' },
+                { to: '/stress-check', label: 'Stress Check' },
+                { to: '/wellness-quiz', label: 'Wellness Quiz' },
+                { to: '/water-tracker', label: 'Water Tracker' },
                 { to: '/first-aid', label: 'First Aid' },
                 { to: '/about', label: 'About' },
               ].map(link => (
@@ -68,14 +69,18 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-8 border-t border-white/5">
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Healtify — Made by Pratyush Dalmia</p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground flex items-center gap-1">
+            © {new Date().getFullYear()} Healtify — Made with <Heart className="w-3.5 h-3.5 text-destructive fill-destructive" /> by Pratyush Dalmia
+          </p>
           <div className="flex items-center gap-4">
-            <a href="mailto:pratyush3604@gmail.com" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email pratyush3604@gmail.com"><Mail className="w-5 h-5" /></a>
+            <a href="mailto:pratyush3604@gmail.com" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email"><Mail className="w-5 h-5" /></a>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub"><Github className="w-5 h-5" /></a>
           </div>
         </div>
       </div>
     </footer>
   );
-}
+});
+
+Footer.displayName = 'Footer';
