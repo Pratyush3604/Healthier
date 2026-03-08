@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, Droplets, Flame, ArrowRight, TrendingUp, Scale, Target, Activity } from 'lucide-react';
+import { Calculator, Droplets, Flame, TrendingUp, Scale, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { PageHeader } from '@/components/PageHeader';
+import { ChipSelect } from '@/components/ChipSelect';
+import { cn } from '@/lib/utils';
 
 interface BMIResult {
   bmi: number;
@@ -28,10 +31,10 @@ export default function BMICalculatorPage() {
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [age, setAge] = useState('');
-  const [gender, setGender] = useState<'male' | 'female'>('male');
+  const [gender, setGender] = useState('male');
   const [activity, setActivity] = useState('moderate');
   const [result, setResult] = useState<BMIResult | null>(null);
-  const [bmiStorage, setBmiStorage] = useLocalStorage<{ bmi: string }>('healtify-bmi', { bmi: '--' });
+  const [, setBmiStorage] = useLocalStorage<{ bmi: string }>('healtify-bmi', { bmi: '--' });
   const [history, setHistory] = useLocalStorage<BMIHistory[]>('healtify-bmi-history', []);
 
   const activities = [
@@ -64,16 +67,12 @@ export default function BMICalculatorPage() {
     const water = Math.round(w * 0.033 * 10) / 10;
     const idealWeightLow = Math.round(18.5 * h * h * 10) / 10;
     const idealWeightHigh = Math.round(24.9 * h * h * 10) / 10;
-
-    // Body fat estimate (Navy method approximation)
     const bodyFatEstimate = gender === 'male'
       ? bmi < 18.5 ? '8-12%' : bmi < 25 ? '13-20%' : bmi < 30 ? '21-28%' : '28%+'
       : bmi < 18.5 ? '15-20%' : bmi < 25 ? '21-28%' : bmi < 30 ? '29-35%' : '35%+';
 
     const res = { bmi: Math.round(bmi * 10) / 10, category, color, water, calories, idealWeightLow, idealWeightHigh, bodyFatEstimate };
     setResult(res);
-
-    // Persist to localStorage
     setBmiStorage({ bmi: String(res.bmi) });
     setHistory(prev => [
       { date: new Date().toISOString().split('T')[0], bmi: res.bmi, weight: w, category },
@@ -83,14 +82,14 @@ export default function BMICalculatorPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500">
-            <Calculator className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="font-display text-3xl font-bold mb-2">Health Calculator</h1>
-          <p className="text-muted-foreground">BMI, daily calories, water intake & ideal weight range</p>
-        </div>
+      <div className="max-w-5xl mx-auto">
+        <PageHeader
+          icon={<Calculator className="h-8 w-8 text-primary-foreground" />}
+          title="Health Calculator"
+          description="BMI, daily calories, water intake & ideal weight range"
+          gradient="from-secondary to-primary"
+          showEmergency={false}
+        />
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-5">
@@ -100,26 +99,17 @@ export default function BMICalculatorPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div><Label>Age</Label><Input type="number" placeholder="25" value={age} onChange={e => setAge(e.target.value)} /></div>
-              <div>
-                <Label>Gender</Label>
-                <div className="flex gap-2 mt-1.5">
-                  {(['male', 'female'] as const).map(g => (
-                    <button key={g} onClick={() => setGender(g)}
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium capitalize transition-all ${gender === g ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-                      {g}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <div><Label>Gender</Label><ChipSelect options={['male', 'female']} value={gender} onChange={setGender} /></div>
             </div>
             <div>
               <Label>Activity Level</Label>
               <div className="space-y-2 mt-2">
                 {activities.map(a => (
                   <button key={a.key} onClick={() => setActivity(a.key)}
-                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${activity === a.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                    className={cn("w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
+                      activity === a.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80')}>
                     <span>{a.label}</span>
-                    <span className={`text-xs ${activity === a.key ? 'opacity-80' : 'opacity-50'}`}>{a.desc}</span>
+                    <span className="text-xs opacity-70">{a.desc}</span>
                   </button>
                 ))}
               </div>
@@ -132,17 +122,16 @@ export default function BMICalculatorPage() {
           <div className="space-y-4">
             {result ? (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                <div className="glass-card rounded-2xl p-8 text-center">
+                <div className="bg-card rounded-2xl p-8 border border-border text-center shadow-soft">
                   <p className="text-sm text-muted-foreground mb-2">Your BMI</p>
-                  <p className={`text-6xl font-bold ${result.color}`}>{result.bmi}</p>
-                  <p className={`text-lg font-semibold mt-2 ${result.color}`}>{result.category}</p>
-                  {/* BMI Scale */}
+                  <p className={cn("text-6xl font-bold font-display", result.color)}>{result.bmi}</p>
+                  <p className={cn("text-lg font-semibold mt-2", result.color)}>{result.category}</p>
                   <div className="mt-6 relative h-3 rounded-full overflow-hidden bg-muted">
                     <div className="absolute inset-0 flex">
-                      <div className="h-full bg-blue-400" style={{ width: '18.5%' }} />
-                      <div className="h-full bg-green-500" style={{ width: '31.5%' }} />
-                      <div className="h-full bg-yellow-500" style={{ width: '25%' }} />
-                      <div className="h-full bg-red-500" style={{ width: '25%' }} />
+                      <div className="h-full bg-secondary/70" style={{ width: '18.5%' }} />
+                      <div className="h-full bg-success" style={{ width: '31.5%' }} />
+                      <div className="h-full bg-warning" style={{ width: '25%' }} />
+                      <div className="h-full bg-destructive" style={{ width: '25%' }} />
                     </div>
                     <div className="absolute top-0 h-full w-1 bg-foreground rounded-full transition-all" style={{ left: `${Math.min(Math.max((result.bmi / 40) * 100, 2), 98)}%` }} />
                   </div>
@@ -152,37 +141,36 @@ export default function BMICalculatorPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="glass-card rounded-2xl p-5 text-center">
+                  <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
                     <Flame className="h-7 w-7 text-warning mx-auto mb-2" />
-                    <p className="text-2xl font-bold">{result.calories}</p>
+                    <p className="text-2xl font-bold font-display">{result.calories}</p>
                     <p className="text-sm text-muted-foreground">Daily Calories</p>
                   </div>
-                  <div className="glass-card rounded-2xl p-5 text-center">
+                  <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
                     <Droplets className="h-7 w-7 text-primary mx-auto mb-2" />
-                    <p className="text-2xl font-bold">{result.water}L</p>
+                    <p className="text-2xl font-bold font-display">{result.water}L</p>
                     <p className="text-sm text-muted-foreground">Daily Water</p>
                   </div>
-                  <div className="glass-card rounded-2xl p-5 text-center">
+                  <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
                     <Scale className="h-7 w-7 text-success mx-auto mb-2" />
-                    <p className="text-lg font-bold">{result.idealWeightLow}-{result.idealWeightHigh}</p>
+                    <p className="text-lg font-bold font-display">{result.idealWeightLow}-{result.idealWeightHigh}</p>
                     <p className="text-sm text-muted-foreground">Ideal Weight (kg)</p>
                   </div>
-                  <div className="glass-card rounded-2xl p-5 text-center">
+                  <div className="bg-card rounded-2xl p-5 border border-border text-center shadow-soft">
                     <Activity className="h-7 w-7 text-accent mx-auto mb-2" />
-                    <p className="text-2xl font-bold">{result.bodyFatEstimate}</p>
+                    <p className="text-2xl font-bold font-display">{result.bodyFatEstimate}</p>
                     <p className="text-sm text-muted-foreground">Est. Body Fat</p>
                   </div>
                 </div>
               </motion.div>
             ) : (
-              <div className="glass-card rounded-2xl p-12 text-center">
+              <div className="bg-card rounded-2xl p-12 border border-border text-center">
                 <Calculator className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Enter Your Details</h3>
                 <p className="text-muted-foreground">Fill in the form to calculate BMI, calorie needs, and water intake</p>
               </div>
             )}
 
-            {/* History */}
             {history.length > 0 && (
               <div className="bg-card rounded-2xl p-5 border border-border">
                 <h3 className="font-semibold mb-3 flex items-center gap-2"><TrendingUp className="w-5 h-5 text-primary" /> BMI History</h3>
@@ -191,7 +179,8 @@ export default function BMICalculatorPage() {
                     <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30 text-sm">
                       <span className="text-muted-foreground">{h.date}</span>
                       <span className="font-medium">{h.weight}kg → BMI {h.bmi}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${h.category === 'Normal' ? 'bg-success/15 text-success' : h.category === 'Underweight' || h.category === 'Overweight' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'}`}>
+                      <span className={cn("text-xs px-2 py-0.5 rounded-full",
+                        h.category === 'Normal' ? 'bg-success/15 text-success' : h.category === 'Underweight' || h.category === 'Overweight' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive')}>
                         {h.category}
                       </span>
                     </div>
@@ -201,7 +190,7 @@ export default function BMICalculatorPage() {
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

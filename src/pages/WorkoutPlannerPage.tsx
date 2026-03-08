@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Dumbbell, Loader2, AlertTriangle, Sparkles } from 'lucide-react';
+import { Dumbbell, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/medical-chat`;
+import { useAIStream } from '@/hooks/useAIStream';
+import { AIResponseCard } from '@/components/AIResponseCard';
+import { PageHeader } from '@/components/PageHeader';
+import { ChipSelect } from '@/components/ChipSelect';
+import { cn } from '@/lib/utils';
 
 export default function WorkoutPlannerPage() {
   const [form, setForm] = useState({
@@ -14,9 +16,8 @@ export default function WorkoutPlannerPage() {
     muscles: [] as string[], days: '3', injuries: '',
     equipment: 'full-gym', time: '60', location: 'gym',
   });
-  const [plan, setPlan] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const ai = useAIStream({ type: 'workout-plan' });
 
   const goals = ['strength', 'muscle-building', 'weight-loss', 'endurance', 'flexibility', 'general-fitness'];
   const levels = ['beginner', 'intermediate', 'advanced'];
@@ -25,13 +26,11 @@ export default function WorkoutPlannerPage() {
   const locations = ['gym', 'home', 'outdoor', 'hotel'];
 
   const toggleMuscle = (m: string) => setForm(prev => ({
-    ...prev,
-    muscles: prev.muscles.includes(m) ? prev.muscles.filter(x => x !== m) : [...prev.muscles, m],
+    ...prev, muscles: prev.muscles.includes(m) ? prev.muscles.filter(x => x !== m) : [...prev.muscles, m],
   }));
 
   const handleGenerate = async () => {
-    setIsLoading(true); setPlan(null);
-    const prompt = `Create a comprehensive ${form.days}-day weekly workout plan:
+    const prompt = `Create a comprehensive **${form.days}-day weekly workout plan**:
 - Age: ${form.age || 'Not specified'}, Weight: ${form.weight || 'Not specified'}kg
 - Goal: ${form.goal}, Level: ${form.level}
 - Target Muscles: ${form.muscles.length > 0 ? form.muscles.join(', ') : 'Full Body'}
@@ -40,51 +39,28 @@ export default function WorkoutPlannerPage() {
 ${form.injuries ? `- Injury History: ${form.injuries}` : ''}
 
 For EACH day include:
-1. Warmup (5-10 min with specific movements)
-2. Main exercises with sets, reps, rest periods, and form tips
-3. Cool down and stretching
-4. Progressive overload notes
+1. **Warmup** (5-10 min with specific movements)
+2. **Main exercises** with sets, reps, rest periods, and form tips
+3. **Cool down** and stretching
+4. **Progressive overload** notes
 
 Also include: weekly progression plan, safety notes, and recovery recommendations.`;
 
     try {
-      const response = await fetch(CHAT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], type: 'workout-plan' }),
-      });
-      if (!response.ok || !response.body) throw new Error('Failed');
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '', fullContent = '';
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = buffer.indexOf('\n')) !== -1) {
-          let line = buffer.slice(0, idx); buffer = buffer.slice(idx + 1);
-          if (line.endsWith('\r')) line = line.slice(0, -1);
-          if (!line.startsWith('data: ') || line.trim() === '') continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') break;
-          try { const p = JSON.parse(jsonStr); const c = p.choices?.[0]?.delta?.content; if (c) { fullContent += c; setPlan(fullContent); } } catch { buffer = line + '\n' + buffer; break; }
-        }
-      }
+      await ai.stream([{ role: 'user', content: prompt }]);
     } catch { toast({ title: 'Error', description: 'Failed to generate workout plan.', variant: 'destructive' }); }
-    finally { setIsLoading(false); }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-500 to-yellow-500">
-            <Dumbbell className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="font-display text-3xl font-bold mb-2">AI Workout Planner</h1>
-          <p className="text-muted-foreground">Get a customized workout routine with warmup, exercises, and progression</p>
-        </div>
+      <div className="max-w-6xl mx-auto">
+        <PageHeader
+          icon={<Dumbbell className="h-8 w-8 text-primary-foreground" />}
+          title="AI Workout Planner"
+          description="Get a customized workout routine with warmup, exercises, and progression"
+          gradient="from-warning to-accent"
+          showEmergency={false}
+        />
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
@@ -94,65 +70,24 @@ Also include: weekly progression plan, safety notes, and recovery recommendation
                 <div><Label>Weight (kg)</Label><Input type="number" placeholder="70" value={form.weight} onChange={e => setForm({...form, weight: e.target.value})} /></div>
               </div>
 
-              <div>
-                <Label>Goal</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {goals.map(g => (
-                    <button key={g} onClick={() => setForm({...form, goal: g})}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${form.goal === g ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                      {g.replace(/-/g, ' ')}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label>Fitness Level</Label>
-                <div className="flex gap-2 mt-2">
-                  {levels.map(l => (
-                    <button key={l} onClick={() => setForm({...form, level: l})}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex-1 capitalize ${form.level === l ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                      {l}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <div><Label>Goal</Label><ChipSelect options={goals} value={form.goal} onChange={v => setForm({...form, goal: v})} /></div>
+              <div><Label>Fitness Level</Label><ChipSelect options={levels} value={form.level} onChange={v => setForm({...form, level: v})} /></div>
 
               <div>
                 <Label>Target Muscles</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {muscleGroups.map(m => (
                     <button key={m} onClick={() => toggleMuscle(m)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${form.muscles.includes(m) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                      className={cn("px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                        form.muscles.includes(m) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80')}>
                       {m}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div>
-                <Label>Equipment</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {equipments.map(e => (
-                    <button key={e} onClick={() => setForm({...form, equipment: e})}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${form.equipment === e ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                      {e.replace(/-/g, ' ')}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label>Location</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {locations.map(l => (
-                    <button key={l} onClick={() => setForm({...form, location: l})}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${form.location === l ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                      {l}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <div><Label>Equipment</Label><ChipSelect options={equipments} value={form.equipment} onChange={v => setForm({...form, equipment: v})} /></div>
+              <div><Label>Location</Label><ChipSelect options={locations} value={form.location} onChange={v => setForm({...form, location: v})} /></div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -160,45 +95,36 @@ Also include: weekly progression plan, safety notes, and recovery recommendation
                   <div className="flex gap-2 mt-2">
                     {['2', '3', '4', '5', '6'].map(d => (
                       <button key={d} onClick={() => setForm({...form, days: d})}
-                        className={`w-10 h-10 rounded-full text-sm font-medium transition-all ${form.days === d ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                        className={cn("w-10 h-10 rounded-full text-sm font-medium transition-all",
+                          form.days === d ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80')}>
                         {d}
                       </button>
                     ))}
                   </div>
                 </div>
-                <div>
-                  <Label>Time (min)</Label>
-                  <Input type="number" placeholder="60" value={form.time} onChange={e => setForm({...form, time: e.target.value})} className="mt-2" />
-                </div>
+                <div><Label>Time (min)</Label><Input type="number" placeholder="60" value={form.time} onChange={e => setForm({...form, time: e.target.value})} className="mt-2" /></div>
               </div>
 
               <div><Label>Injury History (optional)</Label><Input placeholder="Bad knee, lower back issues..." value={form.injuries} onChange={e => setForm({...form, injuries: e.target.value})} /></div>
             </div>
-            <Button onClick={handleGenerate} disabled={isLoading} className="w-full" size="lg">
-              {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Generating...</> : <><Sparkles className="mr-2 h-4 w-4" />Generate Workout Plan</>}
+            <Button onClick={handleGenerate} disabled={ai.isLoading} className="w-full" size="lg">
+              {ai.isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Generating...</> : <><Sparkles className="mr-2 h-4 w-4" />Generate Workout Plan</>}
             </Button>
           </div>
 
-          <div className="space-y-4">
-            {plan ? (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl p-6 border border-border shadow-soft max-h-[700px] overflow-y-auto">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2"><Dumbbell className="h-5 w-5 text-primary" />Your Workout Plan</h3>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{plan}</p>
-              </motion.div>
-            ) : (
-              <div className="bg-card rounded-2xl p-12 border border-border shadow-soft text-center">
-                <Dumbbell className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Plan Generated</h3>
-                <p className="text-muted-foreground">Set your preferences and click generate</p>
-              </div>
-            )}
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-warning/5 border border-warning/20">
-              <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
-              <p className="text-sm text-muted-foreground">Consult a healthcare provider before starting a new exercise program, especially if you have health conditions.</p>
-            </div>
-          </div>
+          <AIResponseCard
+            content={ai.response}
+            isLoading={ai.isLoading}
+            icon={<Dumbbell className="h-5 w-5 text-primary" />}
+            title="Your Workout Plan"
+            maxHeight="700px"
+            emptyIcon={<Dumbbell className="h-16 w-16" />}
+            emptyTitle="No Plan Generated"
+            emptyDescription="Set your preferences and click generate"
+            disclaimerText="Consult a healthcare provider before starting a new exercise program, especially if you have health conditions."
+          />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
