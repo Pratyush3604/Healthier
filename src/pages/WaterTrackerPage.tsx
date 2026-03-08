@@ -1,43 +1,64 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Droplets, Plus, Minus, RotateCcw, Target } from 'lucide-react';
+import { Droplets, Plus, Minus, RotateCcw, Target, TrendingUp, Award, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+
+interface WaterEntry { time: string; amount: number; }
 
 export default function WaterTrackerPage() {
-  const [goal, setGoal] = useState(2500);
-  const [intake, setIntake] = useState(0);
+  const [goal, setGoal] = useLocalStorage<number>('healtify-water-goal', 2500);
+  const [intake, setIntake] = useLocalStorage<number>('healtify-water-intake', 0);
+  const [log, setLog] = useLocalStorage<WaterEntry[]>('healtify-water-log', []);
+  const [weekHistory] = useLocalStorage<{ date: string; amount: number }[]>('healtify-water-week', []);
   const [customAmount, setCustomAmount] = useState('250');
-  const [log, setLog] = useState<{ time: string; amount: number }[]>([]);
+  const [waterStorage, setWaterStorage] = useLocalStorage<{ glasses: number; goal: number }>('healtify-water', { glasses: 0, goal: 8 });
   const { toast } = useToast();
 
   const percentage = Math.min((intake / goal) * 100, 100);
+  const streak = weekHistory.filter(d => d.amount >= goal).length;
 
   const addWater = (amount: number) => {
-    setIntake(prev => prev + amount);
+    const newIntake = intake + amount;
+    setIntake(newIntake);
     setLog(prev => [{ time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), amount }, ...prev]);
-    if (intake + amount >= goal) {
+    setWaterStorage({ glasses: Math.round(newIntake / 250), goal: Math.round(goal / 250) });
+    if (newIntake >= goal && intake < goal) {
       toast({ title: '🎉 Goal Reached!', description: `You've hit your ${goal}ml water goal!` });
     }
   };
 
   const removeWater = (amount: number) => {
-    setIntake(prev => Math.max(0, prev - amount));
+    const newIntake = Math.max(0, intake - amount);
+    setIntake(newIntake);
+    setWaterStorage({ glasses: Math.round(newIntake / 250), goal: Math.round(goal / 250) });
   };
 
   const reset = () => {
     setIntake(0);
     setLog([]);
+    setWaterStorage({ glasses: 0, goal: Math.round(goal / 250) });
     toast({ title: 'Reset', description: 'Water intake has been reset.' });
   };
 
   const quickAmounts = [100, 200, 250, 330, 500, 750];
 
+  // Hydration tips
+  const tips = [
+    'Drink a glass of water when you wake up',
+    'Keep a water bottle at your desk',
+    'Set hourly reminders to drink',
+    'Drink before, during, and after exercise',
+    'Eat water-rich fruits like watermelon',
+    'Replace sugary drinks with water',
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500">
             <Droplets className="h-8 w-8 text-white" />
@@ -46,9 +67,9 @@ export default function WaterTrackerPage() {
           <p className="text-muted-foreground">Stay hydrated — track your daily water intake</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Main tracker */}
-          <div className="space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Progress circle */}
             <div className="bg-card rounded-2xl p-8 border border-border text-center">
               <div className="relative w-48 h-48 mx-auto mb-6">
@@ -71,6 +92,25 @@ export default function WaterTrackerPage() {
               <p className="text-sm text-muted-foreground">
                 {percentage < 100 ? `${goal - intake} ml remaining` : 'Great job staying hydrated!'}
               </p>
+
+              {/* Stats row */}
+              <div className="grid grid-cols-3 gap-3 mt-6">
+                <div className="bg-muted/30 rounded-xl p-3">
+                  <Award className="w-4 h-4 text-warning mx-auto mb-1" />
+                  <p className="text-lg font-bold">{streak}</p>
+                  <p className="text-[10px] text-muted-foreground">Day Streak</p>
+                </div>
+                <div className="bg-muted/30 rounded-xl p-3">
+                  <TrendingUp className="w-4 h-4 text-primary mx-auto mb-1" />
+                  <p className="text-lg font-bold">{Math.round(intake / 250)}</p>
+                  <p className="text-[10px] text-muted-foreground">Glasses</p>
+                </div>
+                <div className="bg-muted/30 rounded-xl p-3">
+                  <Clock className="w-4 h-4 text-accent mx-auto mb-1" />
+                  <p className="text-lg font-bold">{log.length}</p>
+                  <p className="text-[10px] text-muted-foreground">Entries</p>
+                </div>
+              </div>
             </div>
 
             {/* Quick add buttons */}
@@ -83,13 +123,11 @@ export default function WaterTrackerPage() {
                   </Button>
                 ))}
               </div>
-
               <div className="flex gap-2">
                 <Input type="number" placeholder="Custom ml" value={customAmount} onChange={e => setCustomAmount(e.target.value)} />
                 <Button onClick={() => addWater(parseInt(customAmount) || 0)} size="icon"><Plus className="w-4 h-4" /></Button>
                 <Button variant="outline" onClick={() => removeWater(parseInt(customAmount) || 0)} size="icon"><Minus className="w-4 h-4" /></Button>
               </div>
-
               <div className="flex gap-2 mt-4">
                 <Button variant="outline" onClick={reset} className="flex-1">
                   <RotateCcw className="w-4 h-4 mr-2" /> Reset
@@ -105,22 +143,34 @@ export default function WaterTrackerPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {[2000, 2500, 3000, 3500, 4000].map(g => (
-                  <button key={g} onClick={() => setGoal(g)}
+                  <button key={g} onClick={() => { setGoal(g); setWaterStorage(prev => ({ ...prev, goal: Math.round(g / 250) })); }}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${goal === g ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
                     {g} ml
                   </button>
                 ))}
               </div>
             </div>
+
+            {/* Hydration tips */}
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <h3 className="font-semibold mb-3 flex items-center gap-2"><Droplets className="w-5 h-5 text-primary" /> Hydration Tips</h3>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {tips.map((tip, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground p-2 rounded-lg bg-muted/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />{tip}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Log */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
+          <div className="bg-card rounded-2xl p-6 border border-border h-fit lg:sticky lg:top-24">
             <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
               <Droplets className="w-5 h-5 text-primary" /> Today's Log
             </h3>
             {log.length > 0 ? (
-              <div className="space-y-2 max-h-[600px] overflow-y-auto">
+              <div className="space-y-2 max-h-[500px] overflow-y-auto">
                 {log.map((entry, i) => (
                   <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                     className="flex items-center justify-between py-3 px-4 rounded-xl bg-muted/30">
@@ -143,8 +193,8 @@ export default function WaterTrackerPage() {
             {log.length > 0 && (
               <div className="mt-4 pt-4 border-t border-border">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Total entries</span>
-                  <span className="font-semibold">{log.length}</span>
+                  <span className="text-muted-foreground">Total intake</span>
+                  <span className="font-semibold">{intake} ml</span>
                 </div>
                 <div className="flex justify-between text-sm mt-1">
                   <span className="text-muted-foreground">Glasses (~250ml)</span>
