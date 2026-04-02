@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Trash2, Search, Calendar, Droplets, Calculator, Heart, Pill, BookMarked, Moon, TrendingUp, Download } from 'lucide-react';
+import { FileText, Trash2, Search, Calendar, Pill, TrendingUp, Download, Scan, Dumbbell, Apple, Stethoscope } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { PageHeader } from '@/components/PageHeader';
 
 interface HealthReport {
   id: string;
@@ -15,159 +16,82 @@ interface HealthReport {
 }
 
 const typeIcons: Record<string, any> = {
-  water: Droplets,
-  bmi: Calculator,
-  mood: Heart,
+  'skin-analysis': Scan,
+  'injury-analysis': Scan,
   medication: Pill,
-  journal: BookMarked,
-  sleep: Moon,
-};
-
-const typeColors: Record<string, string> = {
-  water: 'from-blue-500 to-cyan-500',
-  bmi: 'from-sky-500 to-blue-500',
-  mood: 'from-pink-500 to-rose-500',
-  medication: 'from-teal-500 to-emerald-500',
-  journal: 'from-violet-500 to-purple-500',
-  sleep: 'from-indigo-500 to-violet-500',
+  medicine: Pill,
+  diet: Apple,
+  workout: Dumbbell,
+  symptoms: Stethoscope,
+  bmi: TrendingUp,
 };
 
 export default function HealthReportsPage() {
   const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
-  const [reports, setReports] = useLocalStorage<HealthReport[]>('healtify-reports', []);
+  const [reports] = useLocalStorage<HealthReport[]>('healthier-reports', []);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  // Aggregate data from all localStorage sources
-  const [waterData] = useLocalStorage<{ glasses: number; goal: number }>('healtify-water', { glasses: 0, goal: 8 });
-  const [bmiData] = useLocalStorage<{ bmi: string }>('healtify-bmi', { bmi: '--' });
-  const [journalEntries] = useLocalStorage<any[]>('healtify-journal', []);
-  const [medications] = useLocalStorage<any[]>('healtify-medications', []);
-
-  // Build aggregated reports from all health data
-  const allReports = useMemo(() => {
-    const auto: HealthReport[] = [];
-
-    // Water tracking entries
-    if (waterData.glasses > 0) {
-      auto.push({
-        id: 'water-today',
-        type: 'water',
-        title: 'Water Intake Today',
-        date: new Date().toISOString().split('T')[0],
-        summary: `${waterData.glasses} of ${waterData.goal} glasses consumed`,
-        details: `Progress: ${Math.round((waterData.glasses / waterData.goal) * 100)}% of daily goal`,
+  const sorted = useMemo(() => {
+    return [...reports]
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .filter(r => {
+        const matchSearch = !search || r.title.toLowerCase().includes(search.toLowerCase()) || r.summary.toLowerCase().includes(search.toLowerCase());
+        const matchType = selectedType === 'all' || r.type === selectedType;
+        return matchSearch && matchType;
       });
-    }
+  }, [reports, search, selectedType]);
 
-    // BMI
-    if (bmiData.bmi !== '--') {
-      auto.push({
-        id: 'bmi-latest',
-        type: 'bmi',
-        title: 'BMI Calculation',
-        date: new Date().toISOString().split('T')[0],
-        summary: `BMI: ${bmiData.bmi}`,
-        details: `Your calculated Body Mass Index is ${bmiData.bmi}`,
-      });
-    }
-
-    // Journal entries
-    journalEntries.forEach((entry: any, i: number) => {
-      const moods = ['😞 Very Low', '😐 Low', '🙂 Okay', '😊 Good', '🤩 Excellent'];
-      auto.push({
-        id: `journal-${i}`,
-        type: 'journal',
-        title: `Journal Entry — ${entry.date}`,
-        date: entry.date,
-        summary: `Mood: ${moods[entry.mood - 1] || 'Unknown'} | Energy: ${entry.energy || '--'}/5`,
-        details: entry.notes || 'No notes recorded',
-      });
-    });
-
-    // Medications
-    medications.forEach((med: any, i: number) => {
-      auto.push({
-        id: `med-${i}`,
-        type: 'medication',
-        title: `Medication: ${med.name}`,
-        date: med.addedDate || new Date().toISOString().split('T')[0],
-        summary: `${med.dosage || ''} — ${med.frequency || 'Daily'}`,
-        details: `Time: ${med.time || 'Not set'} | Notes: ${med.notes || 'None'}`,
-      });
-    });
-
-    // Merge with manual reports
-    return [...auto, ...reports].sort((a, b) => b.date.localeCompare(a.date));
-  }, [waterData, bmiData, journalEntries, medications, reports]);
-
-  const filtered = useMemo(() => {
-    return allReports.filter(r => {
-      const matchSearch = !search || r.title.toLowerCase().includes(search.toLowerCase()) || r.summary.toLowerCase().includes(search.toLowerCase());
-      const matchType = selectedType === 'all' || r.type === selectedType;
-      return matchSearch && matchType;
-    });
-  }, [allReports, search, selectedType]);
-
-  const types = ['all', ...Object.keys(typeIcons)];
-
-  const clearReports = () => {
-    setReports([]);
-  };
+  const types = useMemo(() => {
+    const set = new Set(reports.map(r => r.type));
+    return ['all', ...Array.from(set)];
+  }, [reports]);
 
   const exportData = () => {
-    const data = JSON.stringify(allReports, null, 2);
+    const data = JSON.stringify(reports, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `healtify-reports-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `healthier-reports-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-500">
-            <TrendingUp className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="font-display text-3xl font-bold mb-2">Health Reports</h1>
-          <p className="text-muted-foreground">All your health data in one place — water, BMI, mood, medications & journal</p>
-        </div>
+      <div className="max-w-4xl mx-auto">
+        <PageHeader
+          icon={<TrendingUp className="h-8 w-8 text-primary-foreground" />}
+          title="Health Reports"
+          description="Auto-generated from your tool usage — skin analyses, medicine lookups, fitness plans & more"
+          gradient="from-primary to-success"
+          showEmergency={false}
+        />
 
-        {/* Overview cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-card rounded-xl p-4 border border-border text-center">
-            <Droplets className="w-6 h-6 text-primary mx-auto mb-2" />
-            <p className="text-2xl font-bold">{waterData.glasses}/{waterData.goal}</p>
-            <p className="text-xs text-muted-foreground">Water Today</p>
+            <p className="text-2xl font-bold text-primary">{reports.length}</p>
+            <p className="text-xs text-muted-foreground">Total Reports</p>
           </div>
           <div className="bg-card rounded-xl p-4 border border-border text-center">
-            <Calculator className="w-6 h-6 text-secondary mx-auto mb-2" />
-            <p className="text-2xl font-bold">{bmiData.bmi}</p>
-            <p className="text-xs text-muted-foreground">BMI</p>
+            <p className="text-2xl font-bold text-primary">{new Set(reports.map(r => r.type)).size}</p>
+            <p className="text-xs text-muted-foreground">Categories</p>
           </div>
           <div className="bg-card rounded-xl p-4 border border-border text-center">
-            <BookMarked className="w-6 h-6 text-accent mx-auto mb-2" />
-            <p className="text-2xl font-bold">{journalEntries.length}</p>
-            <p className="text-xs text-muted-foreground">Journal Entries</p>
-          </div>
-          <div className="bg-card rounded-xl p-4 border border-border text-center">
-            <Pill className="w-6 h-6 text-success mx-auto mb-2" />
-            <p className="text-2xl font-bold">{medications.length}</p>
-            <p className="text-xs text-muted-foreground">Medications</p>
+            <p className="text-2xl font-bold text-primary">{reports.filter(r => r.date === new Date().toISOString().split('T')[0]).length}</p>
+            <p className="text-xs text-muted-foreground">Today</p>
           </div>
         </div>
 
-        {/* Search + Filters */}
+        {/* Search + filter */}
         <div className="flex gap-3 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input placeholder="Search reports..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
           </div>
-          <Button variant="outline" onClick={exportData} className="gap-2">
+          <Button variant="outline" onClick={exportData} className="gap-2" disabled={reports.length === 0}>
             <Download className="w-4 h-4" /> Export
           </Button>
         </div>
@@ -176,24 +100,23 @@ export default function HealthReportsPage() {
           {types.map(t => (
             <button key={t} onClick={() => setSelectedType(t)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${selectedType === t ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-              {t}
+              {t.replace('-', ' ')}
             </button>
           ))}
         </div>
 
-        {/* Reports list */}
+        {/* Reports */}
         <div className="space-y-3">
-          {filtered.map(report => {
+          {sorted.map(report => {
             const Icon = typeIcons[report.type] || FileText;
-            const gradient = typeColors[report.type] || 'from-primary to-secondary';
             const isExpanded = expandedId === report.id;
             return (
               <motion.div key={report.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 className="bg-card rounded-xl border border-border overflow-hidden">
                 <button onClick={() => setExpandedId(isExpanded ? null : report.id)}
-                  className="w-full flex items-center gap-4 p-4 text-left">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br ${gradient} shrink-0`}>
-                    <Icon className="w-5 h-5 text-white" />
+                  className="w-full flex items-center gap-4 p-4 text-left hover:bg-muted/30 transition-colors">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary/10 shrink-0">
+                    <Icon className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm truncate">{report.title}</h3>
@@ -204,7 +127,7 @@ export default function HealthReportsPage() {
                   </div>
                 </button>
                 <AnimatePresence>
-                  {isExpanded && (
+                  {isExpanded && report.details && (
                     <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
                       <div className="px-4 pb-4 pt-1 border-t border-border">
                         <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report.details}</p>
@@ -217,14 +140,14 @@ export default function HealthReportsPage() {
           })}
         </div>
 
-        {filtered.length === 0 && (
+        {sorted.length === 0 && (
           <div className="text-center py-16">
             <FileText className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No reports yet</h3>
-            <p className="text-muted-foreground">Use the health tools to start generating reports</p>
+            <p className="text-muted-foreground">Reports are auto-generated when you use health tools like Skin Analyzer, Medicine Info, or Fitness Planner</p>
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

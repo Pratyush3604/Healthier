@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'system-ui', 'sans-serif'],
-        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -79,7 +79,7 @@ export default {
         "3xl": "calc(var(--radius) + 16px)",
       },
       boxShadow: {
-        glow: "0 0 24px hsla(160, 84%, 39%, 0.15)",
+        glow: "0 0 24px hsla(191, 63%, 46%, 0.15)",
         soft: "0 2px 12px rgba(0,0,0,0.08)",
         elevated: "0 4px 24px rgba(0,0,0,0.12)",
         floating: "0 8px 40px rgba(0,0,0,0.16)",
