@@ -14,8 +14,8 @@ export const HealtifyLogo = forwardRef<SVGSVGElement, { size?: number; className
       >
         <defs>
           <linearGradient id="logoBg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="hsl(160, 84%, 39%)" />
-            <stop offset="100%" stopColor="hsl(200, 80%, 55%)" />
+            <stop offset="0%" stopColor="#2CA3BF" />
+            <stop offset="100%" stopColor="#ACF9FD" />
           </linearGradient>
           <linearGradient id="heartGrad" x1="14" y1="12" x2="34" y2="36" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#fff" />
@@ -33,18 +33,18 @@ export const HealtifyLogo = forwardRef<SVGSVGElement, { size?: number; className
 
         <path
           d="M10 24H16L18 20L21 28L24 22L26 26L28 24H38"
-          stroke="hsl(160, 84%, 39%)"
+          stroke="#2CA3BF"
           strokeWidth="2.2"
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
         />
 
-        <circle cx="38" cy="12" r="5" fill="hsl(280, 65%, 60%)" opacity="0.9" />
+        <circle cx="38" cy="12" r="5" fill="#0e7490" opacity="0.9" />
         <text x="38" y="15" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="sans-serif">AI</text>
       </svg>
     );
   }
 );
 
-HealtifyLogo.displayName = 'HealtifyLogo';
+HealtifyLogo.displayName = 'HealthierLogo';

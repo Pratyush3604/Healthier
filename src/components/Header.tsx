@@ -3,12 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, Home, Stethoscope, Activity,
-  Camera, FileText, MessageCircle, Mic, BookOpen,
-  Phone, Lightbulb, User, Search, Pill, Dumbbell,
-  Moon, Apple, Scan, Calculator, LogIn, LogOut,
-  Droplets, LayoutDashboard, Settings, TrendingUp,
-  Brain, Heart, Shield, Baby, UserCheck, Plane,
-  Syringe, Monitor, Wind, Star
+  FileText, MessageCircle, Mic, BookOpen,
+  Phone, Lightbulb, Search, Pill, Dumbbell,
+  Apple, Scan, Calculator, LogIn, LogOut,
+  LayoutDashboard, Settings, TrendingUp,
+  Monitor, ClipboardList, User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
@@ -24,32 +23,15 @@ const navItems = [
 ];
 
 const moreItems = [
-  { path: '/injury', label: 'Injury', icon: Camera },
-  { path: '/skin-analyzer', label: 'Skin AI', icon: Scan },
+  { path: '/skin-injury', label: 'Skin & Injury', icon: Scan },
   { path: '/reports', label: 'Reports', icon: FileText },
   { path: '/ai-doctor', label: 'AI Doctor', icon: Mic },
-  { path: '/diet-planner', label: 'Diet Plan', icon: Apple },
-  { path: '/workout-planner', label: 'Workout', icon: Dumbbell },
-  { path: '/exercise-library', label: 'Exercises', icon: Dumbbell },
-  { path: '/sleep-analysis', label: 'Sleep', icon: Moon },
+  { path: '/fitness', label: 'Fitness & Diet', icon: Dumbbell },
   { path: '/medicine-info', label: 'Medicine', icon: Pill },
   { path: '/bmi-calculator', label: 'BMI', icon: Calculator },
-  { path: '/water-tracker', label: 'Water', icon: Droplets },
-  { path: '/blood-pressure', label: 'Blood Pressure', icon: Heart },
-  { path: '/stress-check', label: 'Stress Check', icon: Brain },
-  { path: '/period-tracker', label: 'Period Tracker', icon: Heart },
-  { path: '/mens-health', label: "Men's Health", icon: Shield },
-  { path: '/child-fever', label: 'Child Fever', icon: Baby },
-  { path: '/fall-risk', label: 'Fall Risk', icon: UserCheck },
-  { path: '/travel-health', label: 'Travel Health', icon: Plane },
-  { path: '/diabetes-risk', label: 'Diabetes Risk', icon: Activity },
-  { path: '/vaccine-scheduler', label: 'Vaccines', icon: Syringe },
-  { path: '/posture-corrector', label: 'Posture', icon: Monitor },
-  { path: '/smoking-cessation', label: 'Quit Smoking', icon: Wind },
-  { path: '/wellness-quiz', label: 'Wellness Quiz', icon: Star },
-  { path: '/medication-reminder', label: 'Med Reminders', icon: Pill },
-  { path: '/health-journal', label: 'Journal', icon: BookOpen },
+  { path: '/medication-reminder', label: 'Med Reminders', icon: ClipboardList },
   { path: '/health-reports', label: 'Reports Hub', icon: TrendingUp },
+  { path: '/posture-corrector', label: 'Posture', icon: Monitor },
   { path: '/first-aid', label: 'First Aid', icon: BookOpen },
   { path: '/health-tips', label: 'Tips', icon: Lightbulb },
   { path: '/emergency', label: 'Emergency', icon: Phone },
@@ -67,8 +49,8 @@ export function Header() {
   const location = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     return () => subscription.unsubscribe();
   }, []);
 
@@ -88,7 +70,7 @@ export function Header() {
           <Link to="/" className="flex items-center gap-2.5 group">
             <HealtifyLogo size={32} />
             <div className="hidden sm:block">
-              <span className="font-display font-bold text-sm gradient-text">Healtify</span>
+              <span className="font-display font-bold text-sm gradient-text">Healthier</span>
               <span className="text-[10px] text-muted-foreground block -mt-0.5">AI Health Assistant</span>
             </div>
           </Link>

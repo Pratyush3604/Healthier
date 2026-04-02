@@ -20,9 +20,13 @@ export default function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (session) navigate('/dashboard');
+    });
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate('/dashboard');
     });
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,10 +50,11 @@ export default function AuthPage() {
         }
         const { error } = await supabase.auth.signUp({
           email, password,
-          options: { data: { full_name: fullName }, emailRedirectTo: window.location.origin },
+          options: { data: { full_name: fullName } },
         });
         if (error) throw error;
-        toast({ title: 'Account created!', description: 'Please check your email to verify your account.' });
+        toast({ title: 'Account created!', description: 'You are now logged in.' });
+        navigate('/dashboard');
       }
     } catch (error: any) {
       toast({ title: 'Error', description: error.message || 'Something went wrong.', variant: 'destructive' });
@@ -72,7 +77,7 @@ export default function AuthPage() {
   };
 
   const handleGuestMode = () => {
-    toast({ title: 'Guest Mode', description: 'Using Healtify as a guest. Your data will not be saved.' });
+    toast({ title: 'Guest Mode', description: 'Using Healthier as a guest. Your data will not be saved.' });
     navigate('/');
   };
 
@@ -82,11 +87,10 @@ export default function AuthPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4"><HealtifyLogo size={56} /></div>
           <h1 className="font-display text-3xl font-bold mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
-          <p className="text-muted-foreground">{isLogin ? 'Sign in to access your health data' : 'Join Healtify for personalized health insights'}</p>
+          <p className="text-muted-foreground">{isLogin ? 'Sign in to access your health data' : 'Join Healthier for personalized health insights'}</p>
         </div>
 
         <div className="glass-card rounded-2xl p-8">
-          {/* Google Sign In */}
           <Button variant="outline" className="w-full mb-4" size="lg" onClick={handleGoogleSignIn} disabled={isLoading}>
             <Chrome className="mr-2 h-5 w-5" /> Continue with Google
           </Button>
