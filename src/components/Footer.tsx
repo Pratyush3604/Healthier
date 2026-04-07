@@ -58,6 +58,7 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
                 { to: '/first-aid', label: 'First Aid' },
                 { to: '/health-tips', label: 'Health Tips' },
                 { to: '/emergency', label: 'Emergency Numbers' },
+                { to: '/how-to-use', label: 'How to Use' },
                 { to: '/about', label: 'About' },
               ].map(link => (
                 <li key={link.to}>

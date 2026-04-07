@@ -88,7 +88,7 @@ export default function SettingsPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold">Settings</h1>
-            <p className="text-muted-foreground">Customize your Healtify experience</p>
+            <p className="text-muted-foreground">Customize your Healthier experience</p>
           </div>
         </div>
 
@@ -132,7 +132,7 @@ export default function SettingsPage() {
                   <Input placeholder="Search languages..." value={langSearch} onChange={e => setLangSearch(e.target.value)} className="mb-3" />
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
                     {filteredLangs.map(l => (
-                      <button key={l} onClick={() => { setLanguage(l); toast({ title: `Language set to ${l}` }); }}
+                      <button key={l} onClick={() => { setLanguage(l); toast({ title: `Language set to ${l}`, description: 'AI responses will now be in ' + l }); }}
                         className={`px-3 py-2 rounded-lg text-sm font-medium text-left transition-all ${language === l ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}>
                         {l}
                       </button>
