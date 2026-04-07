@@ -46,6 +46,8 @@ export default function FitnessPage() {
   const [equipment, setEquipment] = useState('full-gym');
   const [time, setTime] = useState('60');
   const [trainingStyle, setTrainingStyle] = useState('balanced');
+  const [dietCustom, setDietCustom] = useState('');
+  const [workoutCustom, setWorkoutCustom] = useState('');
 
   const bmi = (() => {
     const w = parseFloat(weight), h = parseFloat(height) / 100;
