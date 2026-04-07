@@ -7,7 +7,7 @@ import {
   Phone, Lightbulb, Search, Pill, Dumbbell,
   Apple, Scan, Calculator, LogIn, LogOut,
   LayoutDashboard, Settings, TrendingUp,
-  Monitor, ClipboardList, User
+  Monitor, ClipboardList, User, HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
@@ -18,23 +18,24 @@ const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/symptoms', label: 'Symptoms', icon: Stethoscope },
-  { path: '/vitals', label: 'Vitals', icon: Activity },
+  { path: '/skin-injury', label: 'Skin & Injury', icon: Scan },
   { path: '/chat', label: 'Chat', icon: MessageCircle },
+  { path: '/fitness', label: 'Fitness', icon: Dumbbell },
+  { path: '/medicine-info', label: 'Medicine', icon: Pill },
 ];
 
 const moreItems = [
-  { path: '/skin-injury', label: 'Skin & Injury', icon: Scan },
-  { path: '/reports', label: 'Reports', icon: FileText },
-  { path: '/ai-doctor', label: 'AI Doctor', icon: Mic },
-  { path: '/fitness', label: 'Fitness & Diet', icon: Dumbbell },
-  { path: '/medicine-info', label: 'Medicine', icon: Pill },
-  { path: '/bmi-calculator', label: 'BMI', icon: Calculator },
+  { path: '/vitals', label: 'Vitals', icon: Activity },
+  { path: '/reports', label: 'Report Analysis', icon: FileText },
+  { path: '/ai-doctor', label: 'Voice Doctor', icon: Mic },
+  { path: '/bmi-calculator', label: 'Health Calculator', icon: Calculator },
   { path: '/medication-reminder', label: 'Med Reminders', icon: ClipboardList },
   { path: '/health-reports', label: 'Reports Hub', icon: TrendingUp },
   { path: '/posture-corrector', label: 'Posture', icon: Monitor },
   { path: '/first-aid', label: 'First Aid', icon: BookOpen },
-  { path: '/health-tips', label: 'Tips', icon: Lightbulb },
+  { path: '/health-tips', label: 'Health Tips', icon: Lightbulb },
   { path: '/emergency', label: 'Emergency', icon: Phone },
+  { path: '/how-to-use', label: 'How to Use', icon: HelpCircle },
   { path: '/settings', label: 'Settings', icon: Settings },
   { path: '/about', label: 'About', icon: User },
 ];
