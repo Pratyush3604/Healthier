@@ -30,7 +30,7 @@ const categories = {
     { icon: BookOpen, title: 'First Aid Guide', description: '60+ emergency instructions', link: '/first-aid' },
     { icon: Lightbulb, title: 'Health Tips', description: '170+ wellness tips', link: '/health-tips' },
     { icon: Phone, title: 'Emergency Numbers', description: '100+ country numbers', link: '/emergency' },
-  ],
+    { icon: HelpCircle, title: 'How to Use', description: 'Detailed guide for every tool', link: '/how-to-use' },
 };
 
 const stats = [
