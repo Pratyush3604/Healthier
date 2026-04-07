@@ -4,7 +4,7 @@ import {
   Stethoscope, Activity, FileText, MessageCircle, Mic,
   BookOpen, Lightbulb, Phone, ArrowRight, Shield, Zap, Heart,
   Sparkles, Pill, Scan, Calculator,
-  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock
+  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle
 } from 'lucide-react';
 
 const categories = {
@@ -16,12 +16,12 @@ const categories = {
   'AI Consultation': [
     { icon: MessageCircle, title: 'AI Chat', description: 'Text-based medical consultation', link: '/chat' },
     { icon: Mic, title: 'Voice Doctor', description: 'Talk to AI with voice & TTS', link: '/ai-doctor' },
-    { icon: Pill, title: 'Medicine Encyclopedia', description: '13-section drug analysis', link: '/medicine-info' },
+    { icon: Pill, title: 'Medicine Encyclopedia', description: 'Comprehensive drug analysis', link: '/medicine-info' },
   ],
   'Fitness & Wellness': [
     { icon: Apple, title: 'Diet & Workout Planner', description: 'AI meal plans + exercise routines', link: '/fitness' },
-    { icon: Calculator, title: 'BMI Calculator', description: 'BMI, body fat & ideal weight', link: '/bmi-calculator' },
     { icon: Monitor, title: 'Posture Corrector', description: 'Exercises & ergonomic tips', link: '/posture-corrector' },
+    { icon: Calculator, title: 'Health Calculator', description: 'BMI, body fat & ideal weight', link: '/bmi-calculator' },
     { icon: Activity, title: 'Vital Signs', description: 'Track heart rate, SpO2 & BP', link: '/vitals' },
   ],
   'Tools & Guides': [
@@ -30,6 +30,7 @@ const categories = {
     { icon: BookOpen, title: 'First Aid Guide', description: '60+ emergency instructions', link: '/first-aid' },
     { icon: Lightbulb, title: 'Health Tips', description: '170+ wellness tips', link: '/health-tips' },
     { icon: Phone, title: 'Emergency Numbers', description: '100+ country numbers', link: '/emergency' },
+    { icon: HelpCircle, title: 'How to Use', description: 'Detailed guide for every tool', link: '/how-to-use' },
   ],
 };
 

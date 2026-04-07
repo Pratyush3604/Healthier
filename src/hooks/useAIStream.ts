@@ -34,6 +34,15 @@ export function useAIStream(options: UseAIStreamOptions = {}) {
     const controller = new AbortController();
     abortRef.current = controller;
 
+    // Apply language preference
+    const lang = localStorage.getItem('healtify-language')?.replace(/"/g, '') || 'English';
+    const langInstruction = lang !== 'English' ? `\n\nIMPORTANT: Respond entirely in ${lang}.` : '';
+    const enhancedMessages = messages.map((m, i) =>
+      i === messages.length - 1 && m.role === 'user'
+        ? { ...m, content: m.content + langInstruction }
+        : m
+    );
+
     try {
       const res = await fetch(CHAT_URL, {
         method: 'POST',
@@ -42,7 +51,7 @@ export function useAIStream(options: UseAIStreamOptions = {}) {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          messages,
+          messages: enhancedMessages,
           type: type ?? options.type,
         }),
         signal: controller.signal,

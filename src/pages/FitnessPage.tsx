@@ -46,6 +46,8 @@ export default function FitnessPage() {
   const [equipment, setEquipment] = useState('full-gym');
   const [time, setTime] = useState('60');
   const [trainingStyle, setTrainingStyle] = useState('balanced');
+  const [dietCustom, setDietCustom] = useState('');
+  const [workoutCustom, setWorkoutCustom] = useState('');
 
   const bmi = (() => {
     const w = parseFloat(weight), h = parseFloat(height) / 100;
@@ -61,7 +63,7 @@ export default function FitnessPage() {
 - Age: ${age}, Gender: ${gender}, Weight: ${weight}kg, Height: ${height}cm, BMI: ${bmi}
 - Goal: ${dietGoal}, Diet: ${dietType}, Activity: ${activity}
 - Cuisine: ${cuisine}, Meals/day: ${mealsPerDay}, Cooking: ${cookingSkill}, Budget: ${budget}
-${allergies ? `- Allergies: ${allergies}` : ''}${conditions ? `\n- Conditions: ${conditions}` : ''}${dislikedFoods ? `\n- Disliked: ${dislikedFoods}` : ''}
+${allergies ? `- Allergies: ${allergies}` : ''}${conditions ? `\n- Conditions: ${conditions}` : ''}${dislikedFoods ? `\n- Disliked: ${dislikedFoods}` : ''}${dietCustom ? `\n- Custom notes: ${dietCustom}` : ''}
 
 For EACH day: Breakfast, Snack, Lunch, Snack, Dinner with calories, protein, carbs.
 Include: daily macro totals, hydration, supplement suggestions, weekly grocery list with cost estimate, meal prep guide, optimal eating schedule.`;
@@ -76,7 +78,7 @@ Include: daily macro totals, hydration, supplement suggestions, weekly grocery l
 - Goal: ${workoutGoal}, Level: ${level}, Style: ${trainingStyle}
 - Muscles: ${muscles.length > 0 ? muscles.join(', ') : 'Full Body'}
 - Equipment: ${equipment}, Time: ${time}min/session, Activity: ${activity}
-${injuries ? `- Injuries: ${injuries}` : ''}
+${injuries ? `- Injuries: ${injuries}` : ''}${workoutCustom ? `\n- Custom notes: ${workoutCustom}` : ''}
 
 For EACH day: warmup (5min), main exercises (sets/reps/rest/tempo/form), cool down, progressive overload notes.
 Include: weekly volume breakdown, cardio integration, recovery routine, 4-week progression, deload guidance.`;
@@ -148,6 +150,7 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
                 </div>
                 <div><Label>Allergies</Label><Input placeholder="Nuts, dairy, shellfish..." value={allergies} onChange={e => setAllergies(e.target.value)} /></div>
                 <div><Label>Disliked Foods</Label><Input placeholder="Mushrooms, olives..." value={dislikedFoods} onChange={e => setDislikedFoods(e.target.value)} /></div>
+                <div><Label>Custom Diet Notes</Label><Textarea placeholder="I want high protein meals, intermittent fasting, specific calorie targets, preferred snacks..." value={dietCustom} onChange={e => setDietCustom(e.target.value)} rows={2} /></div>
               </div>
             ) : (
               <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
@@ -183,6 +186,7 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
                   </div>
                   <div><Label>Time (min)</Label><Input type="number" placeholder="60" value={time} onChange={e => setTime(e.target.value)} className="mt-2" /></div>
                 </div>
+                <div><Label>Custom Workout Notes</Label><Textarea placeholder="I want to focus on pull-ups, avoid running, include stretching, prefer supersets..." value={workoutCustom} onChange={e => setWorkoutCustom(e.target.value)} rows={2} /></div>
               </div>
             )}
 

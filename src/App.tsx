@@ -24,6 +24,7 @@ import HealthDashboardPage from "@/pages/HealthDashboardPage";
 import MedicationReminderPage from "@/pages/MedicationReminderPage";
 import HealthReportsPage from "@/pages/HealthReportsPage";
 import PostureCorrectorPage from "@/pages/PostureCorrectorPage";
+import HowToUsePage from "@/pages/HowToUsePage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/medication-reminder" element={<MedicationReminderPage />} />
             <Route path="/health-reports" element={<HealthReportsPage />} />
             <Route path="/posture-corrector" element={<PostureCorrectorPage />} />
+            <Route path="/how-to-use" element={<HowToUsePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
