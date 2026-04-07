@@ -31,6 +31,7 @@ const categories = {
     { icon: Lightbulb, title: 'Health Tips', description: '170+ wellness tips', link: '/health-tips' },
     { icon: Phone, title: 'Emergency Numbers', description: '100+ country numbers', link: '/emergency' },
     { icon: HelpCircle, title: 'How to Use', description: 'Detailed guide for every tool', link: '/how-to-use' },
+  ],
 };
 
 const stats = [
