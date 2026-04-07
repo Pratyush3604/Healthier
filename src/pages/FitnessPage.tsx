@@ -148,6 +148,7 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
                 </div>
                 <div><Label>Allergies</Label><Input placeholder="Nuts, dairy, shellfish..." value={allergies} onChange={e => setAllergies(e.target.value)} /></div>
                 <div><Label>Disliked Foods</Label><Input placeholder="Mushrooms, olives..." value={dislikedFoods} onChange={e => setDislikedFoods(e.target.value)} /></div>
+                <div><Label>Custom Diet Notes</Label><Textarea placeholder="I want high protein meals, intermittent fasting, specific calorie targets, preferred snacks..." value={dietCustom} onChange={e => setDietCustom(e.target.value)} rows={2} /></div>
               </div>
             ) : (
               <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
@@ -183,6 +184,7 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
                   </div>
                   <div><Label>Time (min)</Label><Input type="number" placeholder="60" value={time} onChange={e => setTime(e.target.value)} className="mt-2" /></div>
                 </div>
+                <div><Label>Custom Workout Notes</Label><Textarea placeholder="I want to focus on pull-ups, avoid running, include stretching, prefer supersets..." value={workoutCustom} onChange={e => setWorkoutCustom(e.target.value)} rows={2} /></div>
               </div>
             )}
 

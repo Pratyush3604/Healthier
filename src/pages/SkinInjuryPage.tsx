@@ -135,14 +135,15 @@ export default function SkinInjuryPage() {
                 </div>
               )}
               {!image && !cameraActive && (
-                <div className="aspect-video flex flex-col items-center justify-center p-8 bg-muted/30">
+                <div className="aspect-video flex flex-col items-center justify-center p-8 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}>
                   <Scan className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground mb-6">Take a photo or upload an image</p>
+                  <p className="text-muted-foreground mb-6">Tap here to upload or use the buttons below</p>
                   <div className="flex gap-3">
-                    <Button onClick={startCamera} size="lg"><Camera className="mr-2 h-5 w-5" />Camera</Button>
-                    <Button variant="outline" size="lg" onClick={() => fileInputRef.current?.click()}><Upload className="mr-2 h-5 w-5" />Upload</Button>
+                    <Button onClick={(e) => { e.stopPropagation(); startCamera(); }} size="lg"><Camera className="mr-2 h-5 w-5" />Camera</Button>
+                    <Button variant="outline" size="lg" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}><Upload className="mr-2 h-5 w-5" />Upload</Button>
                   </div>
-                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                  <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileUpload} className="hidden" />
                 </div>
               )}
             </div>
