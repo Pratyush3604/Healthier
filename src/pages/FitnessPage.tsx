@@ -78,7 +78,7 @@ Include: daily macro totals, hydration, supplement suggestions, weekly grocery l
 - Goal: ${workoutGoal}, Level: ${level}, Style: ${trainingStyle}
 - Muscles: ${muscles.length > 0 ? muscles.join(', ') : 'Full Body'}
 - Equipment: ${equipment}, Time: ${time}min/session, Activity: ${activity}
-${injuries ? `- Injuries: ${injuries}` : ''}
+${injuries ? `- Injuries: ${injuries}` : ''}${workoutCustom ? `\n- Custom notes: ${workoutCustom}` : ''}
 
 For EACH day: warmup (5min), main exercises (sets/reps/rest/tempo/form), cool down, progressive overload notes.
 Include: weekly volume breakdown, cardio integration, recovery routine, 4-week progression, deload guidance.`;
