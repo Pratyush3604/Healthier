@@ -63,7 +63,7 @@ export default function FitnessPage() {
 - Age: ${age}, Gender: ${gender}, Weight: ${weight}kg, Height: ${height}cm, BMI: ${bmi}
 - Goal: ${dietGoal}, Diet: ${dietType}, Activity: ${activity}
 - Cuisine: ${cuisine}, Meals/day: ${mealsPerDay}, Cooking: ${cookingSkill}, Budget: ${budget}
-${allergies ? `- Allergies: ${allergies}` : ''}${conditions ? `\n- Conditions: ${conditions}` : ''}${dislikedFoods ? `\n- Disliked: ${dislikedFoods}` : ''}
+${allergies ? `- Allergies: ${allergies}` : ''}${conditions ? `\n- Conditions: ${conditions}` : ''}${dislikedFoods ? `\n- Disliked: ${dislikedFoods}` : ''}${dietCustom ? `\n- Custom notes: ${dietCustom}` : ''}
 
 For EACH day: Breakfast, Snack, Lunch, Snack, Dinner with calories, protein, carbs.
 Include: daily macro totals, hydration, supplement suggestions, weekly grocery list with cost estimate, meal prep guide, optimal eating schedule.`;
