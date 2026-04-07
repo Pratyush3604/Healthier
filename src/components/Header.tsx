@@ -7,7 +7,7 @@ import {
   Phone, Lightbulb, Search, Pill, Dumbbell,
   Apple, Scan, Calculator, LogIn, LogOut,
   LayoutDashboard, Settings, TrendingUp,
-  Monitor, ClipboardList, User
+  Monitor, ClipboardList, User, HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
