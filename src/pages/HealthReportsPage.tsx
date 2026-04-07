@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Trash2, Search, Calendar, Pill, TrendingUp, Download, Scan, Dumbbell, Apple, Stethoscope } from 'lucide-react';
+import { FileText, Trash2, Search, Calendar, Pill, TrendingUp, Download, Scan, Dumbbell, Apple, Stethoscope, X, ExternalLink } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
@@ -29,8 +29,9 @@ const typeIcons: Record<string, any> = {
 export default function HealthReportsPage() {
   const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
-  const [reports] = useLocalStorage<HealthReport[]>('healthier-reports', []);
+  const [reports, setReports] = useLocalStorage<HealthReport[]>('healthier-reports', []);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [viewingReport, setViewingReport] = useState<HealthReport | null>(null);
 
   const sorted = useMemo(() => {
     return [...reports]
@@ -47,7 +48,7 @@ export default function HealthReportsPage() {
     return ['all', ...Array.from(set)];
   }, [reports]);
 
-  const exportData = () => {
+  const exportAll = () => {
     const data = JSON.stringify(reports, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -58,16 +59,59 @@ export default function HealthReportsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadSingle = (report: HealthReport) => {
+    const data = JSON.stringify(report, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `report-${report.type}-${report.date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const deleteReport = (id: string) => {
+    setReports(prev => prev.filter(r => r.id !== id));
+    if (viewingReport?.id === id) setViewingReport(null);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <PageHeader
           icon={<TrendingUp className="h-8 w-8 text-primary-foreground" />}
           title="Health Reports"
-          description="Auto-generated from your tool usage — skin analyses, medicine lookups, fitness plans & more"
+          description="Auto-generated from your tool usage — view, download, or delete anytime"
           gradient="from-primary to-success"
           showEmergency={false}
         />
+
+        {/* Full report viewer modal */}
+        <AnimatePresence>
+          {viewingReport && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+              onClick={() => setViewingReport(null)}>
+              <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                className="bg-card rounded-2xl border border-border shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col"
+                onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <div>
+                    <h3 className="font-semibold">{viewingReport.title}</h3>
+                    <p className="text-xs text-muted-foreground">{viewingReport.date} · {viewingReport.type}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => downloadSingle(viewingReport)}><Download className="w-3 h-3 mr-1" />Download</Button>
+                    <button onClick={() => setViewingReport(null)} className="p-2 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
+                  </div>
+                </div>
+                <div className="p-6 overflow-y-auto flex-1">
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{viewingReport.details || viewingReport.summary}</p>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
@@ -91,8 +135,8 @@ export default function HealthReportsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input placeholder="Search reports..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
           </div>
-          <Button variant="outline" onClick={exportData} className="gap-2" disabled={reports.length === 0}>
-            <Download className="w-4 h-4" /> Export
+          <Button variant="outline" onClick={exportAll} className="gap-2" disabled={reports.length === 0}>
+            <Download className="w-4 h-4" /> Export All
           </Button>
         </div>
 
@@ -127,10 +171,23 @@ export default function HealthReportsPage() {
                   </div>
                 </button>
                 <AnimatePresence>
-                  {isExpanded && report.details && (
+                  {isExpanded && (
                     <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
                       <div className="px-4 pb-4 pt-1 border-t border-border">
-                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report.details}</p>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap mb-3">
+                          {report.details ? report.details.slice(0, 300) + (report.details.length > 300 ? '...' : '') : report.summary}
+                        </p>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setViewingReport(report); }}>
+                            <ExternalLink className="w-3 h-3 mr-1" />Open
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); downloadSingle(report); }}>
+                            <Download className="w-3 h-3 mr-1" />Download
+                          </Button>
+                          <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); deleteReport(report.id); }}>
+                            <Trash2 className="w-3 h-3 mr-1" />Delete
+                          </Button>
+                        </div>
                       </div>
                     </motion.div>
                   )}
