@@ -1,19 +1,19 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  HelpCircle, Stethoscope, Scan, MessageCircle, Mic, Pill, Apple, Dumbbell,
+  HelpCircle, Stethoscope, Scan, MessageCircle, Pill, Apple, Dumbbell,
   Calculator, Monitor, ClipboardList, TrendingUp, BookOpen, Lightbulb, Phone,
-  Activity, FileText, ArrowRight, ChevronRight, CheckCircle2
+  Activity, FileText, ArrowRight, CheckCircle2
 } from 'lucide-react';
 
 const tools = [
   {
     icon: Stethoscope, title: 'Symptom Checker', path: '/symptoms',
     steps: [
-      'Select your symptoms from the categorized list or type custom ones',
-      'Add patient context: age, gender, severity, duration, medications',
-      'Click "Analyze Symptoms" to get an AI urgency assessment',
-      'Review the detailed analysis with severity rating and recommendations',
+      'Fill in patient info: age, gender, severity, duration, medications, lifestyle, family history',
+      'Select symptoms from categorized list or type custom ones',
+      'Add any additional context about triggers or patterns',
+      'Click "Get Assessment" for AI analysis with urgency level and recommendations',
     ],
     tips: 'The more symptoms and context you provide, the more accurate the assessment.',
   },
@@ -22,7 +22,7 @@ const tools = [
     steps: [
       'Choose between "Skin Condition" or "Injury/Wound" analysis',
       'Upload a photo or use your camera to capture the affected area',
-      'Fill in details: body location, duration, pain level, allergies',
+      'Fill in details: body location, duration, pain level, allergies, skin type',
       'Click "Analyze" — AI will assess the image with your context',
     ],
     tips: 'Use good lighting and capture the area from 15-20cm away for best results.',
@@ -38,64 +38,52 @@ const tools = [
     tips: 'Be specific — instead of "headache help", try "I have a headache behind my eyes for 3 days with nausea".',
   },
   {
-    icon: Mic, title: 'Voice Doctor', path: '/ai-doctor',
-    steps: [
-      'Click the microphone button to start speaking',
-      'Describe your symptoms or health concern naturally',
-      'The AI transcribes and responds with text and optional voice',
-      'Continue the conversation hands-free',
-    ],
-    tips: 'Speak clearly and in complete sentences for the best transcription.',
-  },
-  {
     icon: Pill, title: 'Medicine Encyclopedia', path: '/medicine-info',
     steps: [
       'Type a medicine name or click a popular medicine chip',
-      'Click "Search" or press Enter',
-      'Review the comprehensive drug profile: uses, side effects, interactions, food guidance, storage, and alternatives',
+      'Optionally add specific questions about the medicine',
+      'Click "Search" — get a profile covering uses, side effects, contraindications',
     ],
     tips: 'Search generic names (e.g., "ibuprofen" instead of "Advil") for more complete info.',
   },
   {
     icon: Apple, title: 'Diet Planner', path: '/fitness',
     steps: [
-      'Select the "Diet Plan" tab',
-      'Enter your body stats: age, weight, height, gender',
-      'Set diet preferences: goal, diet type, cuisine, cooking skill, budget',
-      'Add allergies, disliked foods, or custom preferences',
-      'Click "Generate Meal Plan" for a full 7-day plan with macros',
+      'Select the "Diet Plan" tab and enter body stats',
+      'Set preferences: goal, diet type, cuisine, cooking skill, budget',
+      'Add allergies, disliked foods, target calories, supplements, and custom notes',
+      'Click "Generate Meal Plan" for a personalized plan with macros',
     ],
     tips: 'Include your medical conditions so the AI avoids unsuitable foods.',
   },
   {
     icon: Dumbbell, title: 'Workout Planner', path: '/fitness',
     steps: [
-      'Select the "Workout Plan" tab',
-      'Enter body stats and select your fitness level',
-      'Choose training style, target muscles, equipment, and days per week',
-      'Add any custom goals or preferences in the text fields',
-      'Click "Generate Workout Plan" for a full weekly program',
+      'Select "Workout Plan" tab and fill in body stats and fitness level',
+      'Choose style, target muscles, equipment, days, cardio preference',
+      'Add rest day activities and custom workout notes',
+      'Click "Generate Workout Plan" for a structured weekly program',
     ],
     tips: 'Mention injuries so the AI provides safe exercise alternatives.',
   },
   {
-    icon: Calculator, title: 'BMI & Health Calculator', path: '/bmi-calculator',
+    icon: Calculator, title: 'Health Calculator', path: '/bmi-calculator',
     steps: [
-      'Enter weight (kg) and height (cm)',
+      'Enter weight (kg), height (cm), age, gender',
       'Add optional measurements: waist, hip, neck, wrist',
-      'Click "Calculate" to see BMI, body fat estimate, BMR, ideal weight, and more',
-      'View your BMI history chart over time',
+      'Select activity level, body type, and goal',
+      'Click "Calculate" to see BMI, BMR, TDEE, body fat, ideal weight, protein needs, and water intake',
     ],
     tips: 'Measure waist at navel level for accurate body fat estimation.',
   },
   {
     icon: Monitor, title: 'Posture Corrector', path: '/posture-corrector',
     steps: [
-      'Select your posture issues from the chip list',
-      'Choose your occupation and hours seated daily',
-      'Mark pain areas and duration',
-      'Set exercise level, workspace setup, and add custom notes',
-      'Click "Get Exercise Plan" for personalized stretches and routines',
+      'Select posture issues and add custom ones if needed',
+      'Fill in age, weight, height, seated hours, screen time',
+      'Set occupation, pain areas, exercise level, workspace, sleep position, stress',
+      'Add footwear type, hobbies, previous treatment, and goals',
+      'Get a targeted plan with assessment, 3-4 exercises, daily routine, and professional guidance',
     ],
     tips: 'Be honest about your workspace setup — the AI tailors ergonomic advice to your actual environment.',
   },
@@ -107,16 +95,15 @@ const tools = [
       'Save — the app will alert you with a sound when it\'s time',
       'View all your medications and edit or delete as needed',
     ],
-    tips: 'Keep the browser tab open for alarms to work. Set multiple times for medicines taken throughout the day.',
+    tips: 'Keep the browser tab open for alarms to work.',
   },
   {
     icon: TrendingUp, title: 'Health Reports', path: '/health-reports',
     steps: [
       'Reports are auto-generated whenever you use any health tool',
-      'Search and filter reports by type (skin, medicine, diet, etc.)',
-      'Click a report to expand and view full details',
-      'Download individual reports or export all as JSON',
-      'Delete reports you no longer need',
+      'Search and filter reports by type',
+      'Click to expand and view details, or open the full report',
+      'Download as PDF prescription or JSON, or delete reports',
     ],
     tips: 'Check your reports regularly to track your health journey over time.',
   },
@@ -132,9 +119,9 @@ const tools = [
   {
     icon: Activity, title: 'Vital Signs', path: '/vitals',
     steps: [
-      'Enter your readings: heart rate, blood pressure, SpO2, temperature',
-      'View normal ranges and how your values compare',
-      'Track changes over time',
+      'Enter readings: heart rate, blood pressure, SpO2, temperature',
+      'Add context: age, recent activity, conditions, medications',
+      'Click "Analyze Vitals" for an AI assessment with recommendations',
     ],
     tips: 'Measure vitals at the same time each day for consistent tracking.',
   },
@@ -184,7 +171,6 @@ export default function HowToUsePage() {
           </p>
         </motion.div>
 
-        {/* Quick nav */}
         <div className="bg-card rounded-2xl border border-border p-6 mb-10">
           <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-4">Jump to a tool</h2>
           <div className="flex flex-wrap gap-2">

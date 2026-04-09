@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { imageBase64, type } = await req.json();
+    const { imageBase64, type, context } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {
@@ -22,47 +22,70 @@ serve(async (req) => {
       throw new Error("Image data is required");
     }
 
+    const safetyRule = `\n\nCRITICAL SAFETY RULES:
+- Do NOT prescribe any medications or specific drugs.
+- Do NOT diagnose serious conditions definitively.
+- For anything potentially serious, clearly state: "Please consult a qualified healthcare provider."
+- Do NOT recommend prescription treatments.
+- Always use the name "Healthier" when referring to this service.`;
+
     let systemPrompt = "";
     
     if (type === "injury") {
-      systemPrompt = `You are an AI medical assistant specializing in injury assessment. Analyze this image and provide:
+      systemPrompt = `You are an AI medical assistant specializing in injury assessment. Analyze this image.
+${context ? `Context: ${context}` : ''}
 
-1. **Injury Type**: What type of injury is visible (cut, burn, bruise, scrape, etc.)
-2. **Severity Assessment**: Rate as MILD, MODERATE, or SEVERE
-3. **Visible Characteristics**: Describe what you observe
-4. **First Aid Recommendations**: Step-by-step home care instructions
-5. **Warning Signs**: Symptoms that would require immediate medical attention
-6. **When to Seek Care**: Clear guidance on when to see a doctor
+Start with empathy (acknowledge their concern), then provide EXACTLY these sections:
 
-CRITICAL: For any injury that appears severe (deep cuts, large burns, potential fractures, heavy bleeding), immediately recommend professional medical care.
+## Possible Conditions
+What type of injury is visible and possible conditions.
 
-Keep response structured and easy to follow. Use bullet points where appropriate.`;
+## Urgency Level
+Rate as Emergency / Urgent / Non-urgent / Self-care with explanation.
+
+## Recommended Actions
+Step-by-step home care and first aid instructions. Include safe home remedies. Do NOT prescribe medications.
+
+## When to Seek Professional Care
+Warning signs that require immediate medical attention.
+
+## Possible Causes
+What might have caused this type of injury.${safetyRule}`;
     } else if (type === "report") {
-      systemPrompt = `You are an AI medical assistant specializing in medical report interpretation. Analyze this medical report/scan image and provide:
+      systemPrompt = `You are an AI medical assistant specializing in medical report interpretation. Analyze this report/scan image.
 
-1. **Report Type**: Identify what kind of report/scan this is
-2. **Key Findings**: Summarize the main observations
-3. **Notable Values**: Highlight any values outside normal ranges
-4. **Plain Language Explanation**: Explain findings in simple terms
-5. **Recommended Follow-up**: Suggest next steps if any
-6. **Questions for Doctor**: Suggest questions to ask their healthcare provider
+1. **Report Type**: What kind of report/scan
+2. **Key Findings**: Main observations
+3. **Notable Values**: Values outside normal ranges
+4. **Plain Language Explanation**: Simple terms
+5. **Recommended Follow-up**: Next steps
+6. **Questions for Doctor**: Suggested questions
 
-CRITICAL: Always recommend discussing results with a qualified healthcare provider. You are providing educational context only.
-
-Keep the response clear and accessible to non-medical readers.`;
+CRITICAL: Always recommend discussing results with a qualified healthcare provider. Use "Healthier" as the service name.${safetyRule}`;
     } else if (type === "skin") {
-      systemPrompt = `You are an AI dermatology assistant. Analyze this skin image and provide:
+      systemPrompt = `You are an AI dermatology assistant. Analyze this skin image.
+${context ? `Context: ${context}` : ''}
 
-1. **Possible Condition**: What the skin condition might be
-2. **Characteristics**: Describe visible features (color, texture, size, location)
-3. **Common Causes**: What typically causes this type of condition
-4. **Home Care**: Safe home remedies and care suggestions
-5. **When to See a Dermatologist**: Warning signs that need professional evaluation
+Start with empathy, then provide EXACTLY these sections:
 
-CRITICAL: Always recommend consulting a dermatologist for proper diagnosis. You are providing educational context only. If the condition looks potentially serious (irregular moles, rapidly changing lesions, signs of infection), strongly recommend immediate professional evaluation.`;
+## Possible Conditions
+What the skin condition might be based on visible features.
+
+## Urgency Level
+Rate as Emergency / Urgent / Non-urgent / Self-care with explanation.
+
+## Recommended Actions
+Safe home remedies and skincare suggestions. Do NOT prescribe medications.
+
+## When to Seek Professional Care
+Warning signs that need a dermatologist visit.
+
+## Possible Causes
+What typically causes this type of condition.${safetyRule}`;
     } else {
-      systemPrompt = `You are an AI medical assistant. Analyze this health-related image and provide helpful, educational information. Always recommend consulting healthcare professionals for proper diagnosis and treatment.`;
+      systemPrompt = `You are an AI medical assistant. Analyze this health-related image and provide helpful, educational information. Always recommend consulting healthcare professionals. Use "Healthier" as the service name.${safetyRule}`;
     }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
