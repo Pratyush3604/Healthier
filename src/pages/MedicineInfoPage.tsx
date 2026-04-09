@@ -21,57 +21,31 @@ export default function MedicineInfoPage() {
     if (!med.trim()) { toast({ title: 'Enter a medicine name', variant: 'destructive' }); return; }
     if (name) setMedicine(name);
 
-    const prompt = `You are a comprehensive pharmaceutical reference AI. Provide an **extremely detailed** analysis of **"${med}"**:
+    const prompt = `You are a pharmaceutical reference AI. Provide a clear, concise profile of **"${med}"**:
 
 ${additionalQuestions ? `Patient questions: ${additionalQuestions}` : ''}
 
-Provide these sections in detail:
+IMPORTANT: Do NOT prescribe this medicine. Do NOT recommend dosages. Always advise consulting a doctor or pharmacist for dosing and prescription.
+
+Provide EXACTLY these sections:
 
 ## 💊 What It Is
-Drug class, generic vs brand names, mechanism of action explained simply
+Drug class, generic vs brand names, what it does in simple terms.
 
 ## 🎯 Common Uses
-All FDA-approved and common off-label uses
-
-## ⚙️ How It Works
-Detailed but understandable explanation of pharmacology
+All common uses (FDA-approved and well-known off-label).
 
 ## 📋 Common Side Effects
-### Mild (usually resolve)
-### Serious (seek help if)
-### Rare but dangerous
-
-## ⚠️ Drug Interactions
-Common drug interactions. Include food-drug interactions, supplement interactions
+### Mild (usually resolve on their own)
+### Serious (seek medical help immediately)
 
 ## 🚫 Who Should NOT Take This
-Absolute contraindications and relative contraindications
+Absolute and relative contraindications.
 
-## 🍽️ Food & Lifestyle
-- Foods to avoid or take with
-- Alcohol interaction
-- Exercise considerations
-- Driving/machinery safety
+## ⚙️ How It Works
+Simple explanation of the mechanism of action.
 
-## 💉 Available Forms
-Tablet, capsule, liquid, injection variants with pros/cons
-
-## 📦 Storage & Handling
-Temperature, light exposure, expiry considerations
-
-## ⏰ Missed Dose
-What to do if you miss a dose vs double-dosing risks
-
-## 🔄 Stopping the Medication
-Can it be stopped abruptly? Tapering requirements?
-
-## 🌿 Natural Alternatives
-Evidence-based natural alternatives or complementary approaches
-
-## 🔬 Latest Research
-Any notable recent findings about this medication
-
-IMPORTANT: Do NOT provide specific dosage instructions. Recommend consulting doctor/pharmacist for dosing.`;
+End with: "⚠️ Always consult your doctor or pharmacist before starting, stopping, or changing any medication."`;
 
     try {
       await ai.stream([{ role: 'user', content: prompt }]);
@@ -87,7 +61,7 @@ IMPORTANT: Do NOT provide specific dosage instructions. Recommend consulting doc
         <PageHeader
           icon={<Pill className="h-8 w-8 text-primary-foreground" />}
           title="Medicine Encyclopedia"
-          description="Search any medication for a comprehensive drug profile — uses, side effects, interactions & more"
+          description="Search any medication for a comprehensive drug profile"
           gradient="from-primary to-secondary"
         />
 
@@ -135,7 +109,7 @@ IMPORTANT: Do NOT provide specific dosage instructions. Recommend consulting doc
               <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
               <div className="text-sm text-muted-foreground">
                 <p className="font-semibold text-destructive mb-1">Important</p>
-                <p>This information is for educational purposes only. Always consult your doctor or pharmacist for medication guidance.</p>
+                <p>This information is for educational purposes only. Always consult your doctor or pharmacist for medication guidance. Healthier does not prescribe medications.</p>
               </div>
             </div>
           </div>

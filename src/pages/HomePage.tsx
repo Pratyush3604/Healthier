@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Stethoscope, Activity, FileText, MessageCircle, Mic,
+  Stethoscope, Activity, FileText, MessageCircle,
   BookOpen, Lightbulb, Phone, ArrowRight, Shield, Zap, Heart,
   Sparkles, Pill, Scan, Calculator,
   ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle
@@ -15,7 +15,6 @@ const categories = {
   ],
   'AI Consultation': [
     { icon: MessageCircle, title: 'AI Chat', description: 'Text-based medical consultation', link: '/chat' },
-    { icon: Mic, title: 'Voice Doctor', description: 'Talk to AI with voice & TTS', link: '/ai-doctor' },
     { icon: Pill, title: 'Medicine Encyclopedia', description: 'Comprehensive drug analysis', link: '/medicine-info' },
   ],
   'Fitness & Wellness': [
@@ -35,16 +34,10 @@ const categories = {
 };
 
 const stats = [
-  { value: '16', label: 'Health Tools', icon: Sparkles },
+  { value: '15', label: 'Health Tools', icon: Sparkles },
   { value: '24/7', label: 'Available', icon: Zap },
   { value: 'Free', label: 'To Use', icon: Heart },
   { value: 'Private', label: '& Secure', icon: Lock },
-];
-
-const howItWorks = [
-  { step: '01', title: 'Describe Your Concern', description: 'Enter symptoms, upload images, or talk to the AI doctor.' },
-  { step: '02', title: 'Get AI Analysis', description: 'Advanced AI processes your input for a detailed assessment.' },
-  { step: '03', title: 'Take Action', description: 'Clear recommendations and guidance on when to seek care.' },
 ];
 
 const container = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.04 } } };
@@ -55,12 +48,24 @@ export default function HomePage() {
     <div className="min-h-screen">
       {/* Hero */}
       <section className="relative py-24 lg:py-36 overflow-hidden">
-        <div className="absolute inset-0 bg-radial pointer-events-none" />
+        {/* Animated background blobs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <motion.div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl"
+            animate={{ x: [0, 40, 0], y: [0, 30, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
+          <motion.div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-secondary/5 blur-3xl"
+            animate={{ x: [0, -30, 0], y: [0, -40, 0], scale: [1, 1.15, 1] }}
+            transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
+          <motion.div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-accent/5 blur-3xl"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} />
+        </div>
+        
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
           <svg viewBox="0 0 800 200" className="w-[120%] max-w-none" preserveAspectRatio="none">
             <motion.path
               d="M0,100 L150,100 L180,100 L200,20 L220,180 L240,60 L260,140 L280,100 L350,100 L800,100"
-              fill="none" stroke="hsl(191, 63%, 46%)" strokeWidth="2"
+              fill="none" stroke="hsl(var(--primary))" strokeWidth="2"
               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
               transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.5 }}
             />
@@ -72,7 +77,7 @@ export default function HomePage() {
             <motion.div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 border border-primary/15 mb-8"
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-medium text-primary">16 AI-Powered Health Tools</span>
+              <span className="text-xs font-medium text-primary">15 AI-Powered Health Tools</span>
             </motion.div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.05] tracking-tight font-display">
@@ -85,8 +90,8 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/symptoms" className="btn-primary flex items-center gap-2 text-base">
-                Start Symptom Check <ArrowRight className="w-4 h-4" />
+              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base">
+                <HelpCircle className="w-4 h-4" /> How to Use
               </Link>
               <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base">
                 <MessageCircle className="w-4 h-4" /> Chat with AI
@@ -106,29 +111,6 @@ export default function HomePage() {
               );
             })}
           </motion.div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-20 border-t border-border">
-        <div className="container mx-auto px-4">
-          <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl sm:text-4xl font-bold font-display mb-3">How It Works</h2>
-            <p className="text-muted-foreground">Three steps to better health understanding</p>
-          </motion.div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {howItWorks.map((step, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.12 }}
-                className="bg-card rounded-2xl border border-border p-7 text-center relative overflow-hidden group hover:border-primary/20 transition-colors">
-                <div className="text-6xl font-extrabold text-muted/30 absolute top-3 right-4 select-none font-display">{step.step}</div>
-                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-sm font-bold text-primary font-display">{step.step}</span>
-                </div>
-                <h3 className="font-semibold text-base mb-2 font-display">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 

@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, Home, Stethoscope, Activity,
-  FileText, MessageCircle, Mic, BookOpen,
+  FileText, MessageCircle, BookOpen,
   Phone, Lightbulb, Search, Pill, Dumbbell,
   Apple, Scan, Calculator, LogIn, LogOut,
   LayoutDashboard, Settings, TrendingUp,
@@ -27,7 +27,6 @@ const navItems = [
 const moreItems = [
   { path: '/vitals', label: 'Vitals', icon: Activity },
   { path: '/reports', label: 'Report Analysis', icon: FileText },
-  { path: '/ai-doctor', label: 'Voice Doctor', icon: Mic },
   { path: '/bmi-calculator', label: 'Health Calculator', icon: Calculator },
   { path: '/medication-reminder', label: 'Med Reminders', icon: ClipboardList },
   { path: '/health-reports', label: 'Reports Hub', icon: TrendingUp },

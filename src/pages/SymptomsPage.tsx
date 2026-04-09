@@ -35,6 +35,9 @@ export default function SymptomsPage() {
   const [conditions, setConditions] = useState('');
   const [recentTravel, setRecentTravel] = useState('no');
   const [pregnant, setPregnant] = useState('no');
+  const [customSymptoms, setCustomSymptoms] = useState('');
+  const [lifestyle, setLifestyle] = useState('');
+  const [familyHistory, setFamilyHistory] = useState('');
   const { toast } = useToast();
   const ai = useAIStream({ type: 'symptom-assessment' });
 
@@ -56,12 +59,14 @@ export default function SymptomsPage() {
   };
 
   const handleAssess = async () => {
-    if (selectedSymptoms.length === 0) {
+    if (selectedSymptoms.length === 0 && !customSymptoms) {
       toast({ title: 'No symptoms selected', description: 'Please select at least one symptom.', variant: 'destructive' });
       return;
     }
 
-    const prompt = `I am experiencing the following symptoms: ${selectedSymptoms.join(', ')}.
+    const allSymptoms = [...selectedSymptoms, ...(customSymptoms ? customSymptoms.split(',').map(s => s.trim()) : [])].join(', ');
+
+    const prompt = `I am experiencing the following symptoms: ${allSymptoms}.
 ${age ? `Age: ${age}` : ''}${gender ? `, Gender: ${gender}` : ''}
 Duration: ${duration}
 Severity: ${severity}
@@ -69,24 +74,40 @@ ${medications ? `Current medications: ${medications}` : ''}
 ${conditions ? `Pre-existing conditions: ${conditions}` : ''}
 Recent travel: ${recentTravel}
 ${pregnant !== 'no' ? `Pregnancy status: ${pregnant}` : ''}
+${lifestyle ? `Lifestyle: ${lifestyle}` : ''}
+${familyHistory ? `Family history: ${familyHistory}` : ''}
 ${additionalInfo ? `Additional information: ${additionalInfo}` : ''}
 
-Provide a structured assessment with:
-1. **Primary Assessment** — What these symptoms suggest
-2. **Urgency Level** — Emergency, Urgent, Non-urgent, or Self-care
-3. **Possible Causes** — List the most likely conditions (ranked by likelihood)
-4. **Symptom Interactions** — How the selected symptoms relate to each other
-5. **Recommended Actions** — What the user should do now
-6. **Home Remedies** — Safe self-care if appropriate
-7. **When to Seek Care** — Red flags to watch for
-8. **Questions a Doctor May Ask** — Prepare for your visit
-9. **Prevention Tips** — How to prevent recurrence
+IMPORTANT SAFETY RULES:
+- Do NOT prescribe any medications or specific drugs.
+- Do NOT diagnose serious conditions definitively.
+- For anything that could be serious, clearly state: "Please consult a qualified healthcare provider."
 
-Be thorough but clear.`;
+Respond with empathy first (acknowledge their concern), then provide EXACTLY these sections:
+
+## Possible Conditions
+List the most likely conditions ranked by likelihood. Briefly explain each.
+
+## Urgency Level
+Clearly state: Emergency / Urgent / Non-urgent / Self-care. Explain why.
+
+## Recommended Actions
+Include safe home remedies, self-care tips, and lifestyle adjustments all in this section. Do NOT prescribe medicines.
+
+## When to Seek Professional Care
+Red flags and warning signs that require immediate professional attention.
+
+## Possible Causes
+Explain what might be causing these symptoms (lifestyle, environmental, etc.)`;
 
     try {
       const result = await ai.stream([{ role: 'user', content: prompt }]);
-      if (result) setUrgency(parseUrgency(result));
+      if (result) {
+        setUrgency(parseUrgency(result));
+        const existing = JSON.parse(localStorage.getItem('healthier-reports') || '[]');
+        existing.push({ id: `symptoms-${Date.now()}`, type: 'symptoms', title: `Symptom Check: ${allSymptoms.slice(0, 60)}`, date: new Date().toISOString().split('T')[0], summary: `Symptoms: ${allSymptoms}`, details: result });
+        localStorage.setItem('healthier-reports', JSON.stringify(existing));
+      }
     } catch {
       toast({ title: 'Error', description: 'Failed to get assessment.', variant: 'destructive' });
     }
@@ -111,7 +132,6 @@ Be thorough but clear.`;
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            {/* Patient Context */}
             <div className="bg-card rounded-2xl p-5 border border-border shadow-soft space-y-4">
               <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Patient Info (helps accuracy)</h3>
               <div className="grid grid-cols-2 gap-3">
@@ -122,13 +142,14 @@ Be thorough but clear.`;
               <div><Label>Severity</Label><ChipSelect options={['mild', 'moderate', 'severe', 'unbearable']} value={severity} onChange={setSeverity} /></div>
               <div><Label>Current Medications</Label><Input placeholder="Ibuprofen, birth control, etc." value={medications} onChange={e => setMedications(e.target.value)} /></div>
               <div><Label>Pre-existing Conditions</Label><Input placeholder="Diabetes, asthma, etc." value={conditions} onChange={e => setConditions(e.target.value)} /></div>
+              <div><Label>Lifestyle</Label><Input placeholder="Sedentary, smoker, athlete..." value={lifestyle} onChange={e => setLifestyle(e.target.value)} /></div>
+              <div><Label>Family Medical History</Label><Input placeholder="Heart disease, cancer, diabetes..." value={familyHistory} onChange={e => setFamilyHistory(e.target.value)} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Recent Travel</Label><ChipSelect options={['no', 'domestic', 'international']} value={recentTravel} onChange={setRecentTravel} /></div>
                 <div><Label>Pregnant?</Label><ChipSelect options={['no', 'yes', 'possibly']} value={pregnant} onChange={setPregnant} /></div>
               </div>
             </div>
 
-            {/* Symptom Search & Selection */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search symptoms..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
@@ -156,15 +177,17 @@ Be thorough but clear.`;
               ))}
             </div>
 
+            <div><Label>Custom Symptoms</Label><Input placeholder="Symptoms not listed above (comma separated)" value={customSymptoms} onChange={e => setCustomSymptoms(e.target.value)} /></div>
+
             <div>
               <label className="text-sm font-medium text-muted-foreground block mb-2">Additional Information (optional)</label>
               <textarea value={additionalInfo} onChange={(e) => setAdditionalInfo(e.target.value)}
-                placeholder="Duration, severity, when symptoms started, triggers, what makes it better/worse..."
+                placeholder="Triggers, what makes it better/worse, time of day, recent diet changes..."
                 className="w-full h-24 px-4 py-3 rounded-xl bg-muted/50 border border-border resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground placeholder:text-muted-foreground" />
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={handleAssess} disabled={selectedSymptoms.length === 0 || ai.isLoading} className="flex-1" size="lg">
+              <Button onClick={handleAssess} disabled={(selectedSymptoms.length === 0 && !customSymptoms) || ai.isLoading} className="flex-1" size="lg">
                 {ai.isLoading ? <><Loader2 className="h-5 w-5 mr-2 animate-spin" />Analyzing...</> : 'Get Assessment'}
               </Button>
               {ai.response && <Button variant="outline" onClick={handleReset} size="lg">Start Over</Button>}
