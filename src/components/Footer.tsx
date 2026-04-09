@@ -41,7 +41,7 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
                 { to: '/vitals', label: 'Vital Signs' },
                 { to: '/skin-injury', label: 'Skin & Injury' },
                 { to: '/fitness', label: 'Fitness & Diet' },
-                { to: '/bmi-calculator', label: 'BMI Calculator' },
+                { to: '/bmi-calculator', label: 'Health Calculator' },
               ].map(link => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">{link.label}</Link>
@@ -73,7 +73,8 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Healthier — Made by Pratyush Dalmia
           </p>
-          <a href="mailto:pratyush3604@gmail.com" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 text-sm" aria-label="Email">
+          <a href="https://mail.google.com/mail/?view=cm&to=pratyush3604@gmail.com" target="_blank" rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 text-sm" aria-label="Email">
             <Mail className="w-4 h-4" /> pratyush3604@gmail.com
           </a>
         </div>

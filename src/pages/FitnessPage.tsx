@@ -19,7 +19,6 @@ export default function FitnessPage() {
   const dietAI = useAIStream({ type: 'diet-plan' });
   const workoutAI = useAIStream({ type: 'workout-plan' });
 
-  // Shared body stats
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('male');
   const [weight, setWeight] = useState('');
@@ -28,7 +27,6 @@ export default function FitnessPage() {
   const [injuries, setInjuries] = useState('');
   const [conditions, setConditions] = useState('');
 
-  // Diet specific
   const [dietGoal, setDietGoal] = useState('weight-loss');
   const [dietType, setDietType] = useState('no-preference');
   const [allergies, setAllergies] = useState('');
@@ -37,8 +35,11 @@ export default function FitnessPage() {
   const [cookingSkill, setCookingSkill] = useState('intermediate');
   const [budget, setBudget] = useState('medium');
   const [dislikedFoods, setDislikedFoods] = useState('');
+  const [dietCustom, setDietCustom] = useState('');
+  const [targetCalories, setTargetCalories] = useState('');
+  const [waterIntake, setWaterIntake] = useState('');
+  const [supplements, setSupplements] = useState('');
 
-  // Workout specific
   const [workoutGoal, setWorkoutGoal] = useState('strength');
   const [level, setLevel] = useState('beginner');
   const [muscles, setMuscles] = useState<string[]>([]);
@@ -46,8 +47,10 @@ export default function FitnessPage() {
   const [equipment, setEquipment] = useState('full-gym');
   const [time, setTime] = useState('60');
   const [trainingStyle, setTrainingStyle] = useState('balanced');
-  const [dietCustom, setDietCustom] = useState('');
   const [workoutCustom, setWorkoutCustom] = useState('');
+  const [cardioPreference, setCardioPreference] = useState('moderate');
+  const [warmupCooldown, setWarmupCooldown] = useState('yes');
+  const [restDayActivity, setRestDayActivity] = useState('');
 
   const bmi = (() => {
     const w = parseFloat(weight), h = parseFloat(height) / 100;
@@ -59,29 +62,37 @@ export default function FitnessPage() {
 
   const handleDiet = async () => {
     if (!age || !weight || !height) { toast({ title: 'Fill in age, weight, height', variant: 'destructive' }); return; }
-    const prompt = `Create a comprehensive **7-day meal plan**:
+    const prompt = `Create a personalized **meal plan** for one full day (with variety notes for the week):
 - Age: ${age}, Gender: ${gender}, Weight: ${weight}kg, Height: ${height}cm, BMI: ${bmi}
 - Goal: ${dietGoal}, Diet: ${dietType}, Activity: ${activity}
 - Cuisine: ${cuisine}, Meals/day: ${mealsPerDay}, Cooking: ${cookingSkill}, Budget: ${budget}
+${targetCalories ? `- Target calories: ${targetCalories}` : ''}
+${waterIntake ? `- Current water intake: ${waterIntake}L/day` : ''}
+${supplements ? `- Current supplements: ${supplements}` : ''}
 ${allergies ? `- Allergies: ${allergies}` : ''}${conditions ? `\n- Conditions: ${conditions}` : ''}${dislikedFoods ? `\n- Disliked: ${dislikedFoods}` : ''}${dietCustom ? `\n- Custom notes: ${dietCustom}` : ''}
 
-For EACH day: Breakfast, Snack, Lunch, Snack, Dinner with calories, protein, carbs.
-Include: daily macro totals, hydration, supplement suggestions, weekly grocery list with cost estimate, meal prep guide, optimal eating schedule.`;
+IMPORTANT: Do NOT prescribe any medications or supplements that require a prescription.
+
+Keep it practical. For each meal include: dish name, ingredients, approx calories and protein. End with a brief weekly grocery list estimate and hydration target.`;
     try { await dietAI.stream([{ role: 'user', content: prompt }]); 
       saveReport('diet', 'Diet Plan Generated', dietGoal);
     } catch { toast({ title: 'Error', variant: 'destructive' }); }
   };
 
   const handleWorkout = async () => {
-    const prompt = `Create a **${days}-day weekly workout plan**:
+    const prompt = `Create a focused **${days}-day weekly workout plan**:
 - Age: ${age || 'N/A'}, Gender: ${gender}, Weight: ${weight || 'N/A'}kg, Height: ${height || 'N/A'}cm
 - Goal: ${workoutGoal}, Level: ${level}, Style: ${trainingStyle}
 - Muscles: ${muscles.length > 0 ? muscles.join(', ') : 'Full Body'}
 - Equipment: ${equipment}, Time: ${time}min/session, Activity: ${activity}
+- Cardio preference: ${cardioPreference}
+- Include warmup/cooldown: ${warmupCooldown}
+${restDayActivity ? `- Rest day activities: ${restDayActivity}` : ''}
 ${injuries ? `- Injuries: ${injuries}` : ''}${workoutCustom ? `\n- Custom notes: ${workoutCustom}` : ''}
 
-For EACH day: warmup (5min), main exercises (sets/reps/rest/tempo/form), cool down, progressive overload notes.
-Include: weekly volume breakdown, cardio integration, recovery routine, 4-week progression, deload guidance.`;
+IMPORTANT: Do NOT recommend performance-enhancing drugs or prescription supplements.
+
+For each day: exercise name, sets × reps, rest time, brief form cue. Keep exercises practical and safe for the stated level. Include progressive overload notes.`;
     try { await workoutAI.stream([{ role: 'user', content: prompt }]);
       saveReport('workout', 'Workout Plan Generated', workoutGoal);
     } catch { toast({ title: 'Error', variant: 'destructive' }); }
@@ -106,7 +117,6 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
           showEmergency={false}
         />
 
-        {/* Tab switcher */}
         <div className="flex gap-2 mb-6">
           <button onClick={() => setTab('diet')} className={cn("flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold transition-all",
             tab === 'diet' ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-card border border-border text-muted-foreground hover:text-foreground')}>
@@ -120,7 +130,6 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
-            {/* Shared body stats */}
             <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
               <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Body Stats</h3>
               <div className="grid grid-cols-3 gap-3">
@@ -150,7 +159,10 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
                 </div>
                 <div><Label>Allergies</Label><Input placeholder="Nuts, dairy, shellfish..." value={allergies} onChange={e => setAllergies(e.target.value)} /></div>
                 <div><Label>Disliked Foods</Label><Input placeholder="Mushrooms, olives..." value={dislikedFoods} onChange={e => setDislikedFoods(e.target.value)} /></div>
-                <div><Label>Custom Diet Notes</Label><Textarea placeholder="I want high protein meals, intermittent fasting, specific calorie targets, preferred snacks..." value={dietCustom} onChange={e => setDietCustom(e.target.value)} rows={2} /></div>
+                <div><Label>Target Calories (optional)</Label><Input type="number" placeholder="2000" value={targetCalories} onChange={e => setTargetCalories(e.target.value)} /></div>
+                <div><Label>Current Water Intake (L/day)</Label><Input type="number" step="0.1" placeholder="2.0" value={waterIntake} onChange={e => setWaterIntake(e.target.value)} /></div>
+                <div><Label>Current Supplements</Label><Input placeholder="Whey protein, creatine, multivitamin..." value={supplements} onChange={e => setSupplements(e.target.value)} /></div>
+                <div><Label>Custom Diet Notes</Label><Textarea placeholder="Intermittent fasting, preferred snacks, specific calorie targets..." value={dietCustom} onChange={e => setDietCustom(e.target.value)} rows={2} /></div>
               </div>
             ) : (
               <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
@@ -186,7 +198,10 @@ Include: weekly volume breakdown, cardio integration, recovery routine, 4-week p
                   </div>
                   <div><Label>Time (min)</Label><Input type="number" placeholder="60" value={time} onChange={e => setTime(e.target.value)} className="mt-2" /></div>
                 </div>
-                <div><Label>Custom Workout Notes</Label><Textarea placeholder="I want to focus on pull-ups, avoid running, include stretching, prefer supersets..." value={workoutCustom} onChange={e => setWorkoutCustom(e.target.value)} rows={2} /></div>
+                <div><Label>Cardio Preference</Label><ChipSelect options={['none', 'light', 'moderate', 'intense']} value={cardioPreference} onChange={setCardioPreference} /></div>
+                <div><Label>Include Warmup/Cooldown?</Label><ChipSelect options={['yes', 'no']} value={warmupCooldown} onChange={setWarmupCooldown} /></div>
+                <div><Label>Rest Day Activities</Label><Input placeholder="Walking, yoga, swimming..." value={restDayActivity} onChange={e => setRestDayActivity(e.target.value)} /></div>
+                <div><Label>Custom Workout Notes</Label><Textarea placeholder="Focus on pull-ups, avoid running, include stretching, prefer supersets..." value={workoutCustom} onChange={e => setWorkoutCustom(e.target.value)} rows={2} /></div>
               </div>
             )}
 

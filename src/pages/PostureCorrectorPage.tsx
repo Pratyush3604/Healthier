@@ -31,6 +31,11 @@ export default function PostureCorrectorPage() {
   const [stressLevel, setStressLevel] = useState('moderate');
   const [previousTreatment, setPreviousTreatment] = useState('');
   const [goals, setGoals] = useState('');
+  const [screenTime, setScreenTime] = useState('');
+  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('');
+  const [footwear, setFootwear] = useState('');
+  const [hobbyActivities, setHobbyActivities] = useState('');
   const { toast } = useToast();
   const ai = useAIStream({ type: 'posture-correction' });
 
@@ -46,30 +51,36 @@ export default function PostureCorrectorPage() {
     const prompt = `Posture correction plan:
 - Issues: ${allIssues}
 - Age: ${age || 'Not specified'}
+- Weight: ${weight || 'Not specified'}kg, Height: ${height || 'Not specified'}cm
 - Occupation: ${occ}
 - Hours seated daily: ${hoursSeated || 'Not specified'}
+- Screen time daily: ${screenTime || 'Not specified'} hours
 - Pain areas: ${allPain}
 - Pain duration: ${painDuration}
 - Exercise level: ${exerciseLevel}
 - Workspace setup: ${workSetup}
 - Sleep position: ${sleepPosition}
 - Stress level: ${stressLevel}
+- Footwear type: ${footwear || 'Not specified'}
+- Hobbies/Activities: ${hobbyActivities || 'Not specified'}
 ${previousTreatment ? `- Previous treatment: ${previousTreatment}` : ''}
 ${goals ? `- Personal goals: ${goals}` : ''}
 
-Provide a comprehensive posture improvement plan:
-1. **Posture Assessment** — analysis of reported issues and likely causes
-2. **12+ Targeted Stretches & Exercises** with descriptions, hold times, reps, sets
-3. **Daily Routine** — morning (10min), midday (5min), evening (10min)
-4. **Ergonomic Workspace Setup** — monitor height, chair, keyboard, mouse, lighting
-5. **Posture Habits** — reminders, cues, phone posture
-6. **Strengthening Exercises** for weak postural muscles (10+ exercises)
-7. **Mobility Work** for tight areas
-8. **Standing Desk** tips and transition plan
-9. **Sleeping Position** recommendations based on: ${sleepPosition}
-10. **4-Week Progression Plan** — week-by-week goals
-11. **When to See a Physical Therapist**
-12. **Apps & Tools** that can help with posture reminders`;
+IMPORTANT: Do NOT prescribe medications. Only recommend exercises, stretches, and ergonomic adjustments.
+
+Provide EXACTLY these 4 sections:
+
+## 🔍 Posture Assessment
+Analyze the reported issues, identify the root causes, how the issues are connected, and what muscle groups are affected.
+
+## 🏋️ Targeted Exercises (3-4 exercises)
+For each exercise provide: name, description with proper form, hold time or reps, sets, and which muscle group it targets. Keep it to 3-4 most effective exercises for the specific issues.
+
+## 📅 Daily Routine
+A simple morning (5min) and evening (5min) routine incorporating the exercises above with timing.
+
+## 🩺 When to See a Professional
+Clear signs that indicate the person should consult a physiotherapist or orthopedist.`;
 
     try {
       await ai.stream([{ role: 'user', content: prompt }]);
@@ -101,9 +112,14 @@ Provide a comprehensive posture improvement plan:
                 </div>
                 <Input className="mt-2" placeholder="Other issues not listed above..." value={customIssues} onChange={e => setCustomIssues(e.target.value)} />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div><Label>Age</Label><Input type="number" placeholder="30" value={age} onChange={e => setAge(e.target.value)} /></div>
+                <div><Label>Weight (kg)</Label><Input type="number" placeholder="70" value={weight} onChange={e => setWeight(e.target.value)} /></div>
+                <div><Label>Height (cm)</Label><Input type="number" placeholder="175" value={height} onChange={e => setHeight(e.target.value)} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div><Label>Hours Seated Daily</Label><Input type="number" placeholder="8" value={hoursSeated} onChange={e => setHoursSeated(e.target.value)} /></div>
+                <div><Label>Screen Time (hrs)</Label><Input type="number" placeholder="6" value={screenTime} onChange={e => setScreenTime(e.target.value)} /></div>
               </div>
               <div>
                 <Label>Occupation</Label>
@@ -136,6 +152,8 @@ Provide a comprehensive posture improvement plan:
               <div><Label>Workspace Setup</Label><ChipSelect options={['basic', 'ergonomic-chair', 'standing-desk', 'full-ergonomic']} value={workSetup} onChange={setWorkSetup} /></div>
               <div><Label>Sleep Position</Label><ChipSelect options={['back', 'side', 'stomach', 'varies']} value={sleepPosition} onChange={setSleepPosition} /></div>
               <div><Label>Stress Level</Label><ChipSelect options={['low', 'moderate', 'high', 'very-high']} value={stressLevel} onChange={setStressLevel} /></div>
+              <div><Label>Footwear Type</Label><Input placeholder="Flat shoes, heels, sneakers, barefoot..." value={footwear} onChange={e => setFootwear(e.target.value)} /></div>
+              <div><Label>Hobbies / Physical Activities</Label><Input placeholder="Gaming, yoga, swimming, guitar..." value={hobbyActivities} onChange={e => setHobbyActivities(e.target.value)} /></div>
               <div><Label>Previous Treatment</Label><Input placeholder="Physical therapy, chiropractor, none..." value={previousTreatment} onChange={e => setPreviousTreatment(e.target.value)} /></div>
               <div><Label>Your Goals</Label><Textarea placeholder="Pain-free desk work, better athletic performance, fix rounded shoulders..." value={goals} onChange={e => setGoals(e.target.value)} rows={2} /></div>
             </div>

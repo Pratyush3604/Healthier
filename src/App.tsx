@@ -9,7 +9,6 @@ import SymptomsPage from "@/pages/SymptomsPage";
 import VitalsPage from "@/pages/VitalsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import ChatPage from "@/pages/ChatPage";
-import AIDoctorPage from "@/pages/AIDoctorPage";
 import FirstAidPage from "@/pages/FirstAidPage";
 import HealthTipsPage from "@/pages/HealthTipsPage";
 import EmergencyPage from "@/pages/EmergencyPage";
@@ -45,7 +44,6 @@ const App = () => (
             <Route path="/skin-injury" element={<SkinInjuryPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/chat" element={<ChatPage />} />
-            <Route path="/ai-doctor" element={<AIDoctorPage />} />
             <Route path="/fitness" element={<FitnessPage />} />
             <Route path="/medicine-info" element={<MedicineInfoPage />} />
             <Route path="/bmi-calculator" element={<BMICalculatorPage />} />

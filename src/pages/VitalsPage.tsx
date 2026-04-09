@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useAIStream } from '@/hooks/useAIStream';
+import { AIResponseCard } from '@/components/AIResponseCard';
 
 interface VitalSigns {
   heart_rate?: number;
@@ -12,8 +14,6 @@ interface VitalSigns {
   temperature?: number;
   blood_pressure: string;
 }
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/medical-chat`;
 
 const vitalRanges: Record<string, { min: number; max: number; label: string }> = {
   heart_rate: { min: 60, max: 100, label: 'Normal: 60-100 bpm' },
@@ -23,9 +23,12 @@ const vitalRanges: Record<string, { min: number; max: number; label: string }> =
 
 export default function VitalsPage() {
   const [vitals, setVitals] = useState<VitalSigns>({ heart_rate: undefined, spo2: undefined, temperature: undefined, blood_pressure: '' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [analysis, setAnalysis] = useState<string | null>(null);
+  const [age, setAge] = useState('');
+  const [conditions, setConditions] = useState('');
+  const [medications, setMedications] = useState('');
+  const [recentActivity, setRecentActivity] = useState('');
   const { toast } = useToast();
+  const ai = useAIStream({ type: 'vitals-analysis' });
 
   const getVitalStatus = (key: string, value: number | undefined) => {
     if (value === undefined) return 'neutral';
@@ -46,59 +49,44 @@ export default function VitalsPage() {
   };
 
   const handleSubmit = async () => {
-    setIsLoading(true);
-    setAnalysis(null);
+    const prompt = `Analyze these vital signs:
+- Heart Rate: ${vitals.heart_rate || 'Not provided'} bpm
+- SpO2: ${vitals.spo2 || 'Not provided'}%
+- Temperature: ${vitals.temperature || 'Not provided'}°F
+- Blood Pressure: ${vitals.blood_pressure || 'Not provided'}
+${age ? `- Age: ${age}` : ''}
+${conditions ? `- Pre-existing conditions: ${conditions}` : ''}
+${medications ? `- Current medications: ${medications}` : ''}
+${recentActivity ? `- Recent activity: ${recentActivity}` : ''}
 
-    const prompt = `Please analyze these vital signs:\n- Heart Rate: ${vitals.heart_rate || 'Not provided'} bpm\n- SpO2: ${vitals.spo2 || 'Not provided'}%\n- Temperature: ${vitals.temperature || 'Not provided'}°F\n- Blood Pressure: ${vitals.blood_pressure || 'Not provided'}`;
+IMPORTANT: Do NOT prescribe medications. Only provide lifestyle and self-care suggestions.
+
+Start with empathy, then provide EXACTLY these sections:
+
+## Possible Conditions
+What these vital signs might indicate.
+
+## Urgency Level
+Emergency / Urgent / Non-urgent / Self-care with explanation.
+
+## Recommended Actions
+Safe home remedies and lifestyle adjustments. Do NOT prescribe medicines.
+
+## When to Seek Professional Care
+Clear warning signs requiring medical attention.
+
+## Possible Causes
+Lifestyle or environmental factors that could explain these readings.`;
 
     try {
-      const response = await fetch(CHAT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: [{ role: 'user', content: prompt }],
-          type: 'vitals-analysis',
-        }),
-      });
-
-      if (response.status === 429) {
-        toast({ title: 'Rate Limited', description: 'Please wait a moment and try again.', variant: 'destructive' });
-        return;
+      const result = await ai.stream([{ role: 'user', content: prompt }]);
+      if (result) {
+        const existing = JSON.parse(localStorage.getItem('healthier-reports') || '[]');
+        existing.push({ id: `vitals-${Date.now()}`, type: 'vitals', title: 'Vital Signs Analysis', date: new Date().toISOString().split('T')[0], summary: `HR: ${vitals.heart_rate || '-'}, SpO2: ${vitals.spo2 || '-'}, Temp: ${vitals.temperature || '-'}, BP: ${vitals.blood_pressure || '-'}`, details: result });
+        localStorage.setItem('healthier-reports', JSON.stringify(existing));
       }
-      if (!response.ok || !response.body) throw new Error('Failed');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let fullContent = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = buffer.indexOf('\n')) !== -1) {
-          let line = buffer.slice(0, idx);
-          buffer = buffer.slice(idx + 1);
-          if (line.endsWith('\r')) line = line.slice(0, -1);
-          if (!line.startsWith('data: ') || line.trim() === '') continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') break;
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) { fullContent += content; setAnalysis(fullContent); }
-          } catch { buffer = line + '\n' + buffer; break; }
-        }
-      }
-    } catch (error) {
-      console.error('Analysis error:', error);
+    } catch {
       toast({ title: 'Error', description: 'Failed to analyze vitals.', variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -106,7 +94,7 @@ export default function VitalsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
           <div className="icon-container-accent w-16 h-16 mx-auto mb-4"><Activity className="h-8 w-8" /></div>
           <h1 className="font-display text-3xl font-bold mb-2">Vital Signs Monitoring</h1>
@@ -150,8 +138,18 @@ export default function VitalsPage() {
               <Input type="text" placeholder="120/80" value={vitals.blood_pressure} onChange={(e) => setVitals({ ...vitals, blood_pressure: e.target.value })} className="text-lg" />
             </motion.div>
 
-            <Button onClick={handleSubmit} disabled={!hasAnyVital || isLoading} className="w-full" size="lg">
-              {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzing...</> : <><Activity className="mr-2 h-4 w-4" />Analyze Vitals</>}
+            <div className="bg-card rounded-2xl p-6 border border-border shadow-soft space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Additional Context</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Age</Label><Input type="number" placeholder="30" value={age} onChange={e => setAge(e.target.value)} /></div>
+                <div><Label>Recent Activity</Label><Input placeholder="Just exercised, resting..." value={recentActivity} onChange={e => setRecentActivity(e.target.value)} /></div>
+              </div>
+              <div><Label>Pre-existing Conditions</Label><Input placeholder="Hypertension, diabetes..." value={conditions} onChange={e => setConditions(e.target.value)} /></div>
+              <div><Label>Current Medications</Label><Input placeholder="Beta blockers, insulin..." value={medications} onChange={e => setMedications(e.target.value)} /></div>
+            </div>
+
+            <Button onClick={handleSubmit} disabled={!hasAnyVital || ai.isLoading} className="w-full" size="lg">
+              {ai.isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzing...</> : <><Activity className="mr-2 h-4 w-4" />Analyze Vitals</>}
             </Button>
           </div>
 
@@ -178,12 +176,16 @@ export default function VitalsPage() {
               </div>
             </div>
 
-            {analysis && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl p-6 border border-border shadow-soft">
-                <div className="flex items-center gap-3 mb-4"><Activity className="h-6 w-6 text-primary" /><h3 className="font-semibold text-lg">AI Analysis</h3></div>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{analysis}</p>
-              </motion.div>
-            )}
+            <AIResponseCard
+              content={ai.response}
+              isLoading={ai.isLoading}
+              icon={<Activity className="h-5 w-5 text-primary" />}
+              title="AI Analysis"
+              emptyIcon={<Activity className="h-16 w-16" />}
+              emptyTitle="Enter Your Vitals"
+              emptyDescription="Fill in your vital signs and click Analyze for an AI assessment"
+              showDisclaimer={false}
+            />
 
             <div className="flex items-start gap-3 p-4 rounded-xl bg-warning/5 border border-warning/20">
               <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />

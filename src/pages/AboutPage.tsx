@@ -5,10 +5,11 @@ import pratyushImg from '@/assets/pratyush.jpeg';
 export default function AboutPage() {
   const capabilities = [
     'Symptom Checker (100+ symptoms)', 'Injury Detection with Camera', 'AI Skin Analyzer',
-    'Vital Signs Monitoring', 'Medical Report Analysis', 'Voice AI Doctor',
+    'Vital Signs Monitoring', 'Medical Report Analysis',
     'AI Chat Consultation', 'Diet Planner', 'Workout Planner',
-    'Sleep Analysis', 'Medicine Information', 'First Aid Guide (100+ guides)',
+    'Medicine Information', 'First Aid Guide (100+ guides)',
     'Health Tips (150+ tips)', 'Emergency Contacts (40+ countries)',
+    'Posture Corrector', 'Health Calculator', 'Medication Reminders',
   ];
 
   return (
@@ -20,7 +21,7 @@ export default function AboutPage() {
             <img src={pratyushImg} alt="Pratyush Dalmia" className="w-full h-full object-cover" />
           </motion.div>
           <h1 className="font-display text-4xl font-bold mb-2">About Me</h1>
-          <p className="text-xl text-muted-foreground">The Creator of Healtify</p>
+          <p className="text-xl text-muted-foreground">The Creator of Healthier</p>
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -40,7 +41,7 @@ export default function AboutPage() {
                 I'm a student who loves technology, robotics, AI, and innovation. My dream is to build solutions that create real impact and leave a mark that lasts for generations.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">Healtify</strong> originally started as an idea for WRO (World Robot Olympiad), but over time it evolved into a full-fledged AI-powered health assistant.
+                <strong className="text-foreground">Healthier</strong> originally started as an idea for WRO (World Robot Olympiad), but over time it evolved into a full-fledged AI-powered health assistant.
               </p>
             </div>
           </div>
@@ -52,7 +53,7 @@ export default function AboutPage() {
             <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-secondary">
               <Sparkles className="h-6 w-6 text-primary-foreground" />
             </div>
-            <h2 className="font-display text-xl font-bold">What Healtify Can Do</h2>
+            <h2 className="font-display text-xl font-bold">What Healthier Can Do</h2>
           </div>
           <div className="flex flex-wrap gap-3">
             {capabilities.map((cap, index) => (
@@ -70,9 +71,9 @@ export default function AboutPage() {
             <div className="w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-accent">
               <Heart className="h-7 w-7 text-white" />
             </div>
-            <h2 className="font-display text-xl font-bold mb-4 text-primary">🙏 My Mentors</h2>
+            <h2 className="font-display text-xl font-bold mb-4 text-primary">🙏 My Mentor</h2>
             <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              I sincerely thank <strong className="text-foreground">Mr. Akash Deep Rawat</strong> and <strong className="text-foreground">Mr. Chirag Saraswat</strong> for their constant support, guidance, and motivation in turning this vision into reality.
+              I sincerely thank <strong className="text-foreground">Mr. Akash Deep Rawat</strong> for his constant support, guidance, and motivation in turning this vision into reality.
             </p>
           </div>
         </motion.div>
