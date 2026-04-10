@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Stethoscope, Activity, FileText, MessageCircle,
-  BookOpen, Lightbulb, Phone, ArrowRight, Shield, Zap, Heart,
+  BookOpen, Lightbulb, Phone, Shield, Zap, Heart,
   Sparkles, Pill, Scan, Calculator,
   ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle
 } from 'lucide-react';
+import { FloatingBackground } from '@/components/FloatingBackground';
+import { ScrollReveal } from '@/components/ScrollReveal';
 
 const categories = {
   'AI Diagnostics': [
@@ -40,15 +42,13 @@ const stats = [
   { value: 'Private', label: '& Secure', icon: Lock },
 ];
 
-const container = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.04 } } };
-const item = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
-
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <FloatingBackground variant="home" count={24} />
+
       {/* Hero */}
       <section className="relative py-24 lg:py-36 overflow-hidden">
-        {/* Animated background blobs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <motion.div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl"
             animate={{ x: [0, 40, 0], y: [0, 30, 0], scale: [1, 1.1, 1] }}
@@ -72,7 +72,7 @@ export default function HomePage() {
           </svg>
         </div>
 
-        <div className="container mx-auto px-4 relative">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div className="max-w-3xl mx-auto text-center" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <motion.div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 border border-primary/15 mb-8"
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
@@ -90,93 +90,101 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base">
+              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base hover:scale-105 active:scale-95 transition-transform">
                 <HelpCircle className="w-4 h-4" /> How to Use
               </Link>
-              <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base">
+              <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base hover:scale-105 active:scale-95 transition-transform">
                 <MessageCircle className="w-4 h-4" /> Chat with AI
               </Link>
             </div>
           </motion.div>
 
-          <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16 max-w-2xl mx-auto" variants={container} initial="hidden" animate="visible">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16 max-w-2xl mx-auto">
             {stats.map((s, i) => {
               const Icon = s.icon;
               return (
-                <motion.div key={i} variants={item} className="bg-card rounded-xl border border-border p-5 text-center">
-                  <Icon className="w-5 h-5 text-primary mx-auto mb-2" />
-                  <div className="text-xl font-bold font-display">{s.value}</div>
-                  <div className="text-xs text-muted-foreground">{s.label}</div>
-                </motion.div>
+                <ScrollReveal key={i} delay={i * 0.08}>
+                  <div className="bg-card rounded-xl border border-border p-5 text-center hover:shadow-glow hover:border-primary/20 hover:scale-105 transition-all duration-300">
+                    <Icon className="w-5 h-5 text-primary mx-auto mb-2" />
+                    <div className="text-xl font-bold font-display">{s.value}</div>
+                    <div className="text-xs text-muted-foreground">{s.label}</div>
+                  </div>
+                </ScrollReveal>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Categorized Features */}
-      <section className="py-20 border-t border-border">
+      <section className="py-20 border-t border-border relative z-10">
         <div className="container mx-auto px-4">
-          <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl sm:text-4xl font-bold font-display mb-3">All Your Health Tools</h2>
-            <p className="text-muted-foreground">Powerful tools organized by category</p>
-          </motion.div>
+          <ScrollReveal>
+            <div className="text-center mb-14">
+              <h2 className="text-3xl sm:text-4xl font-bold font-display mb-3">All Your Health Tools</h2>
+              <p className="text-muted-foreground">Powerful tools organized by category</p>
+            </div>
+          </ScrollReveal>
 
           <div className="space-y-12">
-            {Object.entries(categories).map(([categoryName, tools]) => (
-              <motion.div key={categoryName} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                <h3 className="text-lg font-semibold font-display mb-4 flex items-center gap-2">
-                  <ChevronRight className="w-5 h-5 text-primary" />
-                  {categoryName}
-                  <span className="text-xs text-muted-foreground font-normal ml-1">({tools.length})</span>
-                </h3>
-                <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" variants={container} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                  {tools.map((f, i) => {
-                    const Icon = f.icon;
-                    return (
-                      <motion.div key={i} variants={item}>
-                        <Link to={f.link} className="block bg-card rounded-2xl border border-border p-5 hover:border-primary/25 hover:shadow-glow transition-all duration-300 group h-full">
-                          <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 group-hover:scale-105 transition-all">
-                              <Icon className="w-5 h-5 text-primary" />
+            {Object.entries(categories).map(([categoryName, tools], catIdx) => (
+              <ScrollReveal key={categoryName} delay={catIdx * 0.05}>
+                <div>
+                  <h3 className="text-lg font-semibold font-display mb-4 flex items-center gap-2">
+                    <ChevronRight className="w-5 h-5 text-primary" />
+                    {categoryName}
+                    <span className="text-xs text-muted-foreground font-normal ml-1">({tools.length})</span>
+                  </h3>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                    {tools.map((f, i) => {
+                      const Icon = f.icon;
+                      return (
+                        <ScrollReveal key={i} delay={i * 0.05}>
+                          <Link to={f.link} className="block bg-card rounded-2xl border border-border p-5 hover:border-primary/25 hover:shadow-glow hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 group h-full">
+                            <div className="flex items-start gap-4">
+                              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 group-hover:scale-110 transition-all duration-300">
+                                <Icon className="w-5 h-5 text-primary" />
+                              </div>
+                              <div className="min-w-0">
+                                <h3 className="text-sm font-semibold mb-0.5 group-hover:text-primary transition-colors">{f.title}</h3>
+                                <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
+                              </div>
                             </div>
-                            <div className="min-w-0">
-                              <h3 className="text-sm font-semibold mb-0.5 group-hover:text-primary transition-colors">{f.title}</h3>
-                              <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
-                            </div>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
-              </motion.div>
+                          </Link>
+                        </ScrollReveal>
+                      );
+                    })}
+                  </div>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* Safety */}
-      <section className="py-16 border-t border-border">
+      <section className="py-16 border-t border-border relative z-10">
         <div className="container mx-auto px-4">
-          <motion.div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border p-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
-                <Shield className="w-6 h-6 text-warning" />
-              </div>
-              <div>
-                <h3 className="font-bold text-base mb-2 font-display">For Basic Diagnostics Only</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  Healthier provides preliminary health assessments. It is <strong className="text-foreground">not a replacement</strong> for professional medical care.
-                </p>
-                <ul className="space-y-1.5 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-destructive" />For emergencies, call your local emergency number</li>
-                  <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-warning" />Always consult a doctor for serious symptoms</li>
-                  <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-success" />Use Healthier for basic questions & wellness</li>
-                </ul>
+          <ScrollReveal>
+            <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border p-8 hover:shadow-elevated transition-shadow duration-300">
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
+                  <Shield className="w-6 h-6 text-warning" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base mb-2 font-display">For Basic Diagnostics Only</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    Healthier provides preliminary health assessments. It is <strong className="text-foreground">not a replacement</strong> for professional medical care.
+                  </p>
+                  <ul className="space-y-1.5 text-sm text-muted-foreground">
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-destructive" />For emergencies, call your local emergency number</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-warning" />Always consult a doctor for serious symptoms</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-success" />Use Healthier for basic questions & wellness</li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </motion.div>
+          </ScrollReveal>
         </div>
       </section>
     </div>
