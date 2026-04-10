@@ -7,13 +7,15 @@ import { Label } from '@/components/ui/label';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/PageHeader';
+import { FloatingBackground } from '@/components/FloatingBackground';
+import { ScrollReveal } from '@/components/ScrollReveal';
 import { cn } from '@/lib/utils';
 
 interface Medication {
   id: string;
   name: string;
   times: string[];
-  days: string[]; // e.g. ['Mon','Tue','Wed']
+  days: string[];
 }
 
 const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -91,130 +93,138 @@ export default function MedicationReminderPage() {
   }, [checkAlarms]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto">
-        <PageHeader
-          icon={<Pill className="h-8 w-8 text-primary-foreground" />}
-          title="Medication Reminders"
-          description="Add your meds, times, and days — get alerted when it's time"
-          gradient="from-primary to-secondary"
-          showEmergency={false}
-        />
+    <div className="relative">
+      <FloatingBackground variant="medication" />
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className="max-w-2xl mx-auto">
+          <PageHeader
+            icon={<Pill className="h-8 w-8 text-primary-foreground" />}
+            title="Medication Reminders"
+            description="Add your meds, times, and days — get alerted when it's time"
+            gradient="from-primary to-secondary"
+            showEmergency={false}
+          />
 
-        <div className="flex justify-end mb-6">
-          <Button onClick={() => { resetForm(); setShowForm(!showForm); }} className="gap-2">
-            <Plus className="w-4 h-4" /> Add Medication
-          </Button>
-        </div>
+          <ScrollReveal>
+            <div className="flex justify-end mb-6">
+              <Button onClick={() => { resetForm(); setShowForm(!showForm); }} className="gap-2 hover:scale-105 active:scale-95 transition-transform">
+                <Plus className="w-4 h-4" /> Add Medication
+              </Button>
+            </div>
+          </ScrollReveal>
 
-        <AnimatePresence>
-          {alarmActive && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="mb-4 p-4 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Volume2 className="w-6 h-6 text-primary animate-pulse" />
-                <span className="font-semibold">Time to take: {alarmActive}</span>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => setAlarmActive(null)}>Dismiss</Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {showForm && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-              className="bg-card rounded-2xl p-6 border border-border shadow-soft mb-6 overflow-hidden space-y-4">
-              <h3 className="font-semibold text-lg">{editId ? 'Edit' : 'Add'} Medication</h3>
-              <div>
-                <Label>Medication Name *</Label>
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Aspirin, Vitamin D" className="mt-1.5" />
-              </div>
-              <div>
-                <Label>Reminder Times</Label>
-                <div className="space-y-2 mt-2">
-                  {times.map((t, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <Input type="time" value={t} onChange={e => updateTime(i, e.target.value)} className="w-40" />
-                      {times.length > 1 && (
-                        <button onClick={() => removeTime(i)} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+          <AnimatePresence>
+            {alarmActive && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className="mb-4 p-4 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Volume2 className="w-6 h-6 text-primary animate-pulse" />
+                  <span className="font-semibold">Time to take: {alarmActive}</span>
                 </div>
-                <Button variant="ghost" size="sm" onClick={addTime} className="mt-2 text-primary"><Plus className="w-3 h-3 mr-1" />Add time</Button>
-              </div>
-              <div>
-                <Label>Days of the Week</Label>
-                <div className="flex gap-2 mt-2">
-                  {ALL_DAYS.map(d => (
-                    <button key={d} onClick={() => toggleDay(d)}
-                      className={cn("w-10 h-10 rounded-full text-xs font-semibold transition-all",
-                        days.includes(d) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80')}>
-                      {d}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex gap-2 mt-2">
-                  <Button variant="ghost" size="sm" onClick={() => setDays([...ALL_DAYS])} className="text-xs text-primary">All days</Button>
-                  <Button variant="ghost" size="sm" onClick={() => setDays(['Mon','Tue','Wed','Thu','Fri'])} className="text-xs text-primary">Weekdays</Button>
-                  <Button variant="ghost" size="sm" onClick={() => setDays(['Sat','Sun'])} className="text-xs text-primary">Weekends</Button>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <Button onClick={handleSave}><Check className="w-4 h-4 mr-1" />{editId ? 'Update' : 'Save'}</Button>
-                <Button variant="outline" onClick={resetForm}>Cancel</Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <Button size="sm" variant="outline" onClick={() => setAlarmActive(null)}>Dismiss</Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        {medications.length === 0 ? (
-          <div className="text-center py-16">
-            <Bell className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No medications added</h3>
-            <p className="text-muted-foreground text-sm">Add your meds to get reminded at the right times.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {medications.map((med, i) => (
-              <motion.div key={med.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                className="bg-card rounded-2xl p-5 border border-border shadow-soft">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                      <Pill className="w-6 h-6 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">{med.name}</h3>
-                      <div className="flex flex-wrap gap-1.5 mt-1">
-                        {med.times.map((t, j) => (
-                          <span key={j} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                            <Clock className="w-3 h-3" />{t}
-                          </span>
-                        ))}
+          <AnimatePresence>
+            {showForm && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                className="bg-card rounded-2xl p-6 border border-border shadow-soft mb-6 overflow-hidden space-y-4">
+                <h3 className="font-semibold text-lg">{editId ? 'Edit' : 'Add'} Medication</h3>
+                <div>
+                  <Label>Medication Name *</Label>
+                  <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Aspirin, Vitamin D" className="mt-1.5" />
+                </div>
+                <div>
+                  <Label>Reminder Times</Label>
+                  <div className="space-y-2 mt-2">
+                    {times.map((t, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Input type="time" value={t} onChange={e => updateTime(i, e.target.value)} className="w-40" />
+                        {times.length > 1 && (
+                          <button onClick={() => removeTime(i)} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {(med.days || ALL_DAYS).map(d => (
-                          <span key={d} className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px] font-medium">{d}</span>
-                        ))}
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(med)} className="p-2 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete(med.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <Button variant="ghost" size="sm" onClick={addTime} className="mt-2 text-primary"><Plus className="w-3 h-3 mr-1" />Add time</Button>
+                </div>
+                <div>
+                  <Label>Days of the Week</Label>
+                  <div className="flex gap-2 mt-2">
+                    {ALL_DAYS.map(d => (
+                      <button key={d} onClick={() => toggleDay(d)}
+                        className={cn("w-10 h-10 rounded-full text-xs font-semibold transition-all duration-200 hover:scale-110 active:scale-95",
+                          days.includes(d) ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-muted text-muted-foreground hover:bg-muted/80')}>
+                        {d}
+                      </button>
+                    ))}
                   </div>
+                  <div className="flex gap-2 mt-2">
+                    <Button variant="ghost" size="sm" onClick={() => setDays([...ALL_DAYS])} className="text-xs text-primary">All days</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setDays(['Mon','Tue','Wed','Thu','Fri'])} className="text-xs text-primary">Weekdays</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setDays(['Sat','Sun'])} className="text-xs text-primary">Weekends</Button>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button onClick={handleSave} className="hover:scale-105 active:scale-95 transition-transform"><Check className="w-4 h-4 mr-1" />{editId ? 'Update' : 'Save'}</Button>
+                  <Button variant="outline" onClick={resetForm} className="hover:scale-105 active:scale-95 transition-transform">Cancel</Button>
                 </div>
               </motion.div>
-            ))}
-          </div>
-        )}
+            )}
+          </AnimatePresence>
+
+          {medications.length === 0 ? (
+            <ScrollReveal>
+              <div className="text-center py-16">
+                <Bell className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No medications added</h3>
+                <p className="text-muted-foreground text-sm">Add your meds to get reminded at the right times.</p>
+              </div>
+            </ScrollReveal>
+          ) : (
+            <div className="space-y-3">
+              {medications.map((med, i) => (
+                <ScrollReveal key={med.id} delay={i * 0.05}>
+                  <div className="bg-card rounded-2xl p-5 border border-border shadow-soft hover:shadow-elevated hover:border-primary/20 transition-all duration-300">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                          <Pill className="w-6 h-6 text-primary-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg">{med.name}</h3>
+                          <div className="flex flex-wrap gap-1.5 mt-1">
+                            {med.times.map((t, j) => (
+                              <span key={j} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                                <Clock className="w-3 h-3" />{t}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {(med.days || ALL_DAYS).map(d => (
+                              <span key={d} className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px] font-medium">{d}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEdit(med)} className="p-2 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary hover:scale-110 transition-all">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDelete(med.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive hover:scale-110 transition-all">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
