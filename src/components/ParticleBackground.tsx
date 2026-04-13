@@ -73,8 +73,12 @@ interface ParticleBackgroundProps {
 }
 
 export function ParticleBackground({ variant = 'default' }: ParticleBackgroundProps) {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => setReady(true));
   }, []);
 
   const options: ISourceOptions = useMemo(() => {
@@ -97,13 +101,14 @@ export function ParticleBackground({ variant = 'default' }: ParticleBackgroundPr
     };
   }, [variant]);
 
+  if (!ready) return null;
+
   return (
     <Particles
       id={`tsparticles-${variant}`}
       className="fixed inset-0 z-0 pointer-events-none"
       style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
       options={options}
-      init={particlesInit}
     />
   );
 }
