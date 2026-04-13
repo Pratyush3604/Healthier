@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import Particles from '@tsparticles/react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
+import Particles, { initParticlesEngine } from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
-import type { Engine, ISourceOptions } from '@tsparticles/engine';
+import type { ISourceOptions } from '@tsparticles/engine';
 
 const pageConfigs: Record<string, Partial<ISourceOptions>> = {
   home: {
