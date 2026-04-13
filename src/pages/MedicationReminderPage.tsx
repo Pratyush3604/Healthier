@@ -8,6 +8,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useToast } from '@/hooks/use-toast';
 import { PageHeader } from '@/components/PageHeader';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { cn } from '@/lib/utils';
 
@@ -94,6 +95,7 @@ export default function MedicationReminderPage() {
 
   return (
     <div className="relative">
+      <ParticleBackground variant="medication" />
       <FloatingBackground variant="medication" />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-2xl mx-auto">

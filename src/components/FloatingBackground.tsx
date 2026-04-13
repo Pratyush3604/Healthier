@@ -55,7 +55,7 @@ export function FloatingBackground({ variant = 'default', count = 18 }: Floating
         size: 16 + Math.random() * 20,
         duration: 15 + Math.random() * 25,
         delay: Math.random() * -20,
-        opacity: 0.03 + Math.random() * 0.05,
+        opacity: 0.02 + Math.random() * 0.04,
         rotation: Math.random() * 360,
       });
     }

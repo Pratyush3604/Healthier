@@ -10,6 +10,7 @@ import { AIResponseCard } from '@/components/AIResponseCard';
 import { PageHeader } from '@/components/PageHeader';
 import { ChipSelect } from '@/components/ChipSelect';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { cn } from '@/lib/utils';
 
@@ -112,6 +113,7 @@ For each day: exercise name, sets × reps, rest time, brief form cue. Keep exerc
 
   return (
     <div className="relative">
+      <ParticleBackground variant="fitness" />
       <FloatingBackground variant="fitness" />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">

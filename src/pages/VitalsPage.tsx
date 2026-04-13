@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAIStream } from '@/hooks/useAIStream';
 import { AIResponseCard } from '@/components/AIResponseCard';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 
 interface VitalSigns {
@@ -96,6 +97,7 @@ Lifestyle or environmental factors that could explain these readings.`;
 
   return (
     <div className="relative">
+      <ParticleBackground variant="vitals" />
       <FloatingBackground variant="vitals" />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">

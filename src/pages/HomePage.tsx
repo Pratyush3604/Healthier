@@ -1,13 +1,18 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Stethoscope, Activity, FileText, MessageCircle,
   BookOpen, Lightbulb, Phone, Shield, Zap, Heart,
   Sparkles, Pill, Scan, Calculator,
-  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle
+  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle, Globe, X
 } from 'lucide-react';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const categories = {
   'AI Diagnostics': [
@@ -42,9 +47,33 @@ const stats = [
   { value: 'Private', label: '& Secure', icon: Lock },
 ];
 
+const allLanguages = [
+  'English', 'Hindi', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Japanese', 'Korean',
+  'Chinese (Simplified)', 'Chinese (Traditional)', 'Arabic', 'Bengali', 'Punjabi', 'Turkish', 'Vietnamese',
+  'Thai', 'Dutch', 'Polish', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Greek', 'Czech', 'Romanian',
+  'Hungarian', 'Indonesian', 'Malay', 'Filipino', 'Ukrainian', 'Hebrew', 'Persian', 'Urdu', 'Tamil',
+  'Telugu', 'Kannada', 'Malayalam', 'Marathi', 'Gujarati', 'Nepali', 'Sinhala', 'Burmese', 'Khmer',
+  'Lao', 'Swahili', 'Amharic', 'Yoruba', 'Igbo', 'Zulu',
+  'Afrikaans', 'Albanian', 'Armenian', 'Azerbaijani', 'Basque', 'Belarusian', 'Bosnian', 'Bulgarian',
+  'Catalan', 'Cebuano', 'Corsican', 'Croatian', 'Esperanto', 'Estonian', 'Fijian', 'Galician',
+  'Georgian', 'Haitian Creole', 'Hausa', 'Hawaiian', 'Hmong', 'Icelandic', 'Irish', 'Javanese',
+  'Kazakh', 'Kinyarwanda', 'Kurdish', 'Kyrgyz', 'Latin', 'Latvian', 'Lithuanian', 'Luxembourgish',
+  'Macedonian', 'Malagasy', 'Maltese', 'Maori', 'Mongolian', 'Myanmar', 'Odia', 'Pashto',
+  'Samoan', 'Scots Gaelic', 'Serbian', 'Sesotho', 'Shona', 'Sindhi', 'Slovak', 'Slovenian',
+  'Somali', 'Sundanese', 'Tajik', 'Tatar', 'Tigrinya', 'Tongan', 'Turkmen', 'Twi',
+  'Uyghur', 'Uzbek', 'Welsh', 'Xhosa', 'Yiddish',
+  'Assamese', 'Bhojpuri', 'Dogri', 'Konkani', 'Maithili', 'Manipuri', 'Sanskrit', 'Santali', 'Bodo',
+];
+
 export default function HomePage() {
+  const [langOpen, setLangOpen] = useState(false);
+  const [langSearch, setLangSearch] = useState('');
+  const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
+  const filteredLangs = allLanguages.filter(l => l.toLowerCase().includes(langSearch.toLowerCase()));
+
   return (
     <div className="min-h-screen relative">
+      <ParticleBackground variant="home" />
       <FloatingBackground variant="home" count={24} />
 
       {/* Hero */}
@@ -90,14 +119,46 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base hover:scale-105 active:scale-95 transition-transform">
+              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base">
                 <HelpCircle className="w-4 h-4" /> How to Use
               </Link>
-              <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base hover:scale-105 active:scale-95 transition-transform">
+              <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base">
                 <MessageCircle className="w-4 h-4" /> Chat with AI
               </Link>
+              <button onClick={() => setLangOpen(true)} className="btn-secondary flex items-center gap-2 text-base">
+                <Globe className="w-4 h-4" /> {language}
+              </button>
             </div>
           </motion.div>
+
+          {/* Language Picker Modal */}
+          <AnimatePresence>
+            {langOpen && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+                onClick={() => setLangOpen(false)}>
+                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-card rounded-2xl border border-border shadow-xl w-full max-w-lg max-h-[70vh] overflow-hidden flex flex-col"
+                  onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center justify-between p-4 border-b border-border">
+                    <h3 className="font-semibold text-lg flex items-center gap-2"><Globe className="w-5 h-5 text-primary" /> Choose Language</h3>
+                    <button onClick={() => setLangOpen(false)} className="p-2 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
+                  </div>
+                  <div className="p-3 border-b border-border">
+                    <Input placeholder="Search 100+ languages..." value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
+                  </div>
+                  <div className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {filteredLangs.map(l => (
+                      <button key={l} onClick={() => { setLanguage(l); setLangOpen(false); setLangSearch(''); }}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium text-left transition-all card-hover-pop ${language === l ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}>
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16 max-w-2xl mx-auto">
             {stats.map((s, i) => {
@@ -140,7 +201,7 @@ export default function HomePage() {
                       const Icon = f.icon;
                       return (
                         <ScrollReveal key={i} delay={i * 0.05}>
-                          <Link to={f.link} className="block bg-card rounded-2xl border border-border p-5 hover:border-primary/25 hover:shadow-glow hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 group h-full">
+                          <Link to={f.link} className="block bg-card rounded-2xl border border-border p-5 tilt-card card-hover-pop group h-full">
                             <div className="flex items-start gap-4">
                               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 group-hover:scale-110 transition-all duration-300">
                                 <Icon className="w-5 h-5 text-primary" />

@@ -260,8 +260,12 @@
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px hsla(191, 63%, 46%, 0.35);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 28px hsla(191, 63%, 46%, 0.4);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
 }
 
 .btn-secondary {
@@ -274,6 +278,34 @@
 .btn-secondary:hover {
   background: hsl(var(--muted));
   border-color: hsl(var(--primary) / 0.3);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 20px hsla(191, 63%, 46%, 0.12);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+/* ===== GLOBAL CARD HOVER ===== */
+.card-hover-pop {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.card-hover-pop:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 40px hsla(191, 63%, 46%, 0.12), 0 0 20px hsla(191, 63%, 46%, 0.06);
+}
+.card-hover-pop:active {
+  transform: scale(0.98);
+}
+
+/* ===== 3D TILT EFFECT ===== */
+.tilt-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  perspective: 1000px;
+}
+.tilt-card:hover {
+  transform: perspective(800px) rotateX(2deg) rotateY(-2deg) translateY(-4px);
+  box-shadow: 0 16px 48px hsla(191, 63%, 46%, 0.15);
 }
 
 /* ===== CHAT ===== */

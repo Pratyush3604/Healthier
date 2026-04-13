@@ -10,6 +10,7 @@ import { AIResponseCard } from '@/components/AIResponseCard';
 import { PageHeader } from '@/components/PageHeader';
 import { ChipSelect } from '@/components/ChipSelect';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { cn } from '@/lib/utils';
 
@@ -91,6 +92,7 @@ Clear signs that indicate the person should consult a physiotherapist or orthope
 
   return (
     <div className="relative">
+      <ParticleBackground variant="posture" />
       <FloatingBackground variant="posture" />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">

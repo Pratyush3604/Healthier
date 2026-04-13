@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { ChipSelect } from '@/components/ChipSelect';
 import { AIResponseCard } from '@/components/AIResponseCard';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
@@ -41,9 +42,20 @@ export default function SkinInjuryPage() {
 
   const startCamera = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toast({ title: 'Camera Unavailable', description: 'Your browser does not support camera access. Please use the upload option.', variant: 'destructive' });
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
       if (videoRef.current) { videoRef.current.srcObject = stream; streamRef.current = stream; setCameraActive(true); }
-    } catch { toast({ title: 'Camera Error', description: 'Could not access camera.', variant: 'destructive' }); }
+    } catch (err: any) {
+      const name = err?.name || '';
+      let msg = 'Could not access camera.';
+      if (name === 'NotAllowedError') msg = 'Camera permission denied. Please allow camera access in your browser settings.';
+      else if (name === 'NotFoundError') msg = 'No camera found on this device. Please use the upload option.';
+      else if (name === 'NotReadableError') msg = 'Camera is in use by another application.';
+      toast({ title: 'Camera Error', description: msg, variant: 'destructive' });
+    }
   };
 
   const stopCamera = () => { streamRef.current?.getTracks().forEach(t => t.stop()); streamRef.current = null; setCameraActive(false); };
@@ -100,6 +112,7 @@ export default function SkinInjuryPage() {
 
   return (
     <div className="relative">
+      <ParticleBackground variant="skin" />
       <FloatingBackground variant="skin" />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-5xl mx-auto">
@@ -139,13 +152,12 @@ export default function SkinInjuryPage() {
                     </div>
                   )}
                   {!image && !cameraActive && (
-                    <div className="aspect-video flex flex-col items-center justify-center p-8 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => fileInputRef.current?.click()}>
+                    <div className="aspect-video flex flex-col items-center justify-center p-8 bg-muted/30">
                       <Scan className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                      <p className="text-muted-foreground mb-6">Tap here to upload or use the buttons below</p>
+                      <p className="text-muted-foreground mb-6">Use the buttons below to upload or capture</p>
                       <div className="flex gap-3">
-                        <Button onClick={(e) => { e.stopPropagation(); startCamera(); }} size="lg" className="hover:scale-105 active:scale-95 transition-transform"><Camera className="mr-2 h-5 w-5" />Camera</Button>
-                        <Button variant="outline" size="lg" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }} className="hover:scale-105 active:scale-95 transition-transform"><Upload className="mr-2 h-5 w-5" />Upload</Button>
+                        <Button onClick={() => startCamera()} size="lg" className="hover:scale-105 active:scale-95 transition-transform"><Camera className="mr-2 h-5 w-5" />Camera</Button>
+                        <Button variant="outline" size="lg" onClick={() => fileInputRef.current?.click()} className="hover:scale-105 active:scale-95 transition-transform"><Upload className="mr-2 h-5 w-5" />Upload</Button>
                       </div>
                       <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileUpload} className="hidden" />
                     </div>
