@@ -119,14 +119,46 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base hover:scale-105 active:scale-95 transition-transform">
+              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base">
                 <HelpCircle className="w-4 h-4" /> How to Use
               </Link>
-              <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base hover:scale-105 active:scale-95 transition-transform">
+              <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base">
                 <MessageCircle className="w-4 h-4" /> Chat with AI
               </Link>
+              <button onClick={() => setLangOpen(true)} className="btn-secondary flex items-center gap-2 text-base">
+                <Globe className="w-4 h-4" /> {language}
+              </button>
             </div>
           </motion.div>
+
+          {/* Language Picker Modal */}
+          <AnimatePresence>
+            {langOpen && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+                onClick={() => setLangOpen(false)}>
+                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-card rounded-2xl border border-border shadow-xl w-full max-w-lg max-h-[70vh] overflow-hidden flex flex-col"
+                  onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center justify-between p-4 border-b border-border">
+                    <h3 className="font-semibold text-lg flex items-center gap-2"><Globe className="w-5 h-5 text-primary" /> Choose Language</h3>
+                    <button onClick={() => setLangOpen(false)} className="p-2 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
+                  </div>
+                  <div className="p-3 border-b border-border">
+                    <Input placeholder="Search 100+ languages..." value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
+                  </div>
+                  <div className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {filteredLangs.map(l => (
+                      <button key={l} onClick={() => { setLanguage(l); setLangOpen(false); setLangSearch(''); }}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium text-left transition-all card-hover-pop ${language === l ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}>
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16 max-w-2xl mx-auto">
             {stats.map((s, i) => {
