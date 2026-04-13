@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAIStream } from '@/hooks/useAIStream';
 import { AIResponseCard } from '@/components/AIResponseCard';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 
 interface VitalSigns {

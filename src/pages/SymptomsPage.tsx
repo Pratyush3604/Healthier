@@ -10,6 +10,7 @@ import { AIResponseCard } from '@/components/AIResponseCard';
 import { PageHeader } from '@/components/PageHeader';
 import { ChipSelect } from '@/components/ChipSelect';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 
 const symptomCategories = {
