@@ -1,13 +1,18 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Stethoscope, Activity, FileText, MessageCircle,
   BookOpen, Lightbulb, Phone, Shield, Zap, Heart,
   Sparkles, Pill, Scan, Calculator,
-  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle
+  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle, Globe, X
 } from 'lucide-react';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const categories = {
   'AI Diagnostics': [
@@ -42,9 +47,33 @@ const stats = [
   { value: 'Private', label: '& Secure', icon: Lock },
 ];
 
+const allLanguages = [
+  'English', 'Hindi', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Japanese', 'Korean',
+  'Chinese (Simplified)', 'Chinese (Traditional)', 'Arabic', 'Bengali', 'Punjabi', 'Turkish', 'Vietnamese',
+  'Thai', 'Dutch', 'Polish', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Greek', 'Czech', 'Romanian',
+  'Hungarian', 'Indonesian', 'Malay', 'Filipino', 'Ukrainian', 'Hebrew', 'Persian', 'Urdu', 'Tamil',
+  'Telugu', 'Kannada', 'Malayalam', 'Marathi', 'Gujarati', 'Nepali', 'Sinhala', 'Burmese', 'Khmer',
+  'Lao', 'Swahili', 'Amharic', 'Yoruba', 'Igbo', 'Zulu',
+  'Afrikaans', 'Albanian', 'Armenian', 'Azerbaijani', 'Basque', 'Belarusian', 'Bosnian', 'Bulgarian',
+  'Catalan', 'Cebuano', 'Corsican', 'Croatian', 'Esperanto', 'Estonian', 'Fijian', 'Galician',
+  'Georgian', 'Haitian Creole', 'Hausa', 'Hawaiian', 'Hmong', 'Icelandic', 'Irish', 'Javanese',
+  'Kazakh', 'Kinyarwanda', 'Kurdish', 'Kyrgyz', 'Latin', 'Latvian', 'Lithuanian', 'Luxembourgish',
+  'Macedonian', 'Malagasy', 'Maltese', 'Maori', 'Mongolian', 'Myanmar', 'Odia', 'Pashto',
+  'Samoan', 'Scots Gaelic', 'Serbian', 'Sesotho', 'Shona', 'Sindhi', 'Slovak', 'Slovenian',
+  'Somali', 'Sundanese', 'Tajik', 'Tatar', 'Tigrinya', 'Tongan', 'Turkmen', 'Twi',
+  'Uyghur', 'Uzbek', 'Welsh', 'Xhosa', 'Yiddish',
+  'Assamese', 'Bhojpuri', 'Dogri', 'Konkani', 'Maithili', 'Manipuri', 'Sanskrit', 'Santali', 'Bodo',
+];
+
 export default function HomePage() {
+  const [langOpen, setLangOpen] = useState(false);
+  const [langSearch, setLangSearch] = useState('');
+  const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
+  const filteredLangs = allLanguages.filter(l => l.toLowerCase().includes(langSearch.toLowerCase()));
+
   return (
     <div className="min-h-screen relative">
+      <ParticleBackground variant="home" />
       <FloatingBackground variant="home" count={24} />
 
       {/* Hero */}
