@@ -19,6 +19,15 @@ const languages = [
   'Hungarian', 'Indonesian', 'Malay', 'Filipino', 'Ukrainian', 'Hebrew', 'Persian', 'Urdu', 'Tamil',
   'Telugu', 'Kannada', 'Malayalam', 'Marathi', 'Gujarati', 'Nepali', 'Sinhala', 'Burmese', 'Khmer',
   'Lao', 'Swahili', 'Amharic', 'Yoruba', 'Igbo', 'Zulu',
+  'Afrikaans', 'Albanian', 'Armenian', 'Azerbaijani', 'Basque', 'Belarusian', 'Bosnian', 'Bulgarian',
+  'Catalan', 'Cebuano', 'Corsican', 'Croatian', 'Esperanto', 'Estonian', 'Fijian', 'Galician',
+  'Georgian', 'Haitian Creole', 'Hausa', 'Hawaiian', 'Hmong', 'Icelandic', 'Irish', 'Javanese',
+  'Kazakh', 'Kinyarwanda', 'Kurdish', 'Kyrgyz', 'Latin', 'Latvian', 'Lithuanian', 'Luxembourgish',
+  'Macedonian', 'Malagasy', 'Maltese', 'Maori', 'Mongolian', 'Myanmar', 'Odia', 'Pashto',
+  'Samoan', 'Scots Gaelic', 'Serbian', 'Sesotho', 'Shona', 'Sindhi', 'Slovak', 'Slovenian',
+  'Somali', 'Sundanese', 'Tajik', 'Tatar', 'Tigrinya', 'Tongan', 'Turkmen', 'Twi',
+  'Uyghur', 'Uzbek', 'Welsh', 'Xhosa', 'Yiddish',
+  'Assamese', 'Bhojpuri', 'Dogri', 'Konkani', 'Maithili', 'Manipuri', 'Sanskrit', 'Santali', 'Bodo',
 ];
 
 type Tab = 'general' | 'voice' | 'privacy' | 'account';
