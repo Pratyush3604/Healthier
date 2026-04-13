@@ -113,6 +113,7 @@ For each day: exercise name, sets × reps, rest time, brief form cue. Keep exerc
 
   return (
     <div className="relative">
+      <ParticleBackground variant="fitness" />
       <FloatingBackground variant="fitness" />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
