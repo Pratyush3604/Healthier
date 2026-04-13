@@ -201,7 +201,7 @@ export default function HomePage() {
                       const Icon = f.icon;
                       return (
                         <ScrollReveal key={i} delay={i * 0.05}>
-                          <Link to={f.link} className="block bg-card rounded-2xl border border-border p-5 hover:border-primary/25 hover:shadow-glow hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 group h-full">
+                          <Link to={f.link} className="block bg-card rounded-2xl border border-border p-5 tilt-card card-hover-pop group h-full">
                             <div className="flex items-start gap-4">
                               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 group-hover:scale-110 transition-all duration-300">
                                 <Icon className="w-5 h-5 text-primary" />
