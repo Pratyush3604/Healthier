@@ -78,6 +78,18 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
             <Mail className="w-4 h-4" /> pratyush3604@gmail.com
           </a>
         </div>
+
+        <div className="text-center mt-6 pt-6 border-t border-border/50">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            If you'd like to support Healthier and help us keep improving, we'd truly appreciate it.
+            <br />
+            Please reach out at{' '}
+            <a href="https://mail.google.com/mail/?view=cm&to=pratyush3604@gmail.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+              pratyush3604@gmail.com
+            </a>{' '}
+            — every bit of support means the world to us. Thank you! 💚
+          </p>
+        </div>
       </div>
     </footer>
   );
