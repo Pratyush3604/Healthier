@@ -110,9 +110,12 @@ export default function HomePage() {
             </motion.div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.05] tracking-tight font-display">
-              Your Personal
-              <span className="block gradient-text">Health Assistant</span>
+              <span className="gradient-text">Healthier</span>
             </h1>
+
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-foreground/90 mb-4 italic">
+              "Make your life healthier !"
+            </p>
 
             <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
               Instant health assessments, first aid guidance, and wellness tools — all powered by AI. Know when to seek professional care.
