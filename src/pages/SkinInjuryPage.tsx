@@ -47,7 +47,15 @@ export default function SkinInjuryPage() {
         return;
       }
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-      if (videoRef.current) { videoRef.current.srcObject = stream; streamRef.current = stream; setCameraActive(true); }
+      streamRef.current = stream;
+      setCameraActive(true);
+      // Defer attaching srcObject so the <video> element exists in the DOM
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play().catch(() => {});
+        }
+      }, 50);
     } catch (err: any) {
       const name = err?.name || '';
       let msg = 'Could not access camera.';
@@ -136,12 +144,22 @@ export default function SkinInjuryPage() {
               <ScrollReveal delay={0.15}>
                 <div className="bg-card rounded-2xl border border-border shadow-soft overflow-hidden hover:shadow-elevated transition-shadow duration-300">
                   {cameraActive && (
-                    <div className="relative aspect-video bg-muted">
+                    <div className="relative aspect-video bg-black">
                       <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
                       <canvas ref={canvasRef} className="hidden" />
+                      {/* Camera-style frame overlay */}
+                      <div className="absolute inset-4 border-2 border-white/40 rounded-lg pointer-events-none">
+                        <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg" />
+                        <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg" />
+                        <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg" />
+                        <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg" />
+                      </div>
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-red-500 text-white text-xs font-medium animate-pulse">● LIVE</div>
                       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4">
-                        <Button onClick={capturePhoto} size="lg" className="hover:scale-105 active:scale-95 transition-transform"><Camera className="mr-2 h-5 w-5" />Capture</Button>
-                        <Button onClick={stopCamera} variant="secondary" size="lg" className="hover:scale-105 active:scale-95 transition-transform"><X className="mr-2 h-5 w-5" />Cancel</Button>
+                        <Button onClick={capturePhoto} size="lg" className="rounded-full w-16 h-16 p-0 bg-white hover:bg-white/90 text-black border-4 border-white/60 shadow-xl hover:scale-105 active:scale-95 transition-transform">
+                          <Camera className="h-7 w-7" />
+                        </Button>
+                        <Button onClick={stopCamera} variant="secondary" size="lg" className="rounded-full hover:scale-105 active:scale-95 transition-transform"><X className="h-5 w-5" /></Button>
                       </div>
                     </div>
                   )}
