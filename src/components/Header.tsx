@@ -100,7 +100,7 @@ export function Header() {
 
             <div className="relative group">
               <button className="px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-all">
-                More
+                {t('more')}
               </button>
               <div className="absolute top-full right-0 mt-1.5 py-1.5 w-48 max-h-[70vh] overflow-y-auto bg-card border border-border rounded-xl shadow-elevated opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 {moreItems.map((navItem) => {
@@ -128,7 +128,7 @@ export function Header() {
               </div>
             ) : (
               <Link to="/auth" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-all">
-                <LogIn className="w-3.5 h-3.5" /><span>Login</span>
+                <LogIn className="w-3.5 h-3.5" /><span>{t('login')}</span>
               </Link>
             )}
 
