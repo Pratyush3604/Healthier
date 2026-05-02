@@ -13,6 +13,7 @@ import { ScrollReveal } from '@/components/ScrollReveal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const categories = {
   'AI Diagnostics': [
@@ -66,6 +67,7 @@ const allLanguages = [
 ];
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [langOpen, setLangOpen] = useState(false);
   const [langSearch, setLangSearch] = useState('');
   const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
@@ -114,7 +116,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-2xl sm:text-3xl font-display font-semibold text-foreground/90 mb-4 italic">
-              "Make your life healthier !"
+              "{t('tagline')}"
             </p>
 
             <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
@@ -123,10 +125,10 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base">
-                <HelpCircle className="w-4 h-4" /> How to Use
+                <HelpCircle className="w-4 h-4" /> {t('howToUse')}
               </Link>
               <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base">
-                <MessageCircle className="w-4 h-4" /> Chat with AI
+                <MessageCircle className="w-4 h-4" /> {t('chatWithAI')}
               </Link>
               <button onClick={() => setLangOpen(true)} className="btn-secondary flex items-center gap-2 text-base">
                 <Globe className="w-4 h-4" /> {language}
