@@ -87,7 +87,7 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
             <a href="https://mail.google.com/mail/?view=cm&to=pratyush3604@gmail.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
               pratyush3604@gmail.com
             </a>{' '}
-            — every bit of support means the world to us. Thank you! 💚
+            — every bit of support means the world to us. Thank you for your support!
           </p>
         </div>
       </div>
