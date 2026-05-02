@@ -13,35 +13,39 @@ import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from '@/hooks/useTranslation';
 
-const navItems = [
-  { path: '/', label: 'Home', icon: Home },
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/symptoms', label: 'Symptoms', icon: Stethoscope },
-  { path: '/skin-injury', label: 'Skin & Injury', icon: Scan },
-  { path: '/chat', label: 'Chat', icon: MessageCircle },
-  { path: '/fitness', label: 'Fitness', icon: Dumbbell },
-  { path: '/medicine-info', label: 'Medicine', icon: Pill },
-];
-
-const moreItems = [
-  { path: '/vitals', label: 'Vitals', icon: Activity },
-  { path: '/reports', label: 'Report Analysis', icon: FileText },
-  { path: '/bmi-calculator', label: 'Health Calculator', icon: Calculator },
-  { path: '/medication-reminder', label: 'Med Reminders', icon: ClipboardList },
-  { path: '/health-reports', label: 'Reports Hub', icon: TrendingUp },
-  { path: '/posture-corrector', label: 'Posture', icon: Monitor },
-  { path: '/first-aid', label: 'First Aid', icon: BookOpen },
-  { path: '/health-tips', label: 'Health Tips', icon: Lightbulb },
-  { path: '/emergency', label: 'Emergency', icon: Phone },
-  { path: '/how-to-use', label: 'How to Use', icon: HelpCircle },
-  { path: '/settings', label: 'Settings', icon: Settings },
-  { path: '/about', label: 'About', icon: User },
-];
-
-const allNav = [...navItems, ...moreItems];
+const useNavItems = () => {
+  const { t } = useTranslation();
+  const navItems = [
+    { path: '/', label: t('home'), icon: Home },
+    { path: '/dashboard', label: t('dashboard'), icon: LayoutDashboard },
+    { path: '/symptoms', label: t('symptoms'), icon: Stethoscope },
+    { path: '/skin-injury', label: t('skinInjury'), icon: Scan },
+    { path: '/chat', label: t('chat'), icon: MessageCircle },
+    { path: '/fitness', label: t('fitness'), icon: Dumbbell },
+    { path: '/medicine-info', label: t('medicine'), icon: Pill },
+  ];
+  const moreItems = [
+    { path: '/vitals', label: t('vitals'), icon: Activity },
+    { path: '/reports', label: t('reportAnalysis'), icon: FileText },
+    { path: '/bmi-calculator', label: t('healthCalculator'), icon: Calculator },
+    { path: '/medication-reminder', label: t('medReminders'), icon: ClipboardList },
+    { path: '/health-reports', label: t('reportsHub'), icon: TrendingUp },
+    { path: '/posture-corrector', label: t('posture'), icon: Monitor },
+    { path: '/first-aid', label: t('firstAid'), icon: BookOpen },
+    { path: '/health-tips', label: t('healthTips'), icon: Lightbulb },
+    { path: '/emergency', label: t('emergency'), icon: Phone },
+    { path: '/how-to-use', label: t('howToUse'), icon: HelpCircle },
+    { path: '/settings', label: t('settings'), icon: Settings },
+    { path: '/about', label: t('about'), icon: User },
+  ];
+  return { navItems, moreItems, t };
+};
 
 export function Header() {
+  const { navItems, moreItems, t } = useNavItems();
+  const allNav = [...navItems, ...moreItems];
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
