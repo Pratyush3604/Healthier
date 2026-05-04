@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://healthier-ai.lovable.app/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://healthier-ai.lovable.app/symptoms</loc><priority>0.9</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/skin-injury</loc><priority>0.9</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/chat</loc><priority>0.9</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/fitness</loc><priority>0.9</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/medicine-info</loc><priority>0.9</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/vitals</loc><priority>0.9</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/reports</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/bmi-calculator</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/medication-reminder</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/health-reports</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/posture-corrector</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/first-aid</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/health-tips</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/emergency</loc><priority>0.8</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/dashboard</loc><priority>0.7</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/how-to-use</loc><priority>0.7</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/about</loc><priority>0.7</priority></url>
+  <url><loc>https://healthier-ai.lovable.app/settings</loc><priority>0.5</priority></url>
+</urlset>

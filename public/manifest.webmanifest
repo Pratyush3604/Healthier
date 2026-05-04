@@ -1,0 +1,17 @@
+{
+  "name": "Healthier — AI Health Assistant",
+  "short_name": "Healthier",
+  "description": "Healthier is your AI-powered health assistant. 15+ free tools to make your life healthier.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#2CA3BF",
+  "orientation": "portrait",
+  "categories": ["health", "medical", "lifestyle", "fitness"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
