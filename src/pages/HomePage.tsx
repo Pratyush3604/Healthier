@@ -135,7 +135,7 @@ export default function HomePage() {
                     <button onClick={() => setLangOpen(false)} className="p-2 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
                   </div>
                   <div className="p-3 border-b border-border">
-                    <Input placeholder="Search 100+ languages..." value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
+                    <Input placeholder={`Search ${allLanguages.length}+ languages...`} value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
                   </div>
                   <div className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {filteredLangs.map(l => (
