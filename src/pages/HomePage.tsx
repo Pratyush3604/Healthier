@@ -14,6 +14,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
+import { allLanguages } from '@/i18n/languages';
 
 const categories = {
   'AI Diagnostics': [
