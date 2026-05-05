@@ -1,38 +1,52 @@
 import { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { ErrorBoundary } from './ErrorBoundary';
+import { ParticleBackground } from './ParticleBackground';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
+// Map every route to a unique medical-themed particle variant.
+// Each variant draws different shapes/colors so every page feels distinct.
+const routeToVariant: Record<string, string> = {
+  '/': 'home',
+  '/dashboard': 'dashboard',
+  '/symptoms': 'symptoms',
+  '/skin-injury': 'skin',
+  '/chat': 'chat',
+  '/fitness': 'fitness',
+  '/medicine-info': 'medicine',
+  '/vitals': 'vitals',
+  '/reports': 'reports',
+  '/bmi-calculator': 'calculator',
+  '/medication-reminder': 'medicine',
+  '/health-reports': 'reports',
+  '/posture-corrector': 'posture',
+  '/first-aid': 'firstaid',
+  '/health-tips': 'tips',
+  '/emergency': 'emergency',
+  '/how-to-use': 'home',
+  '/about': 'about',
+  '/settings': 'settings',
+  '/auth': 'auth',
+  '/travel-health': 'travel',
+  '/ai-doctor': 'chat',
+};
+
 export function Layout({ children }: LayoutProps) {
+  const location = useLocation();
+  const variant = routeToVariant[location.pathname] || 'default';
+
   return (
     <div className="min-h-screen flex flex-col relative bg-background">
+      {/* Per-page medical particle background — keyed by route so it remounts on navigation */}
+      <ParticleBackground key={variant} variant={variant} />
+
       {/* Subtle ambient glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-radial pointer-events-none opacity-60" />
-      <div
-        className="bg-blob animate-blob"
-        style={{
-          top: '5%',
-          left: '15%',
-          width: '350px',
-          height: '350px',
-          background: 'hsla(160, 84%, 39%, 0.08)',
-        }}
-      />
-      <div
-        className="bg-blob animate-blob"
-        style={{
-          top: '50%',
-          right: '10%',
-          width: '300px',
-          height: '300px',
-          background: 'hsla(200, 80%, 55%, 0.06)',
-          animationDelay: '-4s',
-        }}
-      />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-radial pointer-events-none opacity-60 z-0" />
 
       <Header />
       <main className="flex-1 relative z-10">

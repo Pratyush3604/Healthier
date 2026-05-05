@@ -131,11 +131,11 @@ export default function HomePage() {
                   className="bg-card rounded-2xl border border-border shadow-xl w-full max-w-lg max-h-[70vh] overflow-hidden flex flex-col"
                   onClick={e => e.stopPropagation()}>
                   <div className="flex items-center justify-between p-4 border-b border-border">
-                    <h3 className="font-semibold text-lg flex items-center gap-2"><Globe className="w-5 h-5 text-primary" /> Choose Language</h3>
+                    <h3 className="font-semibold text-lg flex items-center gap-2"><Globe className="w-5 h-5 text-primary" /> {t('language')}</h3>
                     <button onClick={() => setLangOpen(false)} className="p-2 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
                   </div>
                   <div className="p-3 border-b border-border">
-                    <Input placeholder={`Search ${allLanguages.length}+ languages...`} value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
+                    <Input placeholder={`${t('search')} ${allLanguages.length}+ ${t('language').toLowerCase()}...`} value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
                   </div>
                   <div className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {filteredLangs.map(l => (
@@ -172,8 +172,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-14">
-              <h2 className="text-3xl sm:text-4xl font-bold font-display mb-3">All Your Health Tools</h2>
-              <p className="text-muted-foreground">Powerful tools organized by category</p>
+              <h2 className="text-3xl sm:text-4xl font-bold font-display mb-3">{t('allHealthTools')}</h2>
+              <p className="text-muted-foreground">{t('language') === 'भाषा' ? 'श्रेणी के अनुसार उपकरण' : 'Powerful tools organized by category'}</p>
             </div>
           </ScrollReveal>
 
