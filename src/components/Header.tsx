@@ -140,7 +140,7 @@ export function Header() {
                 {searchOpen && (
                   <motion.div initial={{ opacity: 0, scale: 0.95, y: -4 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
                     className="absolute top-full right-0 mt-2 w-64 bg-card border border-border rounded-xl shadow-elevated p-2.5 z-50">
-                    <Input placeholder="Search features..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                    <Input placeholder={`${t('search')}...`} value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
                       className="h-9 text-sm bg-muted/50" autoFocus />
                     {filteredNav.length > 0 && (
                       <div className="mt-1.5 space-y-0.5 max-h-64 overflow-y-auto">
