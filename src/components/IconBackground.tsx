@@ -31,7 +31,7 @@ const ICON_PALETTES: Record<string, LucideIcon[]> = {
   posture:     [Bone, User, Activity, Footprints, Hand, Compass, Monitor, Bed],
   firstaid:    [Cross, BriefcaseMedical, Bandage, Heart, AlertTriangle, Phone, Shield, Pill],
   tips:        [Lightbulb, Sparkles, Apple, Salad, Sun, Leaf, Flower2, Bed, Moon, Coffee],
-  emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Activity, Siren],
+  emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Activity, Zap],
   settings:    [Settings, Lock, User, Shield, Wifi, BatteryCharging, Smartphone, Monitor],
   about:       [Award, Star, Sparkles, Heart, Brain, BookOpen, Lightbulb, User],
   auth:        [Lock, Shield, User, Mail, Heart, Sparkles, Star, Award],
