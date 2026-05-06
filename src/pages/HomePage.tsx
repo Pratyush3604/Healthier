@@ -96,7 +96,7 @@ export default function HomePage() {
             <motion.div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 border border-primary/15 mb-8"
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-medium text-primary">15 AI-Powered Health Tools</span>
+              <span className="text-xs font-medium text-primary">{t('heroBadge')}</span>
             </motion.div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.05] tracking-tight font-display">
@@ -108,7 +108,7 @@ export default function HomePage() {
             </p>
 
             <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
-              Instant health assessments, first aid guidance, and wellness tools — all powered by AI. Know when to seek professional care.
+              {t('heroSubtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
