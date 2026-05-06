@@ -4,6 +4,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { ErrorBoundary } from './ErrorBoundary';
 import { ParticleBackground } from './ParticleBackground';
+import { IconBackground } from './IconBackground';
 
 interface LayoutProps {
   children: ReactNode;
@@ -44,6 +45,8 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col relative bg-background">
       {/* Per-page medical particle background — keyed by route so it remounts on navigation */}
       <ParticleBackground key={variant} variant={variant} />
+      {/* Dense per-page medical icon background (deterministic positions) */}
+      <IconBackground count={120} />
 
       {/* Subtle ambient glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-radial pointer-events-none opacity-60 z-0" />

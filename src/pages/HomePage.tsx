@@ -16,43 +16,46 @@ import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
 import { allLanguages } from '@/i18n/languages';
 
-const categories = {
-  'AI Diagnostics': [
-    { icon: Stethoscope, title: 'Symptom Checker', description: 'AI urgency assessment from 100+ symptoms', link: '/symptoms' },
-    { icon: Scan, title: 'Skin & Injury Analyzer', description: 'Photo-based skin & wound analysis', link: '/skin-injury' },
-    { icon: FileText, title: 'Report Analysis', description: 'X-rays, MRIs & labs explained by AI', link: '/reports' },
+// Tool data uses translation keys; resolved at render time so language changes apply.
+const buildCategories = (t: (k: string) => string) => ({
+  [t('catDiagnostics')]: [
+    { icon: Stethoscope, title: t('symptomCheckerT'), description: t('symptomCheckerD'), link: '/symptoms' },
+    { icon: Scan, title: t('skinAnalyzerT'), description: t('skinAnalyzerD'), link: '/skin-injury' },
+    { icon: FileText, title: t('reportAnalysisT'), description: t('reportAnalysisD'), link: '/reports' },
   ],
-  'AI Consultation': [
-    { icon: MessageCircle, title: 'AI Chat', description: 'Text-based medical consultation', link: '/chat' },
-    { icon: Pill, title: 'Medicine Encyclopedia', description: 'Comprehensive drug analysis', link: '/medicine-info' },
+  [t('catConsultation')]: [
+    { icon: MessageCircle, title: t('aiChatT'), description: t('aiChatD'), link: '/chat' },
+    { icon: Pill, title: t('medicineEncyclopediaT'), description: t('medicineEncyclopediaD'), link: '/medicine-info' },
   ],
-  'Fitness & Wellness': [
-    { icon: Apple, title: 'Diet & Workout Planner', description: 'AI meal plans + exercise routines', link: '/fitness' },
-    { icon: Monitor, title: 'Posture Corrector', description: 'Exercises & ergonomic tips', link: '/posture-corrector' },
-    { icon: Calculator, title: 'Health Calculator', description: 'BMI, body fat & ideal weight', link: '/bmi-calculator' },
-    { icon: Activity, title: 'Vital Signs', description: 'Track heart rate, SpO2 & BP', link: '/vitals' },
+  [t('catFitness')]: [
+    { icon: Apple, title: t('dietWorkoutT'), description: t('dietWorkoutD'), link: '/fitness' },
+    { icon: Monitor, title: t('postureT'), description: t('postureD'), link: '/posture-corrector' },
+    { icon: Calculator, title: t('healthCalcT'), description: t('healthCalcD'), link: '/bmi-calculator' },
+    { icon: Activity, title: t('vitalSignsT'), description: t('vitalSignsD'), link: '/vitals' },
   ],
-  'Tools & Guides': [
-    { icon: ClipboardList, title: 'Med Reminders', description: 'Set medication alarms', link: '/medication-reminder' },
-    { icon: TrendingUp, title: 'Health Reports', description: 'Auto-generated from usage', link: '/health-reports' },
-    { icon: BookOpen, title: 'First Aid Guide', description: '60+ emergency instructions', link: '/first-aid' },
-    { icon: Lightbulb, title: 'Health Tips', description: '170+ wellness tips', link: '/health-tips' },
-    { icon: Phone, title: 'Emergency Numbers', description: '100+ country numbers', link: '/emergency' },
-    { icon: HelpCircle, title: 'How to Use', description: 'Detailed guide for every tool', link: '/how-to-use' },
+  [t('catTools')]: [
+    { icon: ClipboardList, title: t('medRemindersT'), description: t('medRemindersD'), link: '/medication-reminder' },
+    { icon: TrendingUp, title: t('healthReportsT'), description: t('healthReportsD'), link: '/health-reports' },
+    { icon: BookOpen, title: t('firstAidT'), description: t('firstAidD'), link: '/first-aid' },
+    { icon: Lightbulb, title: t('healthTipsT'), description: t('healthTipsD'), link: '/health-tips' },
+    { icon: Phone, title: t('emergencyNumbersT'), description: t('emergencyNumbersD'), link: '/emergency' },
+    { icon: HelpCircle, title: t('howToUseT'), description: t('howToUseD'), link: '/how-to-use' },
   ],
-};
+});
 
-const stats = [
-  { value: '15', label: 'Health Tools', icon: Sparkles },
-  { value: '24/7', label: 'Available', icon: Zap },
-  { value: 'Free', label: 'To Use', icon: Heart },
-  { value: 'Private', label: '& Secure', icon: Lock },
+const buildStats = (t: (k: string) => string) => [
+  { value: '15', label: t('statHealthTools'), icon: Sparkles },
+  { value: '24/7', label: t('statAvailable'), icon: Zap },
+  { value: t('statFree'), label: t('statFreeToUse'), icon: Heart },
+  { value: t('statPrivateLabel'), label: t('statPrivate'), icon: Lock },
 ];
 
 // allLanguages now imported from @/i18n/languages (500+ languages)
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const categories = buildCategories(t);
+  const stats = buildStats(t);
   const [langOpen, setLangOpen] = useState(false);
   const [langSearch, setLangSearch] = useState('');
   const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
@@ -93,7 +96,7 @@ export default function HomePage() {
             <motion.div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 border border-primary/15 mb-8"
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-medium text-primary">15 AI-Powered Health Tools</span>
+              <span className="text-xs font-medium text-primary">{t('heroBadge')}</span>
             </motion.div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.05] tracking-tight font-display">
@@ -105,7 +108,7 @@ export default function HomePage() {
             </p>
 
             <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
-              Instant health assessments, first aid guidance, and wellness tools — all powered by AI. Know when to seek professional care.
+              {t('heroSubtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -173,12 +176,12 @@ export default function HomePage() {
           <ScrollReveal>
             <div className="text-center mb-14">
               <h2 className="text-3xl sm:text-4xl font-bold font-display mb-3">{t('allHealthTools')}</h2>
-              <p className="text-muted-foreground">{t('language') === 'भाषा' ? 'श्रेणी के अनुसार उपकरण' : 'Powerful tools organized by category'}</p>
+              <p className="text-muted-foreground">{t('toolsByCategory')}</p>
             </div>
           </ScrollReveal>
 
           <div className="space-y-12">
-            {Object.entries(categories).map(([categoryName, tools], catIdx) => (
+            {(Object.entries(categories) as [string, Array<{icon: any; title: string; description: string; link: string}>][]).map(([categoryName, tools], catIdx) => (
               <ScrollReveal key={categoryName} delay={catIdx * 0.05}>
                 <div>
                   <h3 className="text-lg font-semibold font-display mb-4 flex items-center gap-2">
@@ -223,14 +226,12 @@ export default function HomePage() {
                   <Shield className="w-6 h-6 text-warning" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base mb-2 font-display">For Basic Diagnostics Only</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                    Healthier provides preliminary health assessments. It is <strong className="text-foreground">not a replacement</strong> for professional medical care.
-                  </p>
+                  <h3 className="font-bold text-base mb-2 font-display">{t('safetyTitle')}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{t('safetyBody')}</p>
                   <ul className="space-y-1.5 text-sm text-muted-foreground">
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-destructive" />For emergencies, call your local emergency number</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-warning" />Always consult a doctor for serious symptoms</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-success" />Use Healthier for basic questions & wellness</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-destructive" />{t('safetyBullet1')}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-warning" />{t('safetyBullet2')}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-success" />{t('safetyBullet3')}</li>
                   </ul>
                 </div>
               </div>
