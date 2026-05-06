@@ -176,12 +176,12 @@ export default function HomePage() {
           <ScrollReveal>
             <div className="text-center mb-14">
               <h2 className="text-3xl sm:text-4xl font-bold font-display mb-3">{t('allHealthTools')}</h2>
-              <p className="text-muted-foreground">{t('language') === 'भाषा' ? 'श्रेणी के अनुसार उपकरण' : 'Powerful tools organized by category'}</p>
+              <p className="text-muted-foreground">{t('toolsByCategory')}</p>
             </div>
           </ScrollReveal>
 
           <div className="space-y-12">
-            {Object.entries(categories).map(([categoryName, tools], catIdx) => (
+            {(Object.entries(categories) as [string, Array<{icon: any; title: string; description: string; link: string}>][]).map(([categoryName, tools], catIdx) => (
               <ScrollReveal key={categoryName} delay={catIdx * 0.05}>
                 <div>
                   <h3 className="text-lg font-semibold font-display mb-4 flex items-center gap-2">
