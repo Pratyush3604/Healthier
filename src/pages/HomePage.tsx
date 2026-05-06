@@ -226,14 +226,12 @@ export default function HomePage() {
                   <Shield className="w-6 h-6 text-warning" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base mb-2 font-display">For Basic Diagnostics Only</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                    Healthier provides preliminary health assessments. It is <strong className="text-foreground">not a replacement</strong> for professional medical care.
-                  </p>
+                  <h3 className="font-bold text-base mb-2 font-display">{t('safetyTitle')}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{t('safetyBody')}</p>
                   <ul className="space-y-1.5 text-sm text-muted-foreground">
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-destructive" />For emergencies, call your local emergency number</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-warning" />Always consult a doctor for serious symptoms</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-success" />Use Healthier for basic questions & wellness</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-destructive" />{t('safetyBullet1')}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-warning" />{t('safetyBullet2')}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-success" />{t('safetyBullet3')}</li>
                   </ul>
                 </div>
               </div>
