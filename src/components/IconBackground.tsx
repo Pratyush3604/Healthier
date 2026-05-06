@@ -19,7 +19,7 @@ import type { LucideIcon } from 'lucide-react';
 // so the background patterns feel custom and clearly distinct from page to page.
 const ICON_PALETTES: Record<string, LucideIcon[]> = {
   home:        [Heart, HeartPulse, Stethoscope, Activity, Cross, Pill, Sparkles, Shield],
-  dashboard:   [Activity, HeartPulse, Gauge, FileText, ClipboardList, TrendingUpIcon(), Calendar, Clock],
+  dashboard:   [Activity, HeartPulse, Gauge, FileText, ClipboardList, Calendar, Clock, Award],
   symptoms:    [Stethoscope, Thermometer, Brain, AlertTriangle, Activity, HeartPulse, Eye, Ear],
   skin:        [Bandage, Hand, Microscope, Scan, Droplet, Leaf, Sun, Sparkles],
   chat:        [MessageCircle, Brain, BookOpen, Sparkles, Lightbulb, User, Users, Mail],
@@ -31,18 +31,13 @@ const ICON_PALETTES: Record<string, LucideIcon[]> = {
   posture:     [Bone, User, Activity, Footprints, Hand, Compass, Monitor, Bed],
   firstaid:    [Cross, BriefcaseMedical, Bandage, Heart, AlertTriangle, Phone, Shield, Pill],
   tips:        [Lightbulb, Sparkles, Apple, Salad, Sun, Leaf, Flower2, Bed, Moon, Coffee],
-  emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Activity, Siren()],
+  emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Activity, Siren],
   settings:    [Settings, Lock, User, Shield, Wifi, BatteryCharging, Smartphone, Monitor],
   about:       [Award, Star, Sparkles, Heart, Brain, BookOpen, Lightbulb, User],
   auth:        [Lock, Shield, User, Mail, Heart, Sparkles, Star, Award],
   travel:      [Plane, Car, Map, Compass, Globe, Sun, Snowflake, Wind, BriefcaseMedical, Phone],
   default:     [Heart, Activity, Stethoscope, Pill, Cross, Sparkles, Shield, Star],
 };
-
-// Lucide doesn't ship "TrendingUp" by that import name in some builds — use Activity as proxy.
-function TrendingUpIcon(): LucideIcon { return Activity; }
-// "Siren" exists, but to be safe across versions:
-function Siren(): LucideIcon { return AlertTriangle; }
 
 interface IconBackgroundProps {
   count?: number;
