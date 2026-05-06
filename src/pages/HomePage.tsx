@@ -54,6 +54,8 @@ const buildStats = (t: (k: string) => string) => [
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const categories = buildCategories(t);
+  const stats = buildStats(t);
   const [langOpen, setLangOpen] = useState(false);
   const [langSearch, setLangSearch] = useState('');
   const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
