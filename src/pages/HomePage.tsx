@@ -16,37 +16,38 @@ import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
 import { allLanguages } from '@/i18n/languages';
 
-const categories = {
-  'AI Diagnostics': [
-    { icon: Stethoscope, title: 'Symptom Checker', description: 'AI urgency assessment from 100+ symptoms', link: '/symptoms' },
-    { icon: Scan, title: 'Skin & Injury Analyzer', description: 'Photo-based skin & wound analysis', link: '/skin-injury' },
-    { icon: FileText, title: 'Report Analysis', description: 'X-rays, MRIs & labs explained by AI', link: '/reports' },
+// Tool data uses translation keys; resolved at render time so language changes apply.
+const buildCategories = (t: (k: string) => string) => ({
+  [t('catDiagnostics')]: [
+    { icon: Stethoscope, title: t('symptomCheckerT'), description: t('symptomCheckerD'), link: '/symptoms' },
+    { icon: Scan, title: t('skinAnalyzerT'), description: t('skinAnalyzerD'), link: '/skin-injury' },
+    { icon: FileText, title: t('reportAnalysisT'), description: t('reportAnalysisD'), link: '/reports' },
   ],
-  'AI Consultation': [
-    { icon: MessageCircle, title: 'AI Chat', description: 'Text-based medical consultation', link: '/chat' },
-    { icon: Pill, title: 'Medicine Encyclopedia', description: 'Comprehensive drug analysis', link: '/medicine-info' },
+  [t('catConsultation')]: [
+    { icon: MessageCircle, title: t('aiChatT'), description: t('aiChatD'), link: '/chat' },
+    { icon: Pill, title: t('medicineEncyclopediaT'), description: t('medicineEncyclopediaD'), link: '/medicine-info' },
   ],
-  'Fitness & Wellness': [
-    { icon: Apple, title: 'Diet & Workout Planner', description: 'AI meal plans + exercise routines', link: '/fitness' },
-    { icon: Monitor, title: 'Posture Corrector', description: 'Exercises & ergonomic tips', link: '/posture-corrector' },
-    { icon: Calculator, title: 'Health Calculator', description: 'BMI, body fat & ideal weight', link: '/bmi-calculator' },
-    { icon: Activity, title: 'Vital Signs', description: 'Track heart rate, SpO2 & BP', link: '/vitals' },
+  [t('catFitness')]: [
+    { icon: Apple, title: t('dietWorkoutT'), description: t('dietWorkoutD'), link: '/fitness' },
+    { icon: Monitor, title: t('postureT'), description: t('postureD'), link: '/posture-corrector' },
+    { icon: Calculator, title: t('healthCalcT'), description: t('healthCalcD'), link: '/bmi-calculator' },
+    { icon: Activity, title: t('vitalSignsT'), description: t('vitalSignsD'), link: '/vitals' },
   ],
-  'Tools & Guides': [
-    { icon: ClipboardList, title: 'Med Reminders', description: 'Set medication alarms', link: '/medication-reminder' },
-    { icon: TrendingUp, title: 'Health Reports', description: 'Auto-generated from usage', link: '/health-reports' },
-    { icon: BookOpen, title: 'First Aid Guide', description: '60+ emergency instructions', link: '/first-aid' },
-    { icon: Lightbulb, title: 'Health Tips', description: '170+ wellness tips', link: '/health-tips' },
-    { icon: Phone, title: 'Emergency Numbers', description: '100+ country numbers', link: '/emergency' },
-    { icon: HelpCircle, title: 'How to Use', description: 'Detailed guide for every tool', link: '/how-to-use' },
+  [t('catTools')]: [
+    { icon: ClipboardList, title: t('medRemindersT'), description: t('medRemindersD'), link: '/medication-reminder' },
+    { icon: TrendingUp, title: t('healthReportsT'), description: t('healthReportsD'), link: '/health-reports' },
+    { icon: BookOpen, title: t('firstAidT'), description: t('firstAidD'), link: '/first-aid' },
+    { icon: Lightbulb, title: t('healthTipsT'), description: t('healthTipsD'), link: '/health-tips' },
+    { icon: Phone, title: t('emergencyNumbersT'), description: t('emergencyNumbersD'), link: '/emergency' },
+    { icon: HelpCircle, title: t('howToUseT'), description: t('howToUseD'), link: '/how-to-use' },
   ],
-};
+});
 
-const stats = [
-  { value: '15', label: 'Health Tools', icon: Sparkles },
-  { value: '24/7', label: 'Available', icon: Zap },
-  { value: 'Free', label: 'To Use', icon: Heart },
-  { value: 'Private', label: '& Secure', icon: Lock },
+const buildStats = (t: (k: string) => string) => [
+  { value: '15', label: t('statHealthTools'), icon: Sparkles },
+  { value: '24/7', label: t('statAvailable'), icon: Zap },
+  { value: t('statFree'), label: t('statFreeToUse'), icon: Heart },
+  { value: t('statPrivateLabel'), label: t('statPrivate'), icon: Lock },
 ];
 
 // allLanguages now imported from @/i18n/languages (500+ languages)
