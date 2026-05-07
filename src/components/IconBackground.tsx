@@ -38,14 +38,11 @@ const ICON_PALETTES: Record<string, LucideIcon[]> = {
   tips:        [Lightbulb, Sparkles, Apple, Salad, Sun, Leaf, Flower2, Bed, Moon, Coffee, TreePine, Star],
   emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Flame, Bell, MapPin, Navigation, Car, Plane],
   settings:    [Settings, Lock, User, Shield, Wifi, BatteryCharging, Smartphone, Monitor, Bell, Tag, Globe, Check],
-  about:       [Award, Star, Sparkles, Heart, Brain, BookOpen, Lightbulb, User, Crown, Gift, PartyPopper, Trophy(),],
+  about:       [Award, Star, Sparkles, Heart, Brain, BookOpen, Lightbulb, User, Crown, Gift, PartyPopper, Music],
   auth:        [Lock, Shield, User, Mail, Heart, Sparkles, Star, Award, Check, Bell, Home, Globe],
   travel:      [Plane, Car, Map, Compass, Globe, Sun, Snowflake, Wind, BriefcaseMedical, Phone, Tent, Backpack, MapPin, Anchor],
   default:     [Heart, Activity, Stethoscope, Pill, Cross, Sparkles, Shield, Star, Sun, Leaf, Brain, Bell],
 };
-
-// Trophy isn't always exported; fallback inline
-function Trophy() { return Award as unknown as LucideIcon; }
 
 interface IconBackgroundProps {
   count?: number;
