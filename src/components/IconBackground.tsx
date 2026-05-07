@@ -4,46 +4,50 @@ import {
   Stethoscope, Pill, Syringe, Heart, Activity, Cross,
   Thermometer, HeartPulse, BriefcaseMedical, Bandage, Brain,
   Microscope, FlaskConical, TestTube, Dna, Bone, Eye, Ear,
-  Smile, Hand, Footprints, Apple, Salad, Dumbbell, Bike,
+  Hand, Footprints, Apple, Salad, Dumbbell, Bike,
   Droplet, Leaf, Flower2, Sparkles, Sun, Moon, Snowflake,
   Bed, Coffee, BookOpen, Lightbulb, MessageCircle, FileText,
   ClipboardList, Calculator, Calendar, Clock, Phone, Camera,
   Scan, Shield, Award, Star, Zap, Wind, Compass, Globe,
   Map, Plane, Car, AlertTriangle, BatteryCharging, Wifi,
-  Smartphone, Monitor, Radio, Watch, Music, Gauge, Scale,
-  Atom, Beaker, Lock, Settings, User, Users, Mail
+  Smartphone, Monitor, Watch, Music, Gauge, Scale,
+  Atom, Beaker, Lock, Settings, User, Users, Mail,
+  Carrot, Cherry, Grape, Banana, Fish, Egg, Milk, Wheat,
+  Flame, CloudRain, TreePine, Mountain, Waves, Anchor,
+  Tent, Backpack, Glasses, Crown, Gift, PartyPopper,
+  Headphones, Mic, Volume2, Image, Film, BookMarked,
+  Bookmark, Tag, Flag, MapPin, Navigation, Send,
+  Plus, Minus, Check, Search, Bell, Home,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-// Page-specific icon palettes — each route gets different medical/wellness symbols
-// so the background patterns feel custom and clearly distinct from page to page.
+// Each page gets a UNIQUE icon set so backgrounds feel custom per-route.
 const ICON_PALETTES: Record<string, LucideIcon[]> = {
-  home:        [Heart, HeartPulse, Stethoscope, Activity, Cross, Pill, Sparkles, Shield],
-  dashboard:   [Activity, HeartPulse, Gauge, FileText, ClipboardList, Calendar, Clock, Award],
-  symptoms:    [Stethoscope, Thermometer, Brain, AlertTriangle, Activity, HeartPulse, Eye, Ear],
-  skin:        [Bandage, Hand, Microscope, Scan, Droplet, Leaf, Sun, Sparkles],
-  chat:        [MessageCircle, Brain, BookOpen, Sparkles, Lightbulb, User, Users, Mail],
-  fitness:     [Dumbbell, Bike, Apple, Salad, Footprints, Activity, Heart, Zap],
-  medicine:    [Pill, Syringe, FlaskConical, TestTube, BriefcaseMedical, Beaker, Atom, Dna],
-  vitals:      [HeartPulse, Heart, Activity, Gauge, Thermometer, Watch, Droplet, Wind],
-  reports:     [FileText, ClipboardList, Microscope, Scan, Brain, BookOpen, Calculator, Award],
-  calculator:  [Calculator, Scale, Gauge, Activity, Apple, Heart, Dna, Bone],
-  posture:     [Bone, User, Activity, Footprints, Hand, Compass, Monitor, Bed],
-  firstaid:    [Cross, BriefcaseMedical, Bandage, Heart, AlertTriangle, Phone, Shield, Pill],
-  tips:        [Lightbulb, Sparkles, Apple, Salad, Sun, Leaf, Flower2, Bed, Moon, Coffee],
-  emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Activity, Zap],
-  settings:    [Settings, Lock, User, Shield, Wifi, BatteryCharging, Smartphone, Monitor],
-  about:       [Award, Star, Sparkles, Heart, Brain, BookOpen, Lightbulb, User],
-  auth:        [Lock, Shield, User, Mail, Heart, Sparkles, Star, Award],
-  travel:      [Plane, Car, Map, Compass, Globe, Sun, Snowflake, Wind, BriefcaseMedical, Phone],
-  default:     [Heart, Activity, Stethoscope, Pill, Cross, Sparkles, Shield, Star],
+  home:        [Heart, HeartPulse, Stethoscope, Activity, Cross, Pill, Sparkles, Shield, Award, Star, Sun, Brain],
+  dashboard:   [Activity, Gauge, FileText, ClipboardList, Calendar, Clock, Award, BookMarked, Bell, Check, Star, Crown],
+  symptoms:    [Stethoscope, Thermometer, Brain, AlertTriangle, Eye, Ear, Bone, Hand, HeartPulse, Wind, Droplet, Activity],
+  skin:        [Bandage, Hand, Microscope, Scan, Droplet, Leaf, Sun, Sparkles, Camera, Eye, Flower2, Shield],
+  chat:        [MessageCircle, Brain, BookOpen, Sparkles, Lightbulb, Mic, Send, Mail, User, Users, Headphones, Volume2],
+  fitness:     [Dumbbell, Bike, Apple, Salad, Footprints, Carrot, Cherry, Grape, Banana, Fish, Egg, Wheat, Flame, Zap],
+  medicine:    [Pill, Syringe, FlaskConical, TestTube, BriefcaseMedical, Beaker, Atom, Dna, Microscope, Thermometer, Bandage, Cross],
+  vitals:      [HeartPulse, Heart, Activity, Gauge, Thermometer, Watch, Droplet, Wind, Zap, Bell, Clock, BatteryCharging],
+  reports:     [FileText, ClipboardList, Microscope, Scan, BookOpen, BookMarked, Bookmark, Image, Film, Tag, Calculator, Award],
+  calculator:  [Calculator, Scale, Gauge, Plus, Minus, Apple, Dumbbell, Wheat, Salad, Egg, Milk, Activity],
+  posture:     [Bone, Footprints, Hand, Compass, Monitor, Bed, Dumbbell, Activity, Mountain, Anchor, Crown, User],
+  firstaid:    [Cross, BriefcaseMedical, Bandage, Heart, AlertTriangle, Phone, Shield, Pill, Flame, Droplet, Thermometer, Syringe],
+  tips:        [Lightbulb, Sparkles, Apple, Salad, Sun, Leaf, Flower2, Bed, Moon, Coffee, TreePine, Star],
+  emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Flame, Bell, MapPin, Navigation, Car, Plane],
+  settings:    [Settings, Lock, User, Shield, Wifi, BatteryCharging, Smartphone, Monitor, Bell, Tag, Globe, Check],
+  about:       [Award, Star, Sparkles, Heart, Brain, BookOpen, Lightbulb, User, Crown, Gift, PartyPopper, Music],
+  auth:        [Lock, Shield, User, Mail, Heart, Sparkles, Star, Award, Check, Bell, Home, Globe],
+  travel:      [Plane, Car, Map, Compass, Globe, Sun, Snowflake, Wind, BriefcaseMedical, Phone, Tent, Backpack, MapPin, Anchor],
+  default:     [Heart, Activity, Stethoscope, Pill, Cross, Sparkles, Shield, Star, Sun, Leaf, Brain, Bell],
 };
 
 interface IconBackgroundProps {
   count?: number;
 }
 
-// Deterministic pseudo-random so icon layout is stable per variant (no jitter on re-renders).
 function mulberry32(seed: number) {
   return () => {
     let t = (seed += 0x6d2b79f5);
@@ -53,7 +57,7 @@ function mulberry32(seed: number) {
   };
 }
 
-export function IconBackground({ count = 90 }: IconBackgroundProps) {
+export function IconBackground({ count = 140 }: IconBackgroundProps) {
   const location = useLocation();
 
   const variant = useMemo(() => {
@@ -80,23 +84,45 @@ export function IconBackground({ count = 90 }: IconBackgroundProps) {
   }, [location.pathname]);
 
   const items = useMemo(() => {
-    const palette = ICON_PALETTES[variant] || ICON_PALETTES.default;
-    // Hash the variant name to a seed for deterministic positions per page.
+    const palette = (ICON_PALETTES[variant] || ICON_PALETTES.default).filter(Boolean) as LucideIcon[];
     let seed = 0;
     for (let i = 0; i < variant.length; i++) seed = (seed * 31 + variant.charCodeAt(i)) | 0;
     const rand = mulberry32(seed >>> 0 || 1);
 
-    return Array.from({ length: count }, (_, i) => {
-      const Icon = palette[Math.floor(rand() * palette.length)];
-      const top = rand() * 100;
-      const left = rand() * 100;
-      const size = 14 + rand() * 32; // 14-46px
-      const rotate = rand() * 360;
-      const opacity = 0.05 + rand() * 0.10; // very subtle so content stays readable
-      const dur = 18 + rand() * 22;
-      const delay = rand() * -dur; // start mid-animation
-      return { Icon, top, left, size, rotate, opacity, dur, delay, key: `${variant}-${i}` };
-    });
+    // Jittered-grid layout — guarantees non-overlapping spread across the page.
+    // Choose grid dimensions to roughly match the requested count.
+    const cols = Math.ceil(Math.sqrt(count * 1.4));
+    const rows = Math.ceil(count / cols);
+    const cellW = 100 / cols;
+    const cellH = 100 / rows;
+    const result: Array<{
+      Icon: LucideIcon; top: number; left: number; size: number;
+      rotate: number; opacity: number; dur: number; delay: number; key: string;
+    }> = [];
+
+    let idx = 0;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (result.length >= count) break;
+        const Icon = palette[idx % palette.length];
+        idx++;
+        // Rotate icon order each row so neighbors differ
+        const jitterX = (rand() - 0.5) * cellW * 0.55;
+        const jitterY = (rand() - 0.5) * cellH * 0.55;
+        const left = c * cellW + cellW / 2 + jitterX;
+        const top = r * cellH + cellH / 2 + jitterY;
+        const size = 16 + rand() * 22; // 16-38px - smaller so they don't overlap
+        const rotate = (rand() - 0.5) * 50;
+        const opacity = 0.05 + rand() * 0.08;
+        const dur = 20 + rand() * 18;
+        const delay = rand() * -dur;
+        result.push({
+          Icon, top, left, size, rotate, opacity, dur, delay,
+          key: `${variant}-${r}-${c}`,
+        });
+      }
+    }
+    return result;
   }, [variant, count]);
 
   return (
@@ -117,7 +143,7 @@ export function IconBackground({ count = 90 }: IconBackgroundProps) {
               width: it.size,
               height: it.size,
               opacity: it.opacity,
-              transform: `rotate(${it.rotate}deg)`,
+              transform: `translate(-50%, -50%) rotate(${it.rotate}deg)`,
               animation: `iconFloat ${it.dur}s ease-in-out ${it.delay}s infinite`,
             }}
           />
