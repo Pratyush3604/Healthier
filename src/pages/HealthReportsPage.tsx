@@ -38,13 +38,25 @@ function downloadAsPDF(report: HealthReport) {
   // Header band
   doc.setFillColor(44, 163, 191);
   doc.rect(0, 0, pageW, 70, 'F');
+
+  // Logo: vector heart with inner gradient stripes (no asset dependency)
+  const lx = margin, ly = 22, lr = 14;
+  doc.setFillColor(255, 255, 255);
+  // Two circles + triangle approximating a heart
+  doc.circle(lx + lr * 0.55, ly + lr * 0.55, lr * 0.55, 'F');
+  doc.circle(lx + lr * 1.45, ly + lr * 0.55, lr * 0.55, 'F');
+  doc.triangle(lx, ly + lr * 0.7, lx + lr * 2, ly + lr * 0.7, lx + lr, ly + lr * 2, 'F');
+  // Inner accent
+  doc.setFillColor(172, 249, 253);
+  doc.circle(lx + lr * 1.0, ly + lr * 0.95, lr * 0.35, 'F');
+
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(22);
-  doc.text('Healthier', margin, 38);
+  doc.text('Healthier', margin + 44, 38);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.text('AI Health Assistant — Make your life healthier', margin, 56);
+  doc.text('AI Health Assistant — Make your life healthier', margin + 44, 56);
   y = 100;
 
   // Meta line
