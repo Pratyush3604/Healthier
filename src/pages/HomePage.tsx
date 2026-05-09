@@ -60,7 +60,10 @@ export default function HomePage() {
   const [langOpen, setLangOpen] = useState(false);
   const [langSearch, setLangSearch] = useState('');
   const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
-  const filteredLangs = allLanguages.filter(l => l.toLowerCase().includes(langSearch.toLowerCase()));
+  const filteredLangs = allLanguages.filter(l => {
+    const q = langSearch.toLowerCase();
+    return l.toLowerCase().includes(q) || (LANG_NATIVE[l] ?? '').toLowerCase().includes(q);
+  });
 
   return (
     <div className="min-h-screen relative">
