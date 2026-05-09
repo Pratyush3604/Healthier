@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
 import { allLanguages } from '@/i18n/languages';
+import { LANG_NATIVE, displayLang } from '@/i18n/nativeNames';
 
 // Tool data uses translation keys; resolved at render time so language changes apply.
 const buildCategories = (t: (k: string) => string) => ({
