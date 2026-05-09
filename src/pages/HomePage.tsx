@@ -123,7 +123,7 @@ export default function HomePage() {
                 <MessageCircle className="w-4 h-4" /> {t('chatWithAI')}
               </Link>
               <button onClick={() => setLangOpen(true)} className="btn-secondary flex items-center gap-2 text-base">
-                <Globe className="w-4 h-4" /> {language}
+                <Globe className="w-4 h-4" /> {LANG_NATIVE[language] ?? language}
               </button>
             </div>
           </motion.div>
