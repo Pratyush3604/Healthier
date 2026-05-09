@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
 import { allLanguages } from '@/i18n/languages';
+import { LANG_NATIVE, displayLang } from '@/i18n/nativeNames';
 
 // Tool data uses translation keys; resolved at render time so language changes apply.
 const buildCategories = (t: (k: string) => string) => ({
@@ -59,7 +60,10 @@ export default function HomePage() {
   const [langOpen, setLangOpen] = useState(false);
   const [langSearch, setLangSearch] = useState('');
   const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
-  const filteredLangs = allLanguages.filter(l => l.toLowerCase().includes(langSearch.toLowerCase()));
+  const filteredLangs = allLanguages.filter(l => {
+    const q = langSearch.toLowerCase();
+    return l.toLowerCase().includes(q) || (LANG_NATIVE[l] ?? '').toLowerCase().includes(q);
+  });
 
   return (
     <div className="min-h-screen relative">
@@ -119,7 +123,7 @@ export default function HomePage() {
                 <MessageCircle className="w-4 h-4" /> {t('chatWithAI')}
               </Link>
               <button onClick={() => setLangOpen(true)} className="btn-secondary flex items-center gap-2 text-base">
-                <Globe className="w-4 h-4" /> {language}
+                <Globe className="w-4 h-4" /> {LANG_NATIVE[language] ?? language}
               </button>
             </div>
           </motion.div>
@@ -141,12 +145,21 @@ export default function HomePage() {
                     <Input placeholder={`${t('search')} ${allLanguages.length}+ ${t('language').toLowerCase()}...`} value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
                   </div>
                   <div className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {filteredLangs.map(l => (
-                      <button key={l} onClick={() => { setLanguage(l); setLangOpen(false); setLangSearch(''); }}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium text-left transition-all card-hover-pop ${language === l ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}>
-                        {l}
-                      </button>
-                    ))}
+                    {filteredLangs.map(l => {
+                      const native = LANG_NATIVE[l];
+                      const isActive = language === l;
+                      return (
+                        <button key={l} onClick={() => { setLanguage(l); setLangOpen(false); setLangSearch(''); }}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium text-left transition-all card-hover-pop ${isActive ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}>
+                          <div className="leading-tight">
+                            <div className={`font-semibold ${native && native !== l ? '' : ''}`}>{native ?? l}</div>
+                            {native && native !== l && (
+                              <div className={`text-[10px] opacity-70`}>{l}</div>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </motion.div>
               </motion.div>
