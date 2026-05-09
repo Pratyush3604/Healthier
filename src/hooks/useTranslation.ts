@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
+import { fetchAndCacheTranslation, getCachedTranslation, useTranslationVersion } from './useAutoTranslate';
 
 /**
  * Translation system for Healthier.
