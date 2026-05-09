@@ -384,11 +384,30 @@ const translations: Record<string, Dict> = {
   Swedish: make({ home: 'Hem', tagline: 'Gör ditt liv hälsosammare!', symptoms: 'Symptom', chat: 'Chatt', settings: 'Inställningar', search: 'Sök' }),
 };
 
+export { EN as MASTER_EN_DICT };
+
 export function useTranslation() {
   const [language] = useLocalStorage('healtify-language', 'English');
+  // Re-render when AI translation cache updates.
+  useTranslationVersion();
+
+  // Kick off AI translation fetch for unsupported languages (one-time, cached).
+  useEffect(() => {
+    if (language === 'English') return;
+    if (translations[language as string]) return; // we have a static dict
+    if (getCachedTranslation(language as string)) return; // already cached
+    fetchAndCacheTranslation(language as string, EN);
+  }, [language]);
+
   const t = (key: string, fallback?: string): string => {
-    const dict = translations[language as string] || EN;
-    return dict[key] ?? EN[key] ?? fallback ?? key;
+    const staticDict = translations[language as string];
+    if (staticDict && staticDict[key] !== undefined && staticDict[key] !== EN[key]) {
+      return staticDict[key];
+    }
+    const aiDict = getCachedTranslation(language as string);
+    if (aiDict && aiDict[key]) return aiDict[key];
+    if (staticDict && staticDict[key] !== undefined) return staticDict[key];
+    return EN[key] ?? fallback ?? key;
   };
   return { t, language };
 }
