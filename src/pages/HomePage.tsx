@@ -145,12 +145,21 @@ export default function HomePage() {
                     <Input placeholder={`${t('search')} ${allLanguages.length}+ ${t('language').toLowerCase()}...`} value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
                   </div>
                   <div className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {filteredLangs.map(l => (
-                      <button key={l} onClick={() => { setLanguage(l); setLangOpen(false); setLangSearch(''); }}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium text-left transition-all card-hover-pop ${language === l ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}>
-                        {l}
-                      </button>
-                    ))}
+                    {filteredLangs.map(l => {
+                      const native = LANG_NATIVE[l];
+                      const isActive = language === l;
+                      return (
+                        <button key={l} onClick={() => { setLanguage(l); setLangOpen(false); setLangSearch(''); }}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium text-left transition-all card-hover-pop ${isActive ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}>
+                          <div className="leading-tight">
+                            <div className={`font-semibold ${native && native !== l ? '' : ''}`}>{native ?? l}</div>
+                            {native && native !== l && (
+                              <div className={`text-[10px] opacity-70`}>{l}</div>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </motion.div>
               </motion.div>
