@@ -17,31 +17,42 @@ import {
   Tent, Backpack, Glasses, Crown, Gift, PartyPopper,
   Headphones, Mic, Volume2, Image, Film, BookMarked,
   Bookmark, Tag, Flag, MapPin, Navigation, Send,
-  Plus, Minus, Check, Search, Bell, Home,
+  Plus, Minus, Check, Search, Bell, Home, Accessibility,
+  PersonStanding, Baby, HandHeart, HandHelping, HeartHandshake,
+  Hospital, Ambulance, CirclePlus, CircleAlert, ClipboardPlus,
+  NotepadText, ClipboardCheck, FileHeart, ChartSpline,
+  ChartNoAxesCombined, AudioWaveform, BicepsFlexed, Vegan,
+  Soup, Beef, Drumstick, Utensils, UtensilsCrossed, Ham,
+  Bean, Goal, Medal, Trophy, Timer, AlarmClock, CircleGauge,
+  Tablet, Radiation, TestTubes, BrainCircuit, ThermometerSun,
+  BadgePlus, ClipboardPenLine, NotebookTabs, BookOpenCheck,
+  BadgeAlert, Siren, PhoneCall, MapPinned, Navigation2,
+  ShieldPlus, ShieldAlert, BriefcaseBusiness, BaggageClaim,
+  PlaneTakeoff, StretchHorizontal, School, KeyRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 // Each page gets a UNIQUE icon set so backgrounds feel custom per-route.
 const ICON_PALETTES: Record<string, LucideIcon[]> = {
-  home:        [Heart, HeartPulse, Stethoscope, Activity, Cross, Pill, Sparkles, Shield, Award, Star, Sun, Brain],
-  dashboard:   [Activity, Gauge, FileText, ClipboardList, Calendar, Clock, Award, BookMarked, Bell, Check, Star, Crown],
-  symptoms:    [Stethoscope, Thermometer, Brain, AlertTriangle, Eye, Ear, Bone, Hand, HeartPulse, Wind, Droplet, Activity],
-  skin:        [Bandage, Hand, Microscope, Scan, Droplet, Leaf, Sun, Sparkles, Camera, Eye, Flower2, Shield],
-  chat:        [MessageCircle, Brain, BookOpen, Sparkles, Lightbulb, Mic, Send, Mail, User, Users, Headphones, Volume2],
-  fitness:     [Dumbbell, Bike, Apple, Salad, Footprints, Carrot, Cherry, Grape, Banana, Fish, Egg, Wheat, Flame, Zap],
-  medicine:    [Pill, Syringe, FlaskConical, TestTube, BriefcaseMedical, Beaker, Atom, Dna, Microscope, Thermometer, Bandage, Cross],
-  vitals:      [HeartPulse, Heart, Activity, Gauge, Thermometer, Watch, Droplet, Wind, Zap, Bell, Clock, BatteryCharging],
-  reports:     [FileText, ClipboardList, Microscope, Scan, BookOpen, BookMarked, Bookmark, Image, Film, Tag, Calculator, Award],
-  calculator:  [Calculator, Scale, Gauge, Plus, Minus, Apple, Dumbbell, Wheat, Salad, Egg, Milk, Activity],
-  posture:     [Bone, Footprints, Hand, Compass, Monitor, Bed, Dumbbell, Activity, Mountain, Anchor, Crown, User],
-  firstaid:    [Cross, BriefcaseMedical, Bandage, Heart, AlertTriangle, Phone, Shield, Pill, Flame, Droplet, Thermometer, Syringe],
-  tips:        [Lightbulb, Sparkles, Apple, Salad, Sun, Leaf, Flower2, Bed, Moon, Coffee, TreePine, Star],
-  emergency:   [AlertTriangle, Phone, Cross, BriefcaseMedical, Heart, Shield, Flame, Bell, MapPin, Navigation, Car, Plane],
-  settings:    [Settings, Lock, User, Shield, Wifi, BatteryCharging, Smartphone, Monitor, Bell, Tag, Globe, Check],
-  about:       [Award, Star, Sparkles, Heart, Brain, BookOpen, Lightbulb, User, Crown, Gift, PartyPopper, Music],
-  auth:        [Lock, Shield, User, Mail, Heart, Sparkles, Star, Award, Check, Bell, Home, Globe],
-  travel:      [Plane, Car, Map, Compass, Globe, Sun, Snowflake, Wind, BriefcaseMedical, Phone, Tent, Backpack, MapPin, Anchor],
-  default:     [Heart, Activity, Stethoscope, Pill, Cross, Sparkles, Shield, Star, Sun, Leaf, Brain, Bell],
+  home:        [Heart, HeartPulse, Stethoscope, Activity, Cross, Pill, Sparkles, Shield, Award, Star, Sun, Brain, CirclePlus, HandHeart, HeartHandshake, Hospital, FileHeart, BookOpenCheck, Lightbulb, ChartSpline, Apple, Dumbbell, ThermometerSun, BadgePlus, ClipboardPlus, Baby, Globe, Leaf],
+  dashboard:   [Activity, Gauge, CircleGauge, FileText, ClipboardList, Calendar, Clock, Award, BookMarked, NotebookTabs, Bell, Check, Star, Crown, ChartSpline, ChartNoAxesCombined, ClipboardCheck, NotepadText, HeartPulse, Watch, Trophy, Medal, Timer, AlarmClock, ShieldPlus, Sparkles],
+  symptoms:    [Stethoscope, Thermometer, ThermometerSun, Brain, BrainCircuit, AlertTriangle, CircleAlert, Eye, Ear, Bone, Hand, Footprints, HeartPulse, Wind, Droplet, Activity, Gauge, ClipboardPenLine, NotepadText, BadgeAlert, AudioWaveform, Pill, Bed, Moon, PhoneCall, ShieldAlert],
+  skin:        [Bandage, Hand, Microscope, Scan, Droplet, Leaf, Sun, Sparkles, Camera, Eye, Flower2, Shield, BadgePlus, ClipboardPlus, TestTube, FlaskConical, Heart, ThermometerSun, CirclePlus, HandHelping, FileHeart, Waves, Snowflake, Baby, Lightbulb, Hospital],
+  chat:        [MessageCircle, Brain, BrainCircuit, BookOpen, Sparkles, Lightbulb, Mic, Send, Mail, User, Users, Headphones, Volume2, AudioWaveform, ClipboardPenLine, NotepadText, HeartHandshake, Shield, FileText, BookOpenCheck, Globe, Phone, Search, Check, Star, HandHelping],
+  fitness:     [Dumbbell, BicepsFlexed, Bike, Footprints, Apple, Salad, Vegan, Soup, Beef, Drumstick, Utensils, UtensilsCrossed, Ham, Carrot, Cherry, Grape, Banana, Fish, Egg, Milk, Wheat, Bean, Flame, Zap, Goal, Medal, Trophy, Timer, HeartPulse, Activity],
+  medicine:    [Pill, Tablet, Syringe, FlaskConical, TestTube, TestTubes, BriefcaseMedical, Beaker, Atom, Dna, Microscope, Thermometer, ThermometerSun, Bandage, Cross, CirclePlus, Hospital, Radiation, ShieldPlus, ClipboardPlus, FileHeart, BookMarked, NotepadText, BadgePlus, HeartPulse, Droplet],
+  vitals:      [HeartPulse, Heart, Activity, Gauge, CircleGauge, Thermometer, ThermometerSun, Watch, Droplet, Wind, Zap, Bell, Clock, BatteryCharging, AudioWaveform, ChartSpline, ChartNoAxesCombined, Timer, AlarmClock, ClipboardCheck, FileHeart, BrainCircuit, ShieldPlus, BadgeAlert, Smartphone, Monitor],
+  reports:     [FileText, ClipboardList, ClipboardPlus, ClipboardCheck, ClipboardPenLine, NotepadText, FileHeart, Microscope, Scan, BookOpen, BookMarked, NotebookTabs, Bookmark, Image, Film, Tag, Calculator, Award, ChartSpline, ChartNoAxesCombined, Search, BadgePlus, ShieldPlus, HeartPulse, Dna, TestTubes],
+  calculator:  [Calculator, Scale, Gauge, CircleGauge, Plus, Minus, Apple, Salad, Vegan, Dumbbell, BicepsFlexed, Wheat, Bean, Egg, Milk, Fish, Soup, Utensils, HeartPulse, Activity, ChartSpline, Timer, Goal, Medal, ClipboardCheck, NotepadText],
+  posture:     [Accessibility, PersonStanding, StretchHorizontal, Bone, Footprints, Hand, Compass, Monitor, Bed, Dumbbell, BicepsFlexed, Activity, Mountain, Anchor, User, Eye, HeartPulse, ShieldPlus, Goal, Timer, Gauge, CircleGauge, HandHelping, Medal, Crown, Sparkles],
+  firstaid:    [Cross, CirclePlus, BriefcaseMedical, Hospital, Ambulance, Bandage, Heart, HeartPulse, AlertTriangle, CircleAlert, Phone, PhoneCall, Shield, ShieldPlus, ShieldAlert, Pill, Tablet, Flame, Droplet, Thermometer, ThermometerSun, Syringe, HandHelping, HandHeart, BadgePlus, Siren, MapPin, Navigation2],
+  tips:        [Lightbulb, Sparkles, Apple, Salad, Vegan, Sun, Leaf, Flower2, Bed, Moon, Coffee, TreePine, Star, Heart, HandHeart, BookOpenCheck, Goal, Medal, Timer, Droplet, Waves, Snowflake, Soup, Utensils, BrainCircuit, Footprints],
+  emergency:   [AlertTriangle, CircleAlert, Siren, Phone, PhoneCall, Cross, CirclePlus, BriefcaseMedical, Hospital, Ambulance, Heart, HeartPulse, Shield, ShieldAlert, Flame, Bell, MapPin, MapPinned, Navigation, Navigation2, Car, Plane, BadgeAlert, HandHelping, Droplet, ThermometerSun],
+  settings:    [Settings, Lock, User, Shield, ShieldPlus, Wifi, BatteryCharging, Smartphone, Monitor, Bell, Tag, Globe, Check, Search, Mail, NotebookTabs, ClipboardCheck, BadgePlus, CircleGauge, Clock, Home, Star, Award, Sparkles],
+  about:       [Award, Star, Sparkles, Heart, Brain, BrainCircuit, BookOpen, BookOpenCheck, Lightbulb, User, Crown, Gift, PartyPopper, Music, HandHeart, HeartHandshake, School, Medal, Trophy, NotebookTabs, FileHeart, Globe, Sun, Flower2],
+  auth:        [Lock, Shield, ShieldPlus, User, Mail, Heart, Sparkles, Star, Award, Check, Bell, Home, Globe, KeyRound, BadgePlus, CirclePlus, HandHeart, HeartHandshake, Smartphone, Monitor, BookOpenCheck, Lightbulb],
+  travel:      [Plane, PlaneTakeoff, Car, Map, MapPinned, Compass, Globe, Sun, Snowflake, Wind, BriefcaseMedical, BriefcaseBusiness, Phone, PhoneCall, Tent, Backpack, BaggageClaim, MapPin, Navigation, Navigation2, Anchor, ShieldPlus, Hospital, Pill, Cross, Droplet],
+  default:     [Heart, HeartPulse, Activity, Stethoscope, Pill, Tablet, Cross, CirclePlus, Sparkles, Shield, ShieldPlus, Star, Sun, Leaf, Brain, BrainCircuit, Bell, BookOpenCheck, FileHeart, HandHeart, BadgePlus, ClipboardPlus, ThermometerSun, Droplet],
 };
 
 interface IconBackgroundProps {
@@ -107,11 +118,11 @@ export function IconBackground({ count = 140 }: IconBackgroundProps) {
         const Icon = palette[idx % palette.length];
         idx++;
         // Rotate icon order each row so neighbors differ
-        const jitterX = (rand() - 0.5) * cellW * 0.55;
-        const jitterY = (rand() - 0.5) * cellH * 0.55;
+        const jitterX = (rand() - 0.5) * cellW * 0.42;
+        const jitterY = (rand() - 0.5) * cellH * 0.42;
         const left = c * cellW + cellW / 2 + jitterX;
         const top = r * cellH + cellH / 2 + jitterY;
-        const size = 16 + rand() * 22; // 16-38px - smaller so they don't overlap
+        const size = 13 + rand() * 16; // 13-29px - dense but non-overlapping
         const rotate = (rand() - 0.5) * 50;
         const opacity = 0.05 + rand() * 0.08;
         const dur = 20 + rand() * 18;
