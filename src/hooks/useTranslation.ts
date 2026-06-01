@@ -8,9 +8,9 @@ import { fetchAndCacheTranslation, getCachedTranslation, useTranslationVersion }
  * Strategy:
  * - English is the source of truth (master dictionary `EN`).
  * - For supported languages we ship a translated dictionary.
- * - For any other language picked from the 600+ language list, English text is
- *   used in the UI; AI responses still get generated in the chosen language by
- *   `useAIStream` (it appends a "respond in <language>" instruction).
+ * - Every non-English language can be completed by the translate-ui edge
+ *   function and cached locally, so partial static dictionaries never leave
+ *   buttons stuck in English.
  */
 
 type Dict = Record<string, string>;
@@ -391,10 +391,11 @@ export function useTranslation() {
   // Re-render when AI translation cache updates.
   useTranslationVersion();
 
-  // Kick off AI translation fetch for unsupported languages (one-time, cached).
+  // Kick off AI translation fetch for every non-English language (one-time,
+  // cached). Static dictionaries are only instant fallbacks; the AI cache fills
+  // any labels that were not hand-translated.
   useEffect(() => {
     if (language === 'English') return;
-    if (translations[language as string]) return; // we have a static dict
     if (getCachedTranslation(language as string)) return; // already cached
     fetchAndCacheTranslation(language as string, EN);
   }, [language]);

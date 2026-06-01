@@ -7,8 +7,6 @@ import {
   Sparkles, Pill, Scan, Calculator,
   ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle, Globe, X
 } from 'lucide-react';
-import { FloatingBackground } from '@/components/FloatingBackground';
-import { ParticleBackground } from '@/components/ParticleBackground';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Button } from '@/components/ui/button';
@@ -67,9 +65,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen relative">
-      <ParticleBackground variant="home" />
-      <FloatingBackground variant="home" count={24} />
-
       {/* Hero */}
       <section className="relative py-24 lg:py-36 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
