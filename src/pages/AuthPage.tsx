@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, Loader2, ArrowRight, Chrome } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,16 +18,26 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const rawNext = searchParams.get('next');
+  const nextPath = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : null;
+  const postAuthDest = nextPath ?? '/dashboard';
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session) navigate('/dashboard');
+      if (session) {
+        if (nextPath) window.location.href = nextPath;
+        else navigate('/dashboard');
+      }
     });
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate('/dashboard');
+      if (data.session) {
+        if (nextPath) window.location.href = nextPath;
+        else navigate('/dashboard');
+      }
     });
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, nextPath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,20 +51,23 @@ export default function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: 'Welcome back!', description: 'Signed in successfully.' });
-        navigate('/dashboard');
+        if (nextPath) window.location.href = nextPath;
+        else navigate('/dashboard');
       } else {
         if (!fullName) {
           toast({ title: 'Name required', description: 'Please enter your full name.', variant: 'destructive' });
           setIsLoading(false);
           return;
         }
+        const emailRedirectTo = nextPath ? window.location.origin + nextPath : window.location.origin;
         const { error } = await supabase.auth.signUp({
           email, password,
-          options: { data: { full_name: fullName } },
+          options: { data: { full_name: fullName }, emailRedirectTo },
         });
         if (error) throw error;
         toast({ title: 'Account created!', description: 'You are now logged in.' });
-        navigate('/dashboard');
+        if (nextPath) window.location.href = nextPath;
+        else navigate('/dashboard');
       }
     } catch (error: any) {
       toast({ title: 'Error', description: error.message || 'Something went wrong.', variant: 'destructive' });
@@ -66,8 +79,11 @@ export default function AuthPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
+      const redirectUri = nextPath
+        ? window.location.origin + nextPath
+        : window.location.origin;
       const { error } = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: window.location.origin,
+        redirect_uri: redirectUri,
       });
       if (error) throw error;
     } catch (error: any) {

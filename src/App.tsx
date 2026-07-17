@@ -24,6 +24,7 @@ import MedicationReminderPage from "@/pages/MedicationReminderPage";
 import HealthReportsPage from "@/pages/HealthReportsPage";
 import PostureCorrectorPage from "@/pages/PostureCorrectorPage";
 import HowToUsePage from "@/pages/HowToUsePage";
+import OAuthConsentPage from "@/pages/OAuthConsentPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/posture-corrector" element={<PostureCorrectorPage />} />
             <Route path="/how-to-use" element={<HowToUsePage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
