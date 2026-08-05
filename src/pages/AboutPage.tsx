@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Award, Heart, Sparkles, School } from 'lucide-react';
-import pratyushImg from '@/assets/pratyush.jpeg';
+import pratyushImg from '@/assets/pratyush.png.asset.json';
 import { useTranslation } from '@/hooks/useTranslation';
+
 
 export default function AboutPage() {
   const { t } = useTranslation();
@@ -20,7 +21,8 @@ export default function AboutPage() {
         <div className="text-center mb-12">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}
             className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-glow border-4 border-primary/30">
-            <img src={pratyushImg} alt="Pratyush Dalmia" className="w-full h-full object-cover" loading="lazy" />
+            <img src={pratyushImg.url} alt="Pratyush Dalmia" className="w-full h-full object-cover" loading="lazy" />
+
           </motion.div>
           <h1 className="font-display text-4xl font-bold mb-2">{t('aboutHeading')}</h1>
           <p className="text-xl text-muted-foreground">{t('aboutSubheading')}</p>
@@ -31,7 +33,8 @@ export default function AboutPage() {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             <div className="shrink-0">
               <div className="w-40 h-40 rounded-2xl overflow-hidden border-2 border-primary/30">
-                <img src={pratyushImg} alt="Pratyush Dalmia" className="w-full h-full object-cover" loading="lazy" />
+                <img src={pratyushImg.url} alt="Pratyush Dalmia" className="w-full h-full object-cover" loading="lazy" />
+
               </div>
             </div>
             <div className="flex-1 text-center md:text-left">
