@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Award, Heart, Sparkles, School } from 'lucide-react';
-import pratyushImg from '@/assets/pratyush.jpeg';
+import pratyushImg from '@/assets/pratyush.png.asset.json';
 import { useTranslation } from '@/hooks/useTranslation';
+
 
 export default function AboutPage() {
   const { t } = useTranslation();
