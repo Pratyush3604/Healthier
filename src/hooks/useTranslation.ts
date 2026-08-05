@@ -105,7 +105,7 @@ const EN: Dict = {
   aboutBio: 'I\'m a student who loves technology, robotics, AI, and innovation. My dream is to build solutions that create real impact and leave a mark that lasts for generations.',
   aboutOrigin: 'originally started as an idea for WRO (World Robot Olympiad), but over time it evolved into a full-fledged AI-powered health assistant.',
   whatHealthierCanDo: 'What Healthier Can Do',
-  myMentor: '🙏 My Mentor',
+  myMentor: '\u00a0My Mentor',
   mentorThanks: 'I sincerely thank Mr. Akash Deep Rawat for his constant support, guidance, and motivation in turning this vision into reality.',
   builtForWRO: 'Built with passion for WRO and beyond',
 };
@@ -161,7 +161,7 @@ const translations: Record<string, Dict> = {
     aboutSchool: 'मेयो कॉलेज, अजमेर',
     aboutBio: 'मैं एक छात्र हूं जिसे टेक्नोलॉजी, रोबोटिक्स, AI और नवाचार पसंद है।',
     aboutOrigin: 'मूल रूप से WRO के लिए एक विचार के रूप में शुरू हुआ, समय के साथ यह एक AI-संचालित स्वास्थ्य सहायक बन गया।',
-    whatHealthierCanDo: 'Healthier क्या कर सकता है', myMentor: '🙏 मेरे गुरु',
+    whatHealthierCanDo: 'Healthier क्या कर सकता है', myMentor: '\u00a0मेरे गुरु',
     mentorThanks: 'मैं श्री आकाश दीप रावत को उनके निरंतर समर्थन और मार्गदर्शन के लिए हृदय से धन्यवाद देता हूं।',
     builtForWRO: 'WRO और उससे आगे के लिए जुनून से बनाया गया',
   }),
@@ -184,7 +184,7 @@ const translations: Record<string, Dict> = {
     safetyTitle: 'Solo para diagnóstico básico',
     medicalDisclaimer: 'Aviso médico:',
     aboutHeading: 'Sobre mí', aboutSubheading: 'El creador de Healthier',
-    whatHealthierCanDo: 'Qué puede hacer Healthier', myMentor: '🙏 Mi Mentor',
+    whatHealthierCanDo: 'Qué puede hacer Healthier', myMentor: '\u00a0Mi Mentor',
   }),
   French: make({
     home: 'Accueil', dashboard: 'Tableau de bord', symptoms: 'Symptômes', skinInjury: 'Peau et blessures',
@@ -199,7 +199,7 @@ const translations: Record<string, Dict> = {
     catFitness: 'Fitness et Bien-être', catTools: 'Outils et Guides',
     coreTools: 'Outils principaux', resources: 'Ressources',
     madeBy: 'Réalisé par Pratyush Dalmia',
-    aboutHeading: 'À propos de moi', myMentor: '🙏 Mon Mentor',
+    aboutHeading: 'À propos de moi', myMentor: '\u00a0Mon Mentor',
   }),
   German: make({
     home: 'Start', dashboard: 'Dashboard', symptoms: 'Symptome', skinInjury: 'Haut & Verletzung',
