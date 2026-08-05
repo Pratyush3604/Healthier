@@ -224,18 +224,42 @@ function scheduleScan() {
 
 /* ------------------------------------------------------------- lifecycle */
 
+/** Puts every swapped node back to its English source text. */
+function restoreOriginals() {
+  applying = true;
+  touchedText.forEach((node) => {
+    const rec = textState.get(node);
+    if (rec && node.nodeValue === rec.out) node.nodeValue = rec.orig;
+    textState.delete(node);
+  });
+  touchedText.clear();
+  touchedEls.forEach((el) => {
+    const store = attrState.get(el);
+    if (!store) return;
+    Object.entries(store).forEach(([attr, rec]) => {
+      if (el.getAttribute(attr) === rec.out) el.setAttribute(attr, rec.orig);
+    });
+    attrState.delete(el);
+  });
+  touchedEls.clear();
+  window.setTimeout(() => { applying = false; }, 0);
+}
+
+
 /**
  * Starts (or restarts) whole-page translation for `language`.
  * Returns a cleanup function.
  */
 export function startDomTranslation(language: string): () => void {
   currentLanguage = language;
+  generation += 1;
   failed.clear();
   pending.clear();
 
   if (language === 'English') {
     observer?.disconnect();
     observer = undefined;
+    restoreOriginals();
     return () => {};
   }
 
