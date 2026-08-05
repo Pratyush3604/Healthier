@@ -5,6 +5,7 @@ import { Footer } from './Footer';
 import { ErrorBoundary } from './ErrorBoundary';
 import { ParticleBackground } from './ParticleBackground';
 import { IconBackground } from './IconBackground';
+import { AutoTranslate } from './AutoTranslate';
 
 interface LayoutProps {
   children: ReactNode;

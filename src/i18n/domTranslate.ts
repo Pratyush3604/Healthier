@@ -172,6 +172,7 @@ function translateTextNodes(root: Node, cache: Record$) {
       const replaced = original.replace(trimmed, hit);
       if (replaced !== value) textNode.nodeValue = replaced;
       textState.set(textNode, { orig: original, out: replaced, gen: generation });
+      touchedText.add(textNode);
     } else {
       pending.add(trimmed);
     }
@@ -198,6 +199,7 @@ function translateAttributes(root: Element, cache: Record$) {
         el.setAttribute(attr, hit);
         store[attr] = { orig: original, out: hit, gen: generation };
         attrState.set(el, store);
+        touchedEls.add(el);
       } else {
         pending.add(trimmed);
       }
