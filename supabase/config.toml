@@ -1,13 +1,13 @@
 project_id = "ewnxnvtnkcexwzfnaawp"
 
 [functions.medical-chat]
-verify_jwt = false
+verify_jwt = true
 
 [functions.elevenlabs-tts]
-verify_jwt = false
+verify_jwt = true
 
 [functions.analyze-image]
-verify_jwt = false
+verify_jwt = true
 
 [functions.translate-ui]
-verify_jwt = false
+verify_jwt = true
