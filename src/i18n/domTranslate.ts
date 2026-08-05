@@ -185,14 +185,15 @@ function translateAttributes(root: Element, cache: Record$) {
       if (!value) continue;
       const store = attrState.get(el) ?? {};
       const prev = store[attr];
-      if (prev && value === prev.out) continue;
-      const original = value;
+      const untouched = prev && value === prev.out;
+      if (untouched && prev.gen === generation) continue;
+      const original = untouched ? prev.orig : value;
       if (!isTranslatable(original)) continue;
       const trimmed = original.trim();
       const hit = cache[trimmed];
       if (hit) {
         el.setAttribute(attr, hit);
-        store[attr] = { orig: original, out: hit };
+        store[attr] = { orig: original, out: hit, gen: generation };
         attrState.set(el, store);
       } else {
         pending.add(trimmed);
