@@ -96,6 +96,9 @@ function isSkippedNode(node: Node): boolean {
 type NodeRecord = { orig: string; out: string; gen: number };
 const textState = new WeakMap<Text, NodeRecord>();
 const attrState = new WeakMap<Element, Record<string, NodeRecord>>();
+/** Nodes we actually rewrote, so switching back to English can undo them. */
+const touchedText = new Set<Text>();
+const touchedEls = new Set<Element>();
 
 /* ---------------------------------------------------------------- network */
 
