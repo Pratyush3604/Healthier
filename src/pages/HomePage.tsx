@@ -139,7 +139,7 @@ export default function HomePage() {
                   <div className="p-3 border-b border-border">
                     <Input placeholder={`${t('search')} ${allLanguages.length}+ ${t('language').toLowerCase()}...`} value={langSearch} onChange={e => setLangSearch(e.target.value)} autoFocus />
                   </div>
-                  <div className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div data-no-translate className="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {filteredLangs.map(l => {
                       const native = LANG_NATIVE[l];
                       const isActive = language === l;

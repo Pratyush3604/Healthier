@@ -77,7 +77,7 @@ export const AIResponseCard = forwardRef<HTMLDivElement, AIResponseCardProps>(({
             {title}
           </h3>
         )}
-        <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary">
+        <div data-no-translate className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary">
           <ReactMarkdown>{content ?? ''}</ReactMarkdown>
         </div>
         {isLoading && (

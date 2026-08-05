@@ -5,6 +5,7 @@ import { Footer } from './Footer';
 import { ErrorBoundary } from './ErrorBoundary';
 import { ParticleBackground } from './ParticleBackground';
 import { IconBackground } from './IconBackground';
+import { AutoTranslate } from './AutoTranslate';
 
 interface LayoutProps {
   children: ReactNode;
@@ -43,6 +44,8 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col relative bg-background">
+      {/* Keeps every label on the page in the selected language */}
+      <AutoTranslate />
       {/* Subtle particle layer (light, low density) */}
       <ParticleBackground key={variant} variant={variant} />
       {/* Dense per-page medical icon background (jittered grid, no overlap) */}
