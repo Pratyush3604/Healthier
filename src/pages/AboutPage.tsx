@@ -33,7 +33,8 @@ export default function AboutPage() {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             <div className="shrink-0">
               <div className="w-40 h-40 rounded-2xl overflow-hidden border-2 border-primary/30">
-                <img src={pratyushImg} alt="Pratyush Dalmia" className="w-full h-full object-cover" loading="lazy" />
+                <img src={pratyushImg.url} alt="Pratyush Dalmia" className="w-full h-full object-cover" loading="lazy" />
+
               </div>
             </div>
             <div className="flex-1 text-center md:text-left">
