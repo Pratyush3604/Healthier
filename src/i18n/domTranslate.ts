@@ -33,6 +33,8 @@ let flushTimer: number | undefined;
 let scanTimer: number | undefined;
 let applying = false;
 let currentLanguage = 'English';
+/** Bumped on every language switch so already-swapped nodes are revisited. */
+let generation = 0;
 let observer: MutationObserver | undefined;
 
 /* ------------------------------------------------------------------ cache */
@@ -91,11 +93,11 @@ function isSkippedNode(node: Node): boolean {
 
 /* --------------------------------------------------------------- tracking */
 
-type NodeRecord = { orig: string; out: string };
+type NodeRecord = { orig: string; out: string; gen: number };
 const textState = new WeakMap<Text, NodeRecord>();
 const attrState = new WeakMap<Element, Record<string, NodeRecord>>();
 
-/* -----------------------------------------------------------------网络 */
+/* ---------------------------------------------------------------- network */
 
 async function flushPending() {
   flushTimer = undefined;
@@ -152,10 +154,12 @@ function translateTextNodes(root: Node, cache: Record$) {
   for (const textNode of nodes) {
     const value = textNode.nodeValue ?? '';
     const prev = textState.get(textNode);
-    // Already translated and untouched by React — nothing to do.
-    if (prev && value === prev.out) continue;
+    const untouched = prev && value === prev.out;
+    // Already translated for the current language — nothing to do.
+    if (untouched && prev.gen === generation) continue;
 
-    const original = prev && value === prev.out ? prev.orig : value;
+    // On a language switch we must retranslate from the English source.
+    const original = untouched ? prev.orig : value;
     if (!isTranslatable(original)) continue;
     if (isSkippedNode(textNode)) continue;
 
@@ -164,7 +168,7 @@ function translateTextNodes(root: Node, cache: Record$) {
     if (hit) {
       const replaced = original.replace(trimmed, hit);
       if (replaced !== value) textNode.nodeValue = replaced;
-      textState.set(textNode, { orig: original, out: replaced });
+      textState.set(textNode, { orig: original, out: replaced, gen: generation });
     } else {
       pending.add(trimmed);
     }
