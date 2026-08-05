@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Award, Heart, Sparkles, School } from 'lucide-react';
+import { Heart, Sparkles, School } from 'lucide-react';
 import pratyushImg from '@/assets/pratyush.png.asset.json';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -79,9 +79,6 @@ export default function AboutPage() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-center mt-12 text-muted-foreground">
-          <p className="flex items-center justify-center gap-2"><Award className="h-5 w-5 text-primary" />{"\n"}</p>
-        </motion.div>
       </motion.div>
     </div>
   );
