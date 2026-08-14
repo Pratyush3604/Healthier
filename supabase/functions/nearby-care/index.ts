@@ -45,12 +45,17 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => null);
-    const lat = Number(body?.lat);
-    const lng = Number(body?.lng);
+    let lat = Number(body?.lat);
+    let lng = Number(body?.lng);
+    const addressQuery = typeof body?.address === "string" ? body.address.trim().slice(0, 200) : "";
     const kind = typeof body?.kind === "string" ? body.kind : "hospital";
     const radius = Math.min(Math.max(Number(body?.radius) || 5000, 500), 50000);
 
-    if (!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lng) || lng < -180 || lng > 180) {
+    const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+    if (!hasCoords && addressQuery.length < 3) {
+      return json({ error: "Provide coordinates or an address" }, 400);
+    }
+    if (hasCoords && (!Number.isFinite(lat) || lat < -90 || lat > 90 || lng < -180 || lng > 180)) {
       return json({ error: "Valid lat and lng are required" }, 400);
     }
     const includedTypes = KIND_TYPES[kind];
@@ -60,6 +65,28 @@ Deno.serve(async (req) => {
     const GOOGLE_MAPS_API_KEY = Deno.env.get("GOOGLE_MAPS_API_KEY");
     if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) {
       return json({ error: "Maps connector is not configured for this project yet." }, 503);
+    }
+
+    const gatewayHeaders = {
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      "X-Connection-Api-Key": GOOGLE_MAPS_API_KEY,
+    };
+
+    if (!hasCoords) {
+      const geo = await fetch(
+        `${GATEWAY_URL}/maps/api/geocode/json?address=${encodeURIComponent(addressQuery)}`,
+        { headers: gatewayHeaders },
+      );
+      if (!geo.ok) {
+        const detail = await geo.text();
+        console.error(`Geocode failed [${geo.status}]: ${detail}`);
+        return json({ error: "Could not look up that place", status: geo.status, details: detail }, geo.status);
+      }
+      const geoData = await geo.json();
+      const loc = geoData?.results?.[0]?.geometry?.location;
+      if (!loc) return json({ error: "No location matched that address" }, 404);
+      lat = Number(loc.lat);
+      lng = Number(loc.lng);
     }
 
     const res = await fetch(`${GATEWAY_URL}/places/v1/places:searchNearby`, {
@@ -137,7 +164,7 @@ Deno.serve(async (req) => {
       };
     });
 
-    return json({ kind, radius, count: places.length, places });
+    return json({ kind, radius, center: { lat, lng }, count: places.length, places });
   } catch (e) {
     console.error("nearby-care error", e);
     return json({ error: e instanceof Error ? e.message : "Unknown error" }, 500);
