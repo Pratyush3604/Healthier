@@ -7,7 +7,7 @@ import {
   Phone, Lightbulb, Search, Pill, Dumbbell,
   Apple, Scan, Calculator, LogIn, LogOut,
   LayoutDashboard, Settings, TrendingUp,
-  Monitor, ClipboardList, User, HelpCircle
+  Monitor, ClipboardList, User, HelpCircle, Hospital
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
@@ -35,6 +35,7 @@ const useNavItems = () => {
     { path: '/posture-corrector', label: t('posture'), icon: Monitor },
     { path: '/first-aid', label: t('firstAid'), icon: BookOpen },
     { path: '/health-tips', label: t('healthTips'), icon: Lightbulb },
+    { path: '/nearby-care', label: t('nearbyCare'), icon: Hospital },
     { path: '/emergency', label: t('emergency'), icon: Phone },
     { path: '/how-to-use', label: t('howToUse'), icon: HelpCircle },
     { path: '/settings', label: t('settings'), icon: Settings },
