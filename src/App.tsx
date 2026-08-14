@@ -25,6 +25,7 @@ import HealthReportsPage from "@/pages/HealthReportsPage";
 import PostureCorrectorPage from "@/pages/PostureCorrectorPage";
 import HowToUsePage from "@/pages/HowToUsePage";
 import OAuthConsentPage from "@/pages/OAuthConsentPage";
+import NearbyCarePage from "@/pages/NearbyCarePage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/bmi-calculator" element={<BMICalculatorPage />} />
             <Route path="/first-aid" element={<FirstAidPage />} />
             <Route path="/health-tips" element={<HealthTipsPage />} />
+            <Route path="/nearby-care" element={<NearbyCarePage />} />
             <Route path="/emergency" element={<EmergencyPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/medication-reminder" element={<MedicationReminderPage />} />
