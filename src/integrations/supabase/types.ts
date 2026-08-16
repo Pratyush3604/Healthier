@@ -16,28 +16,79 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          allergies: string | null
           avatar_url: string | null
+          blood_group: string | null
+          chronic_conditions: string | null
+          city: string | null
+          country: string | null
           created_at: string
+          date_of_birth: string | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
           full_name: string | null
+          gender: string | null
+          height_cm: number | null
           id: string
+          last_seen_at: string | null
+          medications: string | null
+          phone: string | null
+          preferred_language: string | null
+          profile_completed: boolean
           updated_at: string
           user_id: string
+          weight_kg: number | null
         }
         Insert: {
+          allergies?: string | null
           avatar_url?: string | null
+          blood_group?: string | null
+          chronic_conditions?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           full_name?: string | null
+          gender?: string | null
+          height_cm?: number | null
           id?: string
+          last_seen_at?: string | null
+          medications?: string | null
+          phone?: string | null
+          preferred_language?: string | null
+          profile_completed?: boolean
           updated_at?: string
           user_id: string
+          weight_kg?: number | null
         }
         Update: {
+          allergies?: string | null
           avatar_url?: string | null
+          blood_group?: string | null
+          chronic_conditions?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           full_name?: string | null
+          gender?: string | null
+          height_cm?: number | null
           id?: string
+          last_seen_at?: string | null
+          medications?: string | null
+          phone?: string | null
+          preferred_language?: string | null
+          profile_completed?: boolean
           updated_at?: string
           user_id?: string
+          weight_kg?: number | null
         }
         Relationships: []
       }
