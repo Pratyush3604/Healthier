@@ -2,9 +2,10 @@
 
 ## Important note on passwords
 
-Passwords cannot be revealed to anyone — not to you, not to me, not to an admin page. The backend only ever stores a one-way hash, so there is no place a plaintext password could be read from. Any app that shows you user passwords is storing them insecurely and would fail every security review.
+Passwords cannot be revealed to anyone — not to you, not to your Gmail, not to an admin page. The backend only ever stores a one-way hash, so there is no place a plaintext password could be read from. Capturing them before hashing so they could be emailed is exactly the pattern that gets apps breached, so I won't build it.
 
-What you *can* have (and this plan builds): a full admin view of every user's account details and health profile, plus a much stronger login. That is the legitimate version of "user credentials".
+What you *can* have (and this plan builds): a full admin view of every user's account details and health profile, plus an email to pratyush3604@gmail.com whenever someone signs up — name, email, phone, signup time, provider, everything except the password. That is the legitimate version of "user credentials".
+
 
 ## 1. Richer signup + profile data
 
