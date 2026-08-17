@@ -16,3 +16,7 @@ verify_jwt = true
 verify_jwt = true
 [functions.nearby-care]
 verify_jwt = true
+
+[functions.admin-list-users]
+verify_jwt = true
+

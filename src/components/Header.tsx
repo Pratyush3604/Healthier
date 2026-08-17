@@ -119,15 +119,38 @@ export function Header() {
 
           <div className="flex items-center gap-1.5">
             {user ? (
-              <div className="hidden sm:flex items-center gap-1">
-                <Link to="/dashboard" className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-all">
-                  <LayoutDashboard className="w-3.5 h-3.5" />
-                </Link>
-                <button onClick={handleLogout} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-all">
-                  <LogOut className="w-3.5 h-3.5" />
+              <div className="hidden sm:block relative group">
+                <button className="flex items-center gap-2 px-1.5 py-1 rounded-lg hover:bg-muted/50 transition-all">
+                  <span className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-[11px] font-bold text-primary-foreground">
+                    {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
+                  </span>
                 </button>
+                <div className="absolute top-full right-0 mt-1.5 py-1.5 w-52 bg-card border border-border rounded-xl shadow-elevated opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="px-3 py-2 border-b border-border">
+                    <p className="text-xs font-semibold truncate">{user.user_metadata?.full_name || 'User'}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  <Link to="/dashboard" className="flex items-center gap-2.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                    <LayoutDashboard className="w-3.5 h-3.5" />{t('dashboard')}
+                  </Link>
+                  <Link to="/complete-profile" className="flex items-center gap-2.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                    <User className="w-3.5 h-3.5" />My profile
+                  </Link>
+                  <Link to="/settings" className="flex items-center gap-2.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                    <Settings className="w-3.5 h-3.5" />{t('settings')}
+                  </Link>
+                  {isAdmin && (
+                    <Link to="/admin/users" className="flex items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-muted/50 transition-colors">
+                      <Shield className="w-3.5 h-3.5" />User directory
+                    </Link>
+                  )}
+                  <button onClick={handleLogout} className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                    <LogOut className="w-3.5 h-3.5" />Sign out
+                  </button>
+                </div>
               </div>
             ) : (
+
               <Link to="/auth" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-all">
                 <LogIn className="w-3.5 h-3.5" /><span>{t('login')}</span>
               </Link>
