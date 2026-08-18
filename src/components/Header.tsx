@@ -50,23 +50,17 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [user, setUser] = useState<any>(null);
+  const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
-    return () => subscription.unsubscribe();
-  }, []);
 
   const filteredNav = searchTerm
     ? allNav.filter(i => i.label.toLowerCase().includes(searchTerm.toLowerCase()))
     : [];
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    await signOut();
   };
+
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-border">
