@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { guard } from "../_shared/guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,37 +36,14 @@ RESPONSE FORMAT:
 
 Remember: You're here to help with basic health questions, not diagnose serious conditions. When in doubt, recommend professional consultation.`;
 
-async function requireUser(req: Request): Promise<Response | null> {
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    { global: { headers: { Authorization: authHeader } } }
-  );
-  const { data, error } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
-  if (error || !data?.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  return null;
-}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const unauthorized = await requireUser(req);
-  if (unauthorized) return unauthorized;
+  const gate = await guard(req, "medical-chat", corsHeaders);
+  if ("denied" in gate) return gate.denied;
 
   try {
     const { messages, type } = await req.json();
