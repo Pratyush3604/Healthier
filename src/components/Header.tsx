@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -7,13 +7,14 @@ import {
   Phone, Lightbulb, Search, Pill, Dumbbell,
   Apple, Scan, Calculator, LogIn, LogOut,
   LayoutDashboard, Settings, TrendingUp,
-  Monitor, ClipboardList, User, HelpCircle, Hospital
+  Monitor, ClipboardList, User, HelpCircle, Hospital, Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/hooks/useTranslation';
+
 
 const useNavItems = () => {
   const { t } = useTranslation();
