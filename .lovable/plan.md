@@ -19,8 +19,9 @@ New **Account & Profile** tab containing:
 ## 4. Finish the admin side
 
 - Deploy the `admin-list-users` function
-- Grant your account the `admin` role so `/admin/users` opens for you
-- Verify the directory loads, search/CSV export work, and non-admins get refused
+- Grant the `admin` role to exactly one account — pratyush3604@gmail.com — and to no one else; `/admin/users` opens only for it
+- The "Make admin" button is removed so no second admin can ever be created from the UI
+- Verify the directory loads, search/CSV export work, and every non-admin account is refused
 
 ## 5. Signup notification email to your Gmail
 
