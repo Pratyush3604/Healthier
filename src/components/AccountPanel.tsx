@@ -112,12 +112,13 @@ export function AccountPanel() {
         </h3>
         <div className="space-y-3">
           <div>
-            <Label className="mb-1.5 block">Current password</Label>
-            <PasswordField value={currentPassword} onChange={setCurrentPassword} placeholder="Current password" showStrength={false} />
+            <Label className="mb-1.5 block" htmlFor="current-password">Current password</Label>
+            <PasswordField id="current-password" value={currentPassword} onChange={setCurrentPassword} placeholder="Current password" autoComplete="current-password" />
           </div>
           <div>
-            <Label className="mb-1.5 block">New password</Label>
-            <PasswordField value={newPassword} onChange={setNewPassword} placeholder="New password" />
+            <Label className="mb-1.5 block" htmlFor="new-password">New password</Label>
+            <PasswordField id="new-password" value={newPassword} onChange={setNewPassword} placeholder="New password" autoComplete="new-password" />
+            <PasswordStrength value={newPassword} />
           </div>
           <Button onClick={() => void changePassword()} disabled={savingPassword || !currentPassword || !newPassword}>
             {savingPassword ? 'Updating…' : 'Update password'}
