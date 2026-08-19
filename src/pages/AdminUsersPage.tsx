@@ -166,16 +166,10 @@ export default function AdminUsersPage() {
                       ))}
 
                       <div className="sm:col-span-2 lg:col-span-3 flex flex-wrap gap-2 pt-2 border-t border-border">
-                        {u.roles.includes('admin') ? (
-                          <Button size="sm" variant="outline" disabled={busy === u.id}
-                            onClick={() => void act('remove_role', { user_id: u.id, role: 'admin' }, 'Admin role removed')}>
-                            Remove admin
-                          </Button>
-                        ) : (
-                          <Button size="sm" variant="outline" disabled={busy === u.id}
-                            onClick={() => void act('set_role', { user_id: u.id, role: 'admin' }, 'Admin role granted')}>
-                            Make admin
-                          </Button>
+                        {u.roles.includes('admin') && (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-primary px-2 py-1 rounded-md bg-primary/10">
+                            <ShieldCheck className="h-3.5 w-3.5" /> Owner account
+                          </span>
                         )}
                         <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10"
                           disabled={busy === u.id}

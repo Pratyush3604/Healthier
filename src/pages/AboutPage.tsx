@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Heart, Sparkles, School } from 'lucide-react';
+import { Sparkles, School } from 'lucide-react';
 import pratyushImg from '@/assets/pratyush.png.asset.json';
 import { useTranslation } from '@/hooks/useTranslation';
 

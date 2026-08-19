@@ -51,23 +51,17 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
 
-    if (action === "set_role" || action === "remove_role") {
+    if (action === "remove_role") {
       const targetId = body.user_id;
       const role = body.role;
       const allowed = ["admin", "moderator", "user"];
       if (!targetId || typeof targetId !== "string" || !role || !allowed.includes(role)) {
         return json({ error: "Invalid user_id or role" }, 400);
       }
-      if (action === "set_role") {
-        const { error } = await admin.from("user_roles").upsert(
-          { user_id: targetId, role },
-          { onConflict: "user_id,role" },
-        );
-        if (error) return json({ error: error.message }, 400);
-      } else {
-        const { error } = await admin.from("user_roles").delete().eq("user_id", targetId).eq("role", role);
-        if (error) return json({ error: error.message }, 400);
-      }
+      // Roles can only be revoked here. The single admin account is granted in the
+      // database by hand, so no request can ever hand out admin rights.
+      const { error } = await admin.from("user_roles").delete().eq("user_id", targetId).eq("role", role);
+      if (error) return json({ error: error.message }, 400);
       return json({ ok: true });
     }
 
