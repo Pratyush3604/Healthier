@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { AccountPanel } from '@/components/AccountPanel';
 
 const languages = [
   'English', 'Hindi', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Japanese', 'Korean',
