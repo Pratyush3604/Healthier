@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Heart, Sparkles, School } from 'lucide-react';
+import { Sparkles, School } from 'lucide-react';
 import pratyushImg from '@/assets/pratyush.png.asset.json';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -42,10 +42,7 @@ export default function AboutPage() {
               <div className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground mb-4">
                 <School className="h-4 w-4" /><span>{t('aboutSchool')}</span>
               </div>
-              <p className="text-muted-foreground leading-relaxed mb-6">{t('aboutBio')}</p>
-              <p className="text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">Healthier</strong> {t('aboutOrigin')}
-              </p>
+              <p className="text-muted-foreground leading-relaxed">{t('aboutBio')}</p>
             </div>
           </div>
         </motion.div>
@@ -65,17 +62,6 @@ export default function AboutPage() {
                 ✓ {cap}
               </motion.span>
             ))}
-          </div>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl p-8 border border-primary/10">
-          <div className="text-center">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-accent">
-              <Heart className="h-7 w-7 text-white" />
-            </div>
-            <h2 className="font-display text-xl font-bold mb-4 text-primary">{t('myMentor')}</h2>
-            <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">{t('mentorThanks')}</p>
           </div>
         </motion.div>
 

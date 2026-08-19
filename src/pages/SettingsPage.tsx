@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { AccountPanel } from '@/components/AccountPanel';
 
 const languages = [
   'English', 'Hindi', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Japanese', 'Korean',
@@ -232,10 +233,10 @@ export default function SettingsPage() {
                     </div>
                   )}
                 </div>
+                {user && <AccountPanel />}
                 {user && (
-                  <div className="bg-destructive/5 rounded-2xl p-6 border border-destructive/20">
-                    <h3 className="font-semibold text-lg text-destructive mb-3">Danger Zone</h3>
-                    <Button variant="outline" onClick={handleLogout} className="text-destructive border-destructive/30 hover:bg-destructive/10">
+                  <div className="bg-card rounded-2xl p-6 border border-border">
+                    <Button variant="outline" onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" /> Sign Out
                     </Button>
                   </div>
