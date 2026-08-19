@@ -42,10 +42,7 @@ export default function AboutPage() {
               <div className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground mb-4">
                 <School className="h-4 w-4" /><span>{t('aboutSchool')}</span>
               </div>
-              <p className="text-muted-foreground leading-relaxed mb-6">{t('aboutBio')}</p>
-              <p className="text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">Healthier</strong> {t('aboutOrigin')}
-              </p>
+              <p className="text-muted-foreground leading-relaxed">{t('aboutBio')}</p>
             </div>
           </div>
         </motion.div>
