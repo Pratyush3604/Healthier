@@ -16,10 +16,10 @@ What you get instead, in the admin directory: every profile detail below, sign-u
 **Step 1 — Account**
 Full name, email, password (strength meter, as today).
 
-**Step 2 — About you** (required)
+**Step 2 — About you** (optional)
 Phone, date of birth (age auto-shown), gender, city, country, preferred language.
 
-**Step 3 — Health basics** (required)
+**Step 3 — Health basics** (optional)
 Blood group, height, weight (BMI auto-shown), allergies, chronic conditions, current medications, emergency contact name + phone.
 
 Rules:
