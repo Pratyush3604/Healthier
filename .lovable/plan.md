@@ -22,6 +22,10 @@ Phone, date of birth (age auto-shown), gender, city, country, preferred language
 **Step 3 — Health basics** (optional)
 Blood group, height, weight (BMI auto-shown), allergies, chronic conditions, current medications, emergency contact name + phone.
 
+**Step 4 — Location** (optional, browser permission required)
+"Share my location" captures latitude, longitude, accuracy and a reverse-geocoded city/area, stored on the profile and refreshed each time the user opens the app while permission is granted. The admin directory shows the last known location, when it was captured, and a map link. The browser will not give location without the user's explicit allow — no app can capture it silently — so the consent text says plainly that Healthier keeps their last known location for emergency and nearby-care use.
+
+
 Rules:
 - "Skip for now" is removed. Until the profile is complete, every signed-in route redirects to the remaining step, so no account can sit empty.
 - Google sign-ins land on the same steps right after their first login.
