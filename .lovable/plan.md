@@ -11,7 +11,7 @@ Storing the Healthier password in readable form, or asking for a user's *email a
 
 What you get instead, in the admin directory: every profile detail below, sign-up provider, verified status, join date, last sign-in and last seen. If you ever need account access for support, the right tool is a password reset link, which I can add a button for.
 
-## Signup becomes a short 3-step flow
+## Signup becomes a short 4-step flow
 
 **Step 1 — Account**
 Full name, email, password (strength meter, as today).
