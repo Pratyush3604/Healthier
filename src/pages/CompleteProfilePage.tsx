@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UserCog } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ProfileForm } from '@/components/ProfileForm';
+import { ProfileWizard } from '@/components/ProfileWizard';
 
 export default function CompleteProfilePage() {
   const navigate = useNavigate();
@@ -18,14 +17,15 @@ export default function CompleteProfilePage() {
             <UserCog className="h-7 w-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Complete your profile</h1>
-            <p className="text-muted-foreground">These details make every AI health insight far more accurate.</p>
+            <h1 className="text-3xl font-bold">Finish setting up</h1>
+            <p className="text-muted-foreground">
+              All of this is optional, but each detail makes your AI health insights far more accurate.
+            </p>
           </div>
         </div>
 
         <div className="bg-card rounded-2xl p-6 border border-border">
-          <ProfileForm submitLabel="Save and continue" onSaved={() => navigate(next)} />
-          <Button variant="ghost" className="mt-4" onClick={() => navigate(next)}>Skip for now</Button>
+          <ProfileWizard onDone={() => navigate(next, { replace: true })} />
         </div>
       </motion.div>
     </div>
