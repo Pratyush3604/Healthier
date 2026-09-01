@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Loader2, Download, Search, RefreshCw, Trash2, ChevronDown, ShieldCheck } from 'lucide-react';
+import { Shield, Loader2, Download, Search, RefreshCw, Trash2, ChevronDown, ShieldCheck, KeyRound, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -30,10 +30,24 @@ type AdminUser = {
   country: string | null;
   preferred_language: string | null;
   last_seen_at: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  location_accuracy_m: number | null;
+  location_label: string | null;
+  location_updated_at: string | null;
   roles: string[];
 };
 
 const fmt = (value: string | null) => (value ? new Date(value).toLocaleString() : '—');
+
+/** Profile fields we ask for during signup — used for the completeness badge. */
+const trackedFields: (keyof AdminUser)[] = [
+  'full_name', 'email', 'phone', 'date_of_birth', 'gender', 'city', 'country', 'preferred_language',
+  'blood_group', 'height_cm', 'weight_kg', 'allergies', 'chronic_conditions', 'medications',
+  'emergency_contact_name', 'emergency_contact_phone', 'latitude',
+];
+
+const completeness = (u: AdminUser) => trackedFields.filter((f) => u[f] !== null && u[f] !== '').length;
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -141,6 +155,9 @@ export default function AdminUsersPage() {
                       <p>Joined {new Date(u.created_at).toLocaleDateString()}</p>
                       <p>{u.provider}{u.email_confirmed ? ' · verified' : ' · unverified'}</p>
                     </div>
+                    <span className={`hidden sm:inline text-xs px-2 py-1 rounded-md ${completeness(u) === trackedFields.length ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                      {completeness(u)}/{trackedFields.length} fields
+                    </span>
                     {u.roles.includes('admin') && <ShieldCheck className="h-4 w-4 text-primary" />}
                     <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
                   </button>
@@ -158,6 +175,9 @@ export default function AdminUsersPage() {
                         ['Emergency contact', u.emergency_contact_name], ['Emergency phone', u.emergency_contact_phone],
                         ['Last sign-in', fmt(u.last_sign_in_at)], ['Last seen', fmt(u.last_seen_at)],
                         ['Roles', u.roles.join(', ') || 'user'],
+                        ['Last known location', u.location_label || (u.latitude != null ? `${u.latitude}, ${u.longitude}` : null)],
+                        ['Location captured', u.location_updated_at ? fmt(u.location_updated_at) : null],
+                        ['Location accuracy', u.location_accuracy_m != null ? `±${u.location_accuracy_m} m` : null],
                       ].map(([label, value]) => (
                         <div key={String(label)}>
                           <p className="text-xs text-muted-foreground">{label}</p>
@@ -171,6 +191,17 @@ export default function AdminUsersPage() {
                             <ShieldCheck className="h-3.5 w-3.5" /> Owner account
                           </span>
                         )}
+                        {u.latitude != null && u.longitude != null && (
+                          <Button size="sm" variant="outline" asChild>
+                            <a href={`https://www.google.com/maps/search/?api=1&query=${u.latitude},${u.longitude}`} target="_blank" rel="noopener noreferrer">
+                              <MapPin className="mr-1.5 h-3.5 w-3.5" /> View on map
+                            </a>
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline" disabled={busy === u.id || !u.email}
+                          onClick={() => void act('send_reset_link', { user_id: u.id, email: u.email, redirect_to: `${window.location.origin}/reset-password` }, 'Password reset link sent')}>
+                          <KeyRound className="mr-1.5 h-3.5 w-3.5" /> Send password reset link
+                        </Button>
                         <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10"
                           disabled={busy === u.id}
                           onClick={() => {

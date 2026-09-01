@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
     if (roleError) return json({ error: "Role check failed" }, 500);
     if (!isAdmin) return json({ error: "Admins only" }, 403);
 
-    let body: { action?: string; user_id?: string; role?: string } = {};
+    let body: { action?: string; user_id?: string; role?: string; email?: string; redirect_to?: string } = {};
     if (req.method === "POST") {
       try { body = await req.json(); } catch { body = {}; }
     }
@@ -47,6 +47,20 @@ Deno.serve(async (req) => {
       }
       if (targetId === user.id) return json({ error: "You cannot delete your own account here" }, 400);
       const { error } = await admin.auth.admin.deleteUser(targetId);
+      if (error) return json({ error: error.message }, 400);
+      return json({ ok: true });
+    }
+
+    if (action === "send_reset_link") {
+      const email = typeof body.email === "string" ? body.email.trim() : "";
+      if (!email || email.length > 255 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        return json({ error: "Invalid email" }, 400);
+      }
+      const redirectTo = typeof body.redirect_to === "string" && body.redirect_to.startsWith("http")
+        ? body.redirect_to
+        : undefined;
+      // Sends a one-time recovery email. Passwords are hashed and can never be read back.
+      const { error } = await admin.auth.resetPasswordForEmail(email, { redirectTo });
       if (error) return json({ error: error.message }, 400);
       return json({ ok: true });
     }
@@ -105,6 +119,11 @@ Deno.serve(async (req) => {
         country: (p.country as string | null) ?? null,
         preferred_language: (p.preferred_language as string | null) ?? null,
         last_seen_at: (p.last_seen_at as string | null) ?? null,
+        latitude: (p.latitude as number | null) ?? null,
+        longitude: (p.longitude as number | null) ?? null,
+        location_accuracy_m: (p.location_accuracy_m as number | null) ?? null,
+        location_label: (p.location_label as string | null) ?? null,
+        location_updated_at: (p.location_updated_at as string | null) ?? null,
         roles: rolesByUser.get(u.id) ?? [],
       };
     });

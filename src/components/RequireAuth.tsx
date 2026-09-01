@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export function RequireAuth({ children, adminOnly = false }: { children: ReactNode; adminOnly?: boolean }) {
-  const { session, isAdmin, loading } = useAuth();
+  const { session, profile, isAdmin, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -18,6 +18,14 @@ export function RequireAuth({ children, adminOnly = false }: { children: ReactNo
   if (!session) {
     const next = encodeURIComponent(location.pathname + location.search);
     return <Navigate to={`/auth?next=${next}`} replace />;
+  }
+
+  // First visit after signing up: offer the optional profile steps once per session.
+  const setupSeen = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('healthier.setup-prompted') === '1';
+  if (profile && profile.profile_completed === false && !setupSeen && location.pathname !== '/complete-profile') {
+    sessionStorage.setItem('healthier.setup-prompted', '1');
+    const next = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/complete-profile?next=${next}`} replace />;
   }
 
   if (adminOnly && !isAdmin) {

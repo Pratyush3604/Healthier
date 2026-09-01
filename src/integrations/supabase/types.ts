@@ -53,6 +53,12 @@ export type Database = {
           height_cm: number | null
           id: string
           last_seen_at: string | null
+          latitude: number | null
+          location_accuracy_m: number | null
+          location_consent: boolean
+          location_label: string | null
+          location_updated_at: string | null
+          longitude: number | null
           medications: string | null
           phone: string | null
           preferred_language: string | null
@@ -78,6 +84,12 @@ export type Database = {
           height_cm?: number | null
           id?: string
           last_seen_at?: string | null
+          latitude?: number | null
+          location_accuracy_m?: number | null
+          location_consent?: boolean
+          location_label?: string | null
+          location_updated_at?: string | null
+          longitude?: number | null
           medications?: string | null
           phone?: string | null
           preferred_language?: string | null
@@ -103,6 +115,12 @@ export type Database = {
           height_cm?: number | null
           id?: string
           last_seen_at?: string | null
+          latitude?: number | null
+          location_accuracy_m?: number | null
+          location_consent?: boolean
+          location_label?: string | null
+          location_updated_at?: string | null
+          longitude?: number | null
           medications?: string | null
           phone?: string | null
           preferred_language?: string | null

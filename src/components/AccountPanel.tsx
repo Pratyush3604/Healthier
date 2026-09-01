@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ProfileForm } from '@/components/ProfileForm';
+import { LocationConsent } from '@/components/LocationConsent';
 import { PasswordField, PasswordStrength, passwordScore } from '@/components/PasswordField';
 
 export function AccountPanel() {
@@ -104,6 +105,7 @@ export function AccountPanel() {
           <User className="w-5 h-5 text-primary" /> Health profile
         </h3>
         <ProfileForm submitLabel="Save changes" />
+        <div className="mt-6"><LocationConsent /></div>
       </div>
 
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">

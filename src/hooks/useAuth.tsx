@@ -23,6 +23,12 @@ export type Profile = {
   country: string | null;
   preferred_language: string | null;
   profile_completed: boolean | null;
+  latitude: number | null;
+  longitude: number | null;
+  location_accuracy_m: number | null;
+  location_label: string | null;
+  location_updated_at: string | null;
+  location_consent: boolean | null;
   created_at: string;
   updated_at: string;
   last_seen_at: string | null;
