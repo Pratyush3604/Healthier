@@ -29,6 +29,9 @@ export type Profile = {
   location_label: string | null;
   location_updated_at: string | null;
   location_consent: boolean | null;
+  tier?: string | null;
+  tier_expires_at?: string | null;
+  bonus_uses?: number | null;
   created_at: string;
   updated_at: string;
   last_seen_at: string | null;

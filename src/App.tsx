@@ -31,6 +31,7 @@ import PostureCorrectorPage from "@/pages/PostureCorrectorPage";
 import HowToUsePage from "@/pages/HowToUsePage";
 import OAuthConsentPage from "@/pages/OAuthConsentPage";
 import NearbyCarePage from "@/pages/NearbyCarePage";
+import PricingPage from "@/pages/PricingPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/first-aid" element={guarded(<FirstAidPage />)} />
               <Route path="/health-tips" element={guarded(<HealthTipsPage />)} />
               <Route path="/nearby-care" element={guarded(<NearbyCarePage />)} />
+              <Route path="/pricing" element={guarded(<PricingPage />)} />
               <Route path="/settings" element={guarded(<SettingsPage />)} />
               <Route path="/medication-reminder" element={guarded(<MedicationReminderPage />)} />
               <Route path="/health-reports" element={guarded(<HealthReportsPage />)} />
