@@ -124,7 +124,7 @@ Deno.serve(async (req) => {
       lng = Number(loc.lng);
     }
 
-    const res = await fetch(`${GATEWAY_URL}/places/v1/places:searchNearby`, {
+    const res = await fetch(`${GATEWAY_URL}/places/v1/places:${includedTypes ? "searchNearby" : "searchText"}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
@@ -144,12 +144,20 @@ Deno.serve(async (req) => {
           "places.currentOpeningHours.openNow",
         ].join(","),
       },
-      body: JSON.stringify({
-        includedTypes,
-        maxResultCount: 20,
-        rankPreference: "DISTANCE",
-        locationRestriction: { circle: { center: { latitude: lat, longitude: lng }, radius } },
-      }),
+      body: JSON.stringify(
+        includedTypes
+          ? {
+            includedTypes,
+            maxResultCount: 20,
+            rankPreference: "DISTANCE",
+            locationRestriction: { circle: { center: { latitude: lat, longitude: lng }, radius } },
+          }
+          : {
+            textQuery,
+            pageSize: 20,
+            locationBias: { circle: { center: { latitude: lat, longitude: lng }, radius } },
+          },
+      ),
     });
 
     if (!res.ok) {
