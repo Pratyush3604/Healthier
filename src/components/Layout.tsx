@@ -6,6 +6,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { ParticleBackground } from './ParticleBackground';
 import { IconBackground } from './IconBackground';
 import { AutoTranslate } from './AutoTranslate';
+import { AnnouncementBanner } from './AnnouncementBanner';
 
 interface LayoutProps {
   children: ReactNode;
@@ -54,6 +55,7 @@ export function Layout({ children }: LayoutProps) {
       {/* Subtle ambient glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-radial pointer-events-none opacity-60 z-0" />
 
+      <AnnouncementBanner />
       <Header />
       <main className="flex-1 relative z-10">
         <ErrorBoundary>{children}</ErrorBoundary>

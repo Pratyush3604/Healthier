@@ -35,11 +35,66 @@ export type Database = {
         }
         Relationships: []
       }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
+      payment_requests: {
+        Row: {
+          amount_inr: number
+          created_at: string
+          id: string
+          note: string | null
+          plan: string
+          reviewed_at: string | null
+          status: string
+          user_id: string
+          utr_number: string
+        }
+        Insert: {
+          amount_inr: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          plan: string
+          reviewed_at?: string | null
+          status?: string
+          user_id: string
+          utr_number: string
+        }
+        Update: {
+          amount_inr?: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          plan?: string
+          reviewed_at?: string | null
+          status?: string
+          user_id?: string
+          utr_number?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           allergies: string | null
           avatar_url: string | null
           blood_group: string | null
+          bonus_uses: number
           chronic_conditions: string | null
           city: string | null
           country: string | null
@@ -63,6 +118,8 @@ export type Database = {
           phone: string | null
           preferred_language: string | null
           profile_completed: boolean
+          tier: string
+          tier_expires_at: string | null
           updated_at: string
           user_id: string
           weight_kg: number | null
@@ -71,6 +128,7 @@ export type Database = {
           allergies?: string | null
           avatar_url?: string | null
           blood_group?: string | null
+          bonus_uses?: number
           chronic_conditions?: string | null
           city?: string | null
           country?: string | null
@@ -94,6 +152,8 @@ export type Database = {
           phone?: string | null
           preferred_language?: string | null
           profile_completed?: boolean
+          tier?: string
+          tier_expires_at?: string | null
           updated_at?: string
           user_id: string
           weight_kg?: number | null
@@ -102,6 +162,7 @@ export type Database = {
           allergies?: string | null
           avatar_url?: string | null
           blood_group?: string | null
+          bonus_uses?: number
           chronic_conditions?: string | null
           city?: string | null
           country?: string | null
@@ -125,6 +186,8 @@ export type Database = {
           phone?: string | null
           preferred_language?: string | null
           profile_completed?: boolean
+          tier?: string
+          tier_expires_at?: string | null
           updated_at?: string
           user_id?: string
           weight_kg?: number | null

@@ -13,7 +13,41 @@ const KIND_TYPES: Record<string, string[]> = {
   doctor: ["doctor"],
   pharmacy: ["pharmacy"],
   dentist: ["dentist"],
-  emergency: ["hospital", "emergency_room"],
+  emergency: ["hospital"],
+  physiotherapist: ["physiotherapist"],
+  lab: ["medical_lab"],
+  chiropractor: ["chiropractor"],
+};
+
+// Specialists have no Places type, so they use a text search near the user.
+const SPECIALIST_QUERIES: Record<string, string> = {
+  "general physician": "general physician clinic",
+  pediatrician: "pediatrician",
+  gynecologist: "gynecologist",
+  cardiologist: "cardiologist",
+  dermatologist: "dermatologist",
+  orthopedic: "orthopedic doctor",
+  neurologist: "neurologist",
+  psychiatrist: "psychiatrist",
+  psychologist: "psychologist counselling",
+  "ent specialist": "ENT specialist",
+  ophthalmologist: "eye hospital ophthalmologist",
+  urologist: "urologist",
+  gastroenterologist: "gastroenterologist",
+  pulmonologist: "pulmonologist chest specialist",
+  endocrinologist: "endocrinologist diabetes clinic",
+  nephrologist: "nephrologist kidney",
+  oncologist: "oncologist cancer hospital",
+  "diagnostic center": "diagnostic centre blood test",
+  "blood bank": "blood bank",
+  "24/7 pharmacy": "24 hour pharmacy",
+  ayurveda: "ayurvedic clinic",
+  homeopathy: "homeopathy clinic",
+  veterinary: "veterinary clinic",
+  "maternity hospital": "maternity hospital",
+  "eye clinic": "eye clinic",
+  "dental clinic": "dental clinic",
+  "ambulance": "ambulance service",
 };
 
 function json(body: unknown, status = 200) {
@@ -59,7 +93,8 @@ Deno.serve(async (req) => {
       return json({ error: "Valid lat and lng are required" }, 400);
     }
     const includedTypes = KIND_TYPES[kind];
-    if (!includedTypes) return json({ error: `Unsupported kind: ${kind}` }, 400);
+    const textQuery = SPECIALIST_QUERIES[kind];
+    if (!includedTypes && !textQuery) return json({ error: `Unsupported kind: ${kind}` }, 400);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const GOOGLE_MAPS_API_KEY = Deno.env.get("GOOGLE_MAPS_API_KEY");
@@ -89,7 +124,7 @@ Deno.serve(async (req) => {
       lng = Number(loc.lng);
     }
 
-    const res = await fetch(`${GATEWAY_URL}/places/v1/places:searchNearby`, {
+    const res = await fetch(`${GATEWAY_URL}/places/v1/places:${includedTypes ? "searchNearby" : "searchText"}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
@@ -109,12 +144,20 @@ Deno.serve(async (req) => {
           "places.currentOpeningHours.openNow",
         ].join(","),
       },
-      body: JSON.stringify({
-        includedTypes,
-        maxResultCount: 20,
-        rankPreference: "DISTANCE",
-        locationRestriction: { circle: { center: { latitude: lat, longitude: lng }, radius } },
-      }),
+      body: JSON.stringify(
+        includedTypes
+          ? {
+            includedTypes,
+            maxResultCount: 20,
+            rankPreference: "DISTANCE",
+            locationRestriction: { circle: { center: { latitude: lat, longitude: lng }, radius } },
+          }
+          : {
+            textQuery,
+            pageSize: 20,
+            locationBias: { circle: { center: { latitude: lat, longitude: lng }, radius } },
+          },
+      ),
     });
 
     if (!res.ok) {

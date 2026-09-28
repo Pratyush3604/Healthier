@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { computeAge, computeBmi } from '@/components/ProfileForm';
+import { OwnerHub } from '@/components/OwnerHub';
 
 type AdminUser = {
   id: string;
@@ -125,6 +126,8 @@ export default function AdminUsersPage() {
             <p className="text-muted-foreground">{users.length} accounts. Passwords are hashed and never viewable.</p>
           </div>
         </div>
+
+        <OwnerHub />
 
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="relative flex-1">
