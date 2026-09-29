@@ -8,6 +8,7 @@ import {
   ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle, Globe, X
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ScrollReveal';
+import { HomeNearbyCare } from '@/components/HomeNearbyCare';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -177,6 +178,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <HomeNearbyCare />
 
       {/* Categorized Features */}
       <section className="py-20 border-t border-border relative z-10">

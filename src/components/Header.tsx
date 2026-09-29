@@ -37,6 +37,7 @@ const useNavItems = () => {
     { path: '/first-aid', label: t('firstAid'), icon: BookOpen },
     { path: '/health-tips', label: t('healthTips'), icon: Lightbulb },
     { path: '/nearby-care', label: t('nearbyCare'), icon: Hospital },
+    { path: '/pricing', label: 'Plans & Pro', icon: TrendingUp },
     { path: '/emergency', label: t('emergency'), icon: Phone },
     { path: '/how-to-use', label: t('howToUse'), icon: HelpCircle },
     { path: '/settings', label: t('settings'), icon: Settings },
