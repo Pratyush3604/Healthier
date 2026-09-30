@@ -93,8 +93,9 @@ export default function ReportsPage() {
         headers: await authHeaders(),
         body: JSON.stringify({ imageBase64: image, type: 'report' }),
       });
-      if (response.status === 429) { toast({ title: 'Rate Limited', variant: 'destructive' }); return; }
+      if (await handleLimitResponse(response)) return;
       if (!response.ok) throw new Error('Analysis failed');
+
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setAnalysis(data.analysis);

@@ -98,8 +98,9 @@ export default function SkinInjuryPage() {
         headers: await authHeaders(),
         body: JSON.stringify({ imageBase64: image, type: analysisType, context }),
       });
-      if (response.status === 429) { toast({ title: 'Rate Limited', variant: 'destructive' }); return; }
+      if (await handleLimitResponse(response)) return;
       if (!response.ok) throw new Error('Failed');
+
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setAnalysis(data.analysis);
