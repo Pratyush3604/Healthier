@@ -7,6 +7,8 @@ import { ParticleBackground } from './ParticleBackground';
 import { IconBackground } from './IconBackground';
 import { AutoTranslate } from './AutoTranslate';
 import { AnnouncementBanner } from './AnnouncementBanner';
+import { LimitDialog } from './LimitDialog';
+
 
 interface LayoutProps {
   children: ReactNode;
@@ -61,6 +63,8 @@ export function Layout({ children }: LayoutProps) {
         <ErrorBoundary>{children}</ErrorBoundary>
       </main>
       <Footer />
+      <LimitDialog />
+
     </div>
   );
 }
