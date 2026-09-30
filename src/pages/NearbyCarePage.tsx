@@ -100,6 +100,18 @@ export default function NearbyCarePage() {
     void search({ address: address.trim() });
   };
 
+  // Free-text search: works off the detected location, or the typed city/address.
+  const runCustomSearch = () => {
+    if (customQuery.trim().length < 2) {
+      toast({ title: 'Type what you need', description: 'For example "MRI scan" or a clinic name.', variant: 'destructive' });
+      return;
+    }
+    if (coords) { void search(coords); return; }
+    if (address.trim().length >= 3) { void search({ address: address.trim() }); return; }
+    useMyLocation();
+  };
+
+
   useEffect(() => {
     if (!autoRan.current && params.get('locate') === '1') { autoRan.current = true; useMyLocation(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
