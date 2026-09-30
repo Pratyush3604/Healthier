@@ -92,9 +92,12 @@ Deno.serve(async (req) => {
     if (hasCoords && (!Number.isFinite(lat) || lat < -90 || lat > 90 || lng < -180 || lng > 180)) {
       return json({ error: "Valid lat and lng are required" }, 400);
     }
-    const includedTypes = KIND_TYPES[kind];
-    const textQuery = SPECIALIST_QUERIES[kind];
+    // A free-text search ("MRI scan", "Dr Gupta", "root canal") always wins over the chips.
+    const custom = typeof body?.query === "string" ? body.query.trim().slice(0, 120) : "";
+    const includedTypes = custom ? undefined : KIND_TYPES[kind];
+    const textQuery = custom || SPECIALIST_QUERIES[kind];
     if (!includedTypes && !textQuery) return json({ error: `Unsupported kind: ${kind}` }, 400);
+
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const GOOGLE_MAPS_API_KEY = Deno.env.get("GOOGLE_MAPS_API_KEY");
