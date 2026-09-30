@@ -7,7 +7,7 @@ import {
   Phone, Lightbulb, Search, Pill, Dumbbell,
   Apple, Scan, Calculator, LogIn, LogOut,
   LayoutDashboard, Settings, TrendingUp,
-  Monitor, ClipboardList, User, HelpCircle, Hospital, Shield
+  Monitor, ClipboardList, User, HelpCircle, Hospital, Shield, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
@@ -52,7 +52,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, profile, signOut } = useAuth();
   const location = useLocation();
 
   const filteredNav = searchTerm
@@ -114,6 +114,13 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-1.5">
+            {!isAdmin && (profile?.tier ?? 'free') === 'free' && (
+              <Link to="/pricing"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-primary-foreground bg-gradient-to-r from-primary to-secondary shadow-soft hover:opacity-90 transition-all">
+                <Sparkles className="w-3.5 h-3.5" /><span>Upgrade</span>
+              </Link>
+            )}
+
             {user ? (
               <div className="hidden sm:block relative group">
                 <button className="flex items-center gap-2 px-1.5 py-1 rounded-lg hover:bg-muted/50 transition-all">
