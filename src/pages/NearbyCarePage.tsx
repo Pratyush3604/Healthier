@@ -131,12 +131,24 @@ export default function NearbyCarePage() {
 
         <ScrollReveal delay={0.1}>
           <div className="bg-card rounded-2xl p-5 border border-border shadow-soft space-y-5">
+            <div>
+              <Label>Search for anything specific</Label>
+              <div className="mt-2 flex gap-2">
+                <Input placeholder='e.g. "MRI scan", "dialysis centre", "root canal", a doctor or clinic name'
+                  value={customQuery} onChange={(e) => setCustomQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') runCustomSearch(); }} />
+                <Button variant="secondary" onClick={runCustomSearch} disabled={loading}>Find</Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Leave this empty to use the categories below.</p>
+            </div>
+
             {Object.entries(GROUPS).map(([group, opts]) => (
               <div key={group}>
                 <Label>{group}</Label>
-                <ChipSelect options={opts} value={opts.includes(kind) ? kind : ''} onChange={(v) => v && setKind(v)} allowCustom={false} />
+                <ChipSelect options={opts} value={opts.includes(kind) ? kind : ''} onChange={(v) => { if (v) { setCustomQuery(''); setKind(v); } }} allowCustom={false} />
               </div>
             ))}
+
 
             <div>
               <div className="flex justify-between"><Label>Search radius</Label><span className="text-sm font-semibold text-primary">{radiusKm} km</span></div>
