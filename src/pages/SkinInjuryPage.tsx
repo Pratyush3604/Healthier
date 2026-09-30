@@ -1,3 +1,4 @@
+import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
 import { useState, useRef, useCallback } from 'react';
 import { Scan, Camera, Upload, X, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';

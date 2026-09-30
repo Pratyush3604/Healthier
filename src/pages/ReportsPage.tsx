@@ -1,3 +1,4 @@
+import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
 import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Upload, X, Loader2, AlertTriangle, RefreshCw, Camera } from 'lucide-react';

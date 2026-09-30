@@ -1,3 +1,4 @@
+import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bot, Mic, MicOff, Camera, FileText, Loader2, Phone, PhoneOff, MessageCircle } from 'lucide-react';
