@@ -74,8 +74,9 @@ async function requireUser(req: Request): Promise<Response | null> {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const unauthorized = await requireUser(req);
-  if (unauthorized) return unauthorized;
+  // Place lookups are public information, so visitors can search before signing up.
+  if (!req.headers.get("Authorization")) return json({ error: "Unauthorized" }, 401);
+
 
   try {
     const body = await req.json().catch(() => null);
