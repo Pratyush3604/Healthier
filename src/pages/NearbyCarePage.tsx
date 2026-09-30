@@ -37,6 +37,8 @@ export default function NearbyCarePage() {
   const [phoneOnly, setPhoneOnly] = useState(false);
   const [sort, setSort] = useState('nearest');
   const [address, setAddress] = useState('');
+  const [customQuery, setCustomQuery] = useState(params.get('q') || '');
+
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,9 @@ export default function NearbyCarePage() {
   const search = async (payload: Record<string, unknown>) => {
     setLoading(true); setNotice(null); setTab('results');
     try {
-      const { data, error } = await supabase.functions.invoke('nearby-care', { body: { kind, radius: radiusKm * 1000, ...payload } });
+      const q = customQuery.trim();
+      const { data, error } = await supabase.functions.invoke('nearby-care', { body: { kind, radius: radiusKm * 1000, ...(q ? { query: q } : {}), ...payload } });
+
       if (error) {
         let message = 'Could not load nearby care providers.';
         try {
