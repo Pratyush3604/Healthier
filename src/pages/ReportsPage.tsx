@@ -1,3 +1,4 @@
+import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
 import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Upload, X, Loader2, AlertTriangle, RefreshCw, Camera } from 'lucide-react';
@@ -89,11 +90,12 @@ export default function ReportsPage() {
     try {
       const response = await fetch(ANALYZE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ imageBase64: image, type: 'report' }),
       });
-      if (response.status === 429) { toast({ title: 'Rate Limited', variant: 'destructive' }); return; }
+      if (await handleLimitResponse(response)) return;
       if (!response.ok) throw new Error('Analysis failed');
+
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setAnalysis(data.analysis);

@@ -1,4 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
+import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
+
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/medical-chat`;
 
@@ -46,10 +48,7 @@ export function useAIStream(options: UseAIStreamOptions = {}) {
     try {
       const res = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
+        headers: await authHeaders(),
         body: JSON.stringify({
           messages: enhancedMessages,
           type: type ?? options.type,
@@ -57,9 +56,15 @@ export function useAIStream(options: UseAIStreamOptions = {}) {
         signal: controller.signal,
       });
 
+      if (await handleLimitResponse(res)) {
+        setIsLoading(false);
+        return;
+      }
+
       if (!res.ok || !res.body) {
         throw new Error(`Request failed: ${res.status}`);
       }
+
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();

@@ -37,6 +37,8 @@ export default function NearbyCarePage() {
   const [phoneOnly, setPhoneOnly] = useState(false);
   const [sort, setSort] = useState('nearest');
   const [address, setAddress] = useState('');
+  const [customQuery, setCustomQuery] = useState(params.get('q') || '');
+
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,9 @@ export default function NearbyCarePage() {
   const search = async (payload: Record<string, unknown>) => {
     setLoading(true); setNotice(null); setTab('results');
     try {
-      const { data, error } = await supabase.functions.invoke('nearby-care', { body: { kind, radius: radiusKm * 1000, ...payload } });
+      const q = customQuery.trim();
+      const { data, error } = await supabase.functions.invoke('nearby-care', { body: { kind, radius: radiusKm * 1000, ...(q ? { query: q } : {}), ...payload } });
+
       if (error) {
         let message = 'Could not load nearby care providers.';
         try {
@@ -96,6 +100,18 @@ export default function NearbyCarePage() {
     void search({ address: address.trim() });
   };
 
+  // Free-text search: works off the detected location, or the typed city/address.
+  const runCustomSearch = () => {
+    if (customQuery.trim().length < 2) {
+      toast({ title: 'Type what you need', description: 'For example "MRI scan" or a clinic name.', variant: 'destructive' });
+      return;
+    }
+    if (coords) { void search(coords); return; }
+    if (address.trim().length >= 3) { void search({ address: address.trim() }); return; }
+    useMyLocation();
+  };
+
+
   useEffect(() => {
     if (!autoRan.current && params.get('locate') === '1') { autoRan.current = true; useMyLocation(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,12 +147,24 @@ export default function NearbyCarePage() {
 
         <ScrollReveal delay={0.1}>
           <div className="bg-card rounded-2xl p-5 border border-border shadow-soft space-y-5">
+            <div>
+              <Label>Search for anything specific</Label>
+              <div className="mt-2 flex gap-2">
+                <Input placeholder='e.g. "MRI scan", "dialysis centre", "root canal", a doctor or clinic name'
+                  value={customQuery} onChange={(e) => setCustomQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') runCustomSearch(); }} />
+                <Button variant="secondary" onClick={runCustomSearch} disabled={loading}>Find</Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Leave this empty to use the categories below.</p>
+            </div>
+
             {Object.entries(GROUPS).map(([group, opts]) => (
               <div key={group}>
                 <Label>{group}</Label>
-                <ChipSelect options={opts} value={opts.includes(kind) ? kind : ''} onChange={(v) => v && setKind(v)} allowCustom={false} />
+                <ChipSelect options={opts} value={opts.includes(kind) ? kind : ''} onChange={(v) => { if (v) { setCustomQuery(''); setKind(v); } }} allowCustom={false} />
               </div>
             ))}
+
 
             <div>
               <div className="flex justify-between"><Label>Search radius</Label><span className="text-sm font-semibold text-primary">{radiusKm} km</span></div>

@@ -57,25 +57,13 @@ function json(body: unknown, status = 200) {
   });
 }
 
-async function requireUser(req: Request): Promise<Response | null> {
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader) return json({ error: "Unauthorized" }, 401);
-  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    { global: { headers: { Authorization: authHeader } } },
-  );
-  const { data, error } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
-  if (error || !data?.user) return json({ error: "Unauthorized" }, 401);
-  return null;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const unauthorized = await requireUser(req);
-  if (unauthorized) return unauthorized;
+  // Place lookups are public information, so visitors can search before signing up.
+  if (!req.headers.get("Authorization")) return json({ error: "Unauthorized" }, 401);
+
 
   try {
     const body = await req.json().catch(() => null);
@@ -92,9 +80,12 @@ Deno.serve(async (req) => {
     if (hasCoords && (!Number.isFinite(lat) || lat < -90 || lat > 90 || lng < -180 || lng > 180)) {
       return json({ error: "Valid lat and lng are required" }, 400);
     }
-    const includedTypes = KIND_TYPES[kind];
-    const textQuery = SPECIALIST_QUERIES[kind];
+    // A free-text search ("MRI scan", "Dr Gupta", "root canal") always wins over the chips.
+    const custom = typeof body?.query === "string" ? body.query.trim().slice(0, 120) : "";
+    const includedTypes = custom ? undefined : KIND_TYPES[kind];
+    const textQuery = custom || SPECIALIST_QUERIES[kind];
     if (!includedTypes && !textQuery) return json({ error: `Unsupported kind: ${kind}` }, 400);
+
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const GOOGLE_MAPS_API_KEY = Deno.env.get("GOOGLE_MAPS_API_KEY");

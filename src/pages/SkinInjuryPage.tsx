@@ -1,3 +1,4 @@
+import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
 import { useState, useRef, useCallback } from 'react';
 import { Scan, Camera, Upload, X, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -94,11 +95,12 @@ export default function SkinInjuryPage() {
       
       const response = await fetch(ANALYZE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ imageBase64: image, type: analysisType, context }),
       });
-      if (response.status === 429) { toast({ title: 'Rate Limited', variant: 'destructive' }); return; }
+      if (await handleLimitResponse(response)) return;
       if (!response.ok) throw new Error('Failed');
+
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setAnalysis(data.analysis);

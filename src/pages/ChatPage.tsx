@@ -1,3 +1,4 @@
+import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, Send, Mic, MicOff, Trash2, Loader2, Volume2 } from 'lucide-react';
@@ -52,7 +53,7 @@ export default function ChatPage() {
       setIsSpeaking(true);
       const response = await fetch(TTS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ text: text.slice(0, 500) }),
       });
       if (response.ok) {
@@ -87,10 +88,16 @@ export default function ChatPage() {
     try {
       const response = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ messages: newMessages.map(m => ({ role: m.role, content: m.content })) }),
       });
+      if (await handleLimitResponse(response)) {
+
+        setMessages(newMessages);
+        return;
+      }
       if (!response.ok || !response.body) throw new Error('Failed');
+
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
