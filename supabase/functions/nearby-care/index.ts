@@ -57,19 +57,6 @@ function json(body: unknown, status = 200) {
   });
 }
 
-async function requireUser(req: Request): Promise<Response | null> {
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader) return json({ error: "Unauthorized" }, 401);
-  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    { global: { headers: { Authorization: authHeader } } },
-  );
-  const { data, error } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
-  if (error || !data?.user) return json({ error: "Unauthorized" }, 401);
-  return null;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
