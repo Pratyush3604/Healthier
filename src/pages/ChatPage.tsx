@@ -90,7 +90,9 @@ export default function ChatPage() {
         method: 'POST',
         headers: await authHeaders(),
         body: JSON.stringify({ messages: newMessages.map(m => ({ role: m.role, content: m.content })) }),
+      });
       if (await handleLimitResponse(response)) {
+
         setMessages(newMessages);
         return;
       }
