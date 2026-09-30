@@ -52,7 +52,7 @@ export default function ChatPage() {
       setIsSpeaking(true);
       const response = await fetch(TTS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ text: text.slice(0, 500) }),
       });
       if (response.ok) {
@@ -87,7 +87,7 @@ export default function ChatPage() {
     try {
       const response = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ messages: newMessages.map(m => ({ role: m.role, content: m.content })) }),
       });
       if (!response.ok || !response.body) throw new Error('Failed');

@@ -77,7 +77,7 @@ export default function AIDoctorPage() {
     try {
       const resp = await fetch(TTS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ text: text.slice(0, 500) }),
       });
       if (resp.ok) {
@@ -112,7 +112,7 @@ export default function AIDoctorPage() {
     try {
       const response = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ messages: newMsgs.map(m => ({ role: m.role, content: m.content })) }),
       });
 
@@ -168,7 +168,7 @@ export default function AIDoctorPage() {
     try {
       const resp = await fetch(ANALYZE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: await authHeaders(),
         body: JSON.stringify({ imageBase64, type }),
       });
       if (!resp.ok) throw new Error('Failed');
