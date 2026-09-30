@@ -66,11 +66,12 @@ const App = () => (
               <Route path="/chat" element={guarded(<ChatPage />)} />
               <Route path="/fitness" element={guarded(<FitnessPage />)} />
               <Route path="/medicine-info" element={guarded(<MedicineInfoPage />)} />
-              <Route path="/bmi-calculator" element={guarded(<BMICalculatorPage />)} />
-              <Route path="/first-aid" element={guarded(<FirstAidPage />)} />
-              <Route path="/health-tips" element={guarded(<HealthTipsPage />)} />
-              <Route path="/nearby-care" element={guarded(<NearbyCarePage />)} />
-              <Route path="/pricing" element={guarded(<PricingPage />)} />
+              <Route path="/bmi-calculator" element={<BMICalculatorPage />} />
+              <Route path="/first-aid" element={<FirstAidPage />} />
+              <Route path="/health-tips" element={<HealthTipsPage />} />
+              <Route path="/nearby-care" element={<NearbyCarePage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+
               <Route path="/settings" element={guarded(<SettingsPage />)} />
               <Route path="/medication-reminder" element={guarded(<MedicationReminderPage />)} />
               <Route path="/health-reports" element={guarded(<HealthReportsPage />)} />
