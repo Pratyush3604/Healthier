@@ -9,8 +9,10 @@ export async function guard(
   req: Request,
   feature: string,
   corsHeaders: Record<string, string>,
-  _hourlyLimit = 60,
+  opts: { countUse?: boolean } = {},
 ): Promise<GuardResult> {
+  const countUse = opts.countUse !== false;
+
   const reject = (message: string, status: number, extra: Record<string, unknown> = {}) => ({
     denied: new Response(JSON.stringify({ error: message, ...extra }), {
       status,
