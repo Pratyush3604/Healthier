@@ -56,6 +56,11 @@ export default function NearbyCarePage() {
       const { data, error } = await supabase.functions.invoke('nearby-care', { body: { kind, radius: radiusKm * 1000, ...(q ? { query: q } : {}), ...payload } });
 
       if (error) {
+        const status = (error as any)?.context?.status;
+        if (status === 401) {
+          window.dispatchEvent(new CustomEvent('healthier:signin-required', { detail: { message: 'Sign in (free) to search for care near you.' } }));
+          setNotice('Sign in (free) to search for care near you.'); setPlaces([]); return;
+        }
         let message = 'Could not load nearby care providers.';
         try {
           const detail = (error as any)?.context?.text ? await (error as any).context.text() : '';

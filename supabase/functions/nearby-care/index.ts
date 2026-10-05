@@ -1,3 +1,4 @@
+import { guard } from "../_shared/guard.ts";
 // Finds hospitals, clinics, doctors, pharmacies and dentists near a coordinate
 // using the Google Maps Places API (New) through the Lovable connector gateway.
 const corsHeaders = {
@@ -61,8 +62,9 @@ function json(body: unknown, status = 200) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  // Place lookups are public information, so visitors can search before signing up.
-  if (!req.headers.get("Authorization")) return json({ error: "Unauthorized" }, 401);
+  // Map searches cost money per call, so they require a signed-in account (not counted against AI quota).
+  const gate = await guard(req, "nearby-care", corsHeaders, { countUse: false });
+  if ("denied" in gate) return gate.denied;
 
 
   try {
