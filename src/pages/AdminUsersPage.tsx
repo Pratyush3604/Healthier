@@ -104,7 +104,12 @@ export default function AdminUsersPage() {
       'city', 'country', 'provider', 'email_confirmed', 'created_at', 'last_sign_in_at', 'last_seen_at',
       'allergies', 'chronic_conditions', 'medications', 'emergency_contact_name', 'emergency_contact_phone',
     ];
-    const escape = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const escape = (v: unknown) => {
+      let s = String(v ?? '');
+      // Neutralise spreadsheet formulas (CSV injection).
+      if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+      return `"${s.replace(/"/g, '""')}"`;
+    };
     const csv = [cols.join(','), ...filtered.map((u) => cols.map((c) => escape(u[c])).join(','))].join('\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
     const a = document.createElement('a');
