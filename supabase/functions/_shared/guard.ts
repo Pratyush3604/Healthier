@@ -47,7 +47,7 @@ export async function guard(
     const tier = active ? (prof?.tier ?? "free") : "free";
     const bonus = Number(prof?.bonus_uses ?? 0);
 
-    if (!isAdmin && tier !== "pro_max") {
+    if (countUse && !isAdmin && tier !== "pro_max") {
       if (tier === "pro") {
         const monthStart = new Date();
         monthStart.setUTCDate(1);
@@ -68,7 +68,7 @@ export async function guard(
       }
     }
 
-    await admin.from("ai_usage").insert({ user_id: userId, feature });
+    if (countUse) await admin.from("ai_usage").insert({ user_id: userId, feature });
   } catch (_e) {
     // Never block a legitimate request because usage logging failed.
   }

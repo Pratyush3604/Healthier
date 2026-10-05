@@ -13,7 +13,7 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const gate = await guard(req, "elevenlabs-tts", corsHeaders);
+  const gate = await guard(req, "elevenlabs-tts", corsHeaders, { countUse: false });
   if ("denied" in gate) return gate.denied;
 
   try {
