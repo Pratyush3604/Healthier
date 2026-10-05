@@ -52,7 +52,6 @@ Deno.serve(async (req) => {
 - Output ONLY a valid JSON object of the translated strings, no commentary, no markdown fences.`;
 
     const userMsg = JSON.stringify({ target_language: lang, strings: dict });
-    const language_ = lang;
 
     const r = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
