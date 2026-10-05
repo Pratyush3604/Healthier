@@ -46,7 +46,29 @@ serve(async (req) => {
   if ("denied" in gate) return gate.denied;
 
   try {
-    const { messages, type } = await req.json();
+    const body = await req.json();
+    const type = body?.type;
+    const rawMessages: unknown = body?.messages;
+    if (!Array.isArray(rawMessages) || rawMessages.length === 0) {
+      return new Response(JSON.stringify({ error: "messages required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // Only user/assistant turns from the caller; the system prompt is server-owned.
+    const messages = rawMessages
+      .slice(-40)
+      .filter((m): m is { role: string; content: string } =>
+        !!m && typeof m === "object" &&
+        ((m as { role?: unknown }).role === "user" || (m as { role?: unknown }).role === "assistant") &&
+        typeof (m as { content?: unknown }).content === "string")
+      .map((m) => ({ role: m.role, content: m.content.slice(0, 8000) }));
+    if (messages.length === 0) {
+      return new Response(JSON.stringify({ error: "messages required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
