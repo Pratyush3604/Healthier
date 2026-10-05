@@ -8,6 +8,13 @@
       "when": 1790591677126,
       "tag": "0000_tiers_payments_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791194349554,
+      "tag": "0001_restrict_public_settings_and_logo_listing",
+      "breakpoints": true
     }
   ]
 }
