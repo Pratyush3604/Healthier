@@ -7,7 +7,7 @@ import {
   Phone, Lightbulb, Search, Pill, Dumbbell,
   Apple, Scan, Calculator, LogIn, LogOut,
   LayoutDashboard, Settings, TrendingUp,
-  Monitor, ClipboardList, User, HelpCircle, Hospital, Shield, Sparkles
+  Monitor, ClipboardList, User, HelpCircle, Hospital, Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HealtifyLogo } from './HealtifyLogo';
@@ -37,7 +37,6 @@ const useNavItems = () => {
     { path: '/first-aid', label: t('firstAid'), icon: BookOpen },
     { path: '/health-tips', label: t('healthTips'), icon: Lightbulb },
     { path: '/nearby-care', label: t('nearbyCare'), icon: Hospital },
-    { path: '/pricing', label: 'Plans & Pro', icon: TrendingUp },
     { path: '/emergency', label: t('emergency'), icon: Phone },
     { path: '/how-to-use', label: t('howToUse'), icon: HelpCircle },
     { path: '/settings', label: t('settings'), icon: Settings },
@@ -52,7 +51,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const { user, isAdmin, profile, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
 
   const filteredNav = searchTerm
@@ -114,13 +113,6 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-1.5">
-            {!isAdmin && (profile?.tier ?? 'free') === 'free' && (
-              <Link to="/pricing"
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-primary-foreground bg-gradient-to-r from-primary to-secondary shadow-soft hover:opacity-90 transition-all">
-                <Sparkles className="w-3.5 h-3.5" /><span>Upgrade</span>
-              </Link>
-            )}
-
             {user ? (
               <div className="hidden sm:block relative group">
                 <button className="flex items-center gap-2 px-1.5 py-1 rounded-lg hover:bg-muted/50 transition-all">
