@@ -5,7 +5,8 @@ import {
   Stethoscope, Activity, FileText, MessageCircle,
   BookOpen, Lightbulb, Phone, Shield, Zap, Heart,
   Sparkles, Pill, Scan, Calculator,
-  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle, Globe, X
+  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle, Globe, X,
+  FileSearch, ArrowRight, ClipboardCheck
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { HomeNearbyCare } from '@/components/HomeNearbyCare';
@@ -43,19 +44,11 @@ const buildCategories = (t: (k: string) => string) => ({
   ],
 });
 
-const buildStats = (t: (k: string) => string) => [
-  { value: '15', label: t('statHealthTools'), icon: Sparkles },
-  { value: '24/7', label: t('statAvailable'), icon: Zap },
-  { value: t('statFree'), label: t('statFreeToUse'), icon: Heart },
-  { value: t('statPrivateLabel'), label: t('statPrivate'), icon: Lock },
-];
-
 // allLanguages now imported from @/i18n/languages (500+ languages)
 
 export default function HomePage() {
   const { t } = useTranslation();
   const categories = buildCategories(t);
-  const stats = buildStats(t);
   const [langOpen, setLangOpen] = useState(false);
   const [langSearch, setLangSearch] = useState('');
   const [language, setLanguage] = useLocalStorage('healtify-language', 'English');
@@ -67,7 +60,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen relative">
       {/* Hero */}
-      <section className="relative py-24 lg:py-36 overflow-hidden">
+      <section className="relative py-14 sm:py-20 lg:py-24 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <motion.div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl"
             animate={{ x: [0, 40, 0], y: [0, 30, 0], scale: [1, 1.1, 1] }}
@@ -92,35 +85,53 @@ export default function HomePage() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div className="max-w-3xl mx-auto text-center" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+          <motion.div className="max-w-4xl mx-auto text-center" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <motion.div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 border border-primary/15 mb-8"
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-medium text-primary">{t('heroBadge')}</span>
+              <FileSearch className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs font-medium text-primary">LAB REPORTS · PRESCRIPTIONS · PLAIN LANGUAGE</span>
             </motion.div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.05] tracking-tight font-display">
-              <span className="gradient-text">Healthier</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-5 leading-tight font-display">
+              Make sense of your <span className="gradient-text">health documents.</span>
             </h1>
 
-            <p className="text-2xl sm:text-3xl font-display font-semibold text-foreground/90 mb-4 italic">
-              "{t('tagline')}"
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
+              Get a clear summary of what’s readable, what isn’t, and what to ask your doctor or pharmacist. No guessing at doses or diagnoses.
             </p>
 
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
-              {t('heroSubtitle')}
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/how-to-use" className="btn-primary flex items-center gap-2 text-base">
-                <HelpCircle className="w-4 h-4" /> {t('howToUse')}
-              </Link>
-              <Link to="/chat" className="btn-secondary flex items-center gap-2 text-base">
-                <MessageCircle className="w-4 h-4" /> {t('chatWithAI')}
-              </Link>
+            <div className="flex flex-col sm:flex-row items-stretch justify-center gap-3 max-w-2xl mx-auto">
+              <Button asChild size="lg" className="h-auto min-h-12 justify-between px-5 py-3 text-base">
+                <Link to="/reports?kind=lab">
+                  <span className="flex items-center gap-2"><FileText className="h-5 w-5" />Understand a lab report</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-auto min-h-12 justify-between px-5 py-3 text-base">
+                <Link to="/reports?kind=prescription">
+                  <span className="flex items-center gap-2"><ClipboardCheck className="h-5 w-5" />Read a prescription</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
               <button onClick={() => setLangOpen(true)} className="btn-secondary flex items-center gap-2 text-base">
                 <Globe className="w-4 h-4" /> {LANG_NATIVE[language] ?? language}
               </button>
+            </div>
+
+            <div className="mt-12 grid gap-5 sm:grid-cols-3 text-left border-y border-border py-6">
+              {[
+                { step: '01', title: 'Add a photo or PDF', detail: 'Use your camera or choose a document.' },
+                { step: '02', title: 'Review what’s clear', detail: 'Uncertain text is called out—not filled in.' },
+                { step: '03', title: 'Take questions with you', detail: 'Save a summary and discuss it with a professional.' },
+              ].map((item) => (
+                <div key={item.step} className="flex gap-3">
+                  <span className="font-mono text-xs text-primary pt-1">{item.step}</span>
+                  <div>
+                    <h2 className="font-semibold text-sm mb-1">{item.title}</h2>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{item.detail}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </motion.div>
 
@@ -162,20 +173,6 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16 max-w-2xl mx-auto">
-            {stats.map((s, i) => {
-              const Icon = s.icon;
-              return (
-                <ScrollReveal key={i} delay={i * 0.08}>
-                  <div className="bg-card rounded-xl border border-border p-5 text-center hover:shadow-glow hover:border-primary/20 hover:scale-105 transition-all duration-300">
-                    <Icon className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <div className="text-xl font-bold font-display">{s.value}</div>
-                    <div className="text-xs text-muted-foreground">{s.label}</div>
-                  </div>
-                </ScrollReveal>
-              );
-            })}
-          </div>
         </div>
       </section>
 
