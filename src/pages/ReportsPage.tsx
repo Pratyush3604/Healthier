@@ -1,24 +1,83 @@
 import { authHeaders, handleLimitResponse } from '@/lib/aiFetch';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FileText, Upload, X, Loader2, AlertTriangle, RefreshCw, Camera } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import jsPDF from 'jspdf';
+import { FileText, Upload, X, Loader2, AlertTriangle, RefreshCw, Camera, FileSearch, ClipboardCheck, Copy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { FloatingBackground } from '@/components/FloatingBackground';
+import { extractClinicianQuestions, validateReportFile } from '@/lib/reportDocuments';
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
+type ReportMode = 'lab' | 'prescription' | 'unknown';
+type SelectedDocument = { dataUrl: string; mimeType: string; name: string };
+
+function saveAnalysisAsPdf(analysis: string, mode: ReportMode) {
+  const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+  const width = pdf.internal.pageSize.getWidth();
+  const height = pdf.internal.pageSize.getHeight();
+  const margin = 48;
+  const title = mode === 'lab' ? 'Lab report summary' : mode === 'prescription' ? 'Prescription reading notes' : 'Document reading notes';
+
+  pdf.setTextColor(20, 70, 82);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(20);
+  pdf.text('Healthier', margin, 54);
+  pdf.setFontSize(14);
+  pdf.text(title, margin, 82);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.setTextColor(100, 100, 100);
+  pdf.text(`Created ${new Date().toLocaleDateString()}`, margin, 100);
+
+  let y = 128;
+  pdf.setFontSize(11);
+  pdf.setTextColor(35, 45, 48);
+  const lines = pdf.splitTextToSize(analysis.replace(/[#*`]/g, ''), width - margin * 2);
+  for (const line of lines) {
+    if (y > height - 100) {
+      pdf.addPage();
+      y = margin;
+    }
+    pdf.text(line, margin, y);
+    y += 15;
+  }
+
+  if (y > height - 125) {
+    pdf.addPage();
+    y = margin;
+  }
+  pdf.setDrawColor(180, 140, 50);
+  pdf.line(margin, y + 4, width - margin, y + 4);
+  pdf.setFontSize(9);
+  pdf.setTextColor(100, 80, 40);
+  pdf.text(pdf.splitTextToSize('For information only—not a diagnosis or treatment plan. Verify every result and medication instruction against the original document with a qualified clinician or pharmacist. Do not change or start medication based on this summary.', width - margin * 2), margin, y + 22);
+  pdf.save(`healthier-${mode}-notes-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
 
 export default function ReportsPage() {
-  const [image, setImage] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const [document, setDocument] = useState<SelectedDocument | null>(null);
+  const [mode, setMode] = useState<ReportMode>(() => {
+    const kind = searchParams.get('kind');
+    return kind === 'lab' || kind === 'prescription' ? kind : 'unknown';
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [extraContext, setExtraContext] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
+  const questions = analysis ? extractClinicianQuestions(analysis) : null;
+
+  useEffect(() => () => streamRef.current?.getTracks().forEach(track => track.stop()), []);
 
   const startCamera = async () => {
     try {
@@ -36,8 +95,8 @@ export default function ReportsPage() {
           videoRef.current.play().catch(() => {});
         }
       }, 50);
-    } catch (err: any) {
-      const name = err?.name || '';
+    } catch (err) {
+      const name = err instanceof DOMException ? err.name : '';
       let msg = 'Could not access camera.';
       if (name === 'NotAllowedError') msg = 'Camera permission denied. Allow camera in browser settings.';
       else if (name === 'NotFoundError') msg = 'No camera found on this device.';
@@ -55,46 +114,59 @@ export default function ReportsPage() {
   const capturePhoto = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
     const canvas = canvasRef.current, video = videoRef.current;
-    canvas.width = video.videoWidth || 1280;
-    canvas.height = video.videoHeight || 720;
+    const sourceWidth = video.videoWidth || 1280;
+    const sourceHeight = video.videoHeight || 720;
+    const scale = Math.min(1, 2200 / Math.max(sourceWidth, sourceHeight));
+    canvas.width = Math.round(sourceWidth * scale);
+    canvas.height = Math.round(sourceHeight * scale);
     canvas.getContext('2d')?.drawImage(video, 0, 0);
-    setImage(canvas.toDataURL('image/jpeg', 0.92));
+    setDocument({ dataUrl: canvas.toDataURL('image/jpeg', 0.88), mimeType: 'image/jpeg', name: 'camera-photo.jpg' });
     stopCamera();
   }, []);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setImage(reader.result as string);
-      reader.readAsDataURL(file);
+  const loadFile = (file?: File) => {
+    if (!file) return;
+    const validationError = validateReportFile(file);
+    if (validationError) {
+      toast({ title: 'Choose another file', description: validationError, variant: 'destructive' });
+      return;
     }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result !== 'string') {
+        toast({ title: 'Could not open file', description: 'Try another photo or PDF.', variant: 'destructive' });
+        return;
+      }
+      const mimeType = file.type || 'application/pdf';
+      setDocument({ dataUrl: reader.result, mimeType, name: file.name });
+      setAnalysis(null);
+    };
+    reader.onerror = () => toast({ title: 'Could not open file', description: 'Try another photo or PDF.', variant: 'destructive' });
+    reader.readAsDataURL(file);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = () => setImage(reader.result as string);
-      reader.readAsDataURL(file);
-    }
+    loadFile(e.dataTransfer.files?.[0]);
   };
 
-  const clearImage = () => { setImage(null); setAnalysis(null); };
+  const clearDocument = () => { setDocument(null); setAnalysis(null); if (fileInputRef.current) fileInputRef.current.value = ''; };
 
   const handleAnalyze = async () => {
-    if (!image) return;
+    if (!document) return;
     setIsLoading(true);
     setAnalysis(null);
     try {
       const response = await fetch(ANALYZE_URL, {
         method: 'POST',
         headers: await authHeaders(),
-        body: JSON.stringify({ imageBase64: image, type: 'report' }),
+        body: JSON.stringify({ imageBase64: document.dataUrl, mimeType: document.mimeType, fileName: document.name, type: 'report', reportMode: mode, context: extraContext }),
       });
       if (await handleLimitResponse(response)) return;
-      if (!response.ok) throw new Error('Analysis failed');
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(typeof errorBody?.error === 'string' ? errorBody.error : 'Could not read this document. Please try again.');
+      }
 
       const data = await response.json();
       if (data.error) throw new Error(data.error);
@@ -105,14 +177,14 @@ export default function ReportsPage() {
       existing.push({
         id: `report-${Date.now()}`,
         type: 'report-analysis',
-        title: `Medical Report Analysis`,
+        title: mode === 'lab' ? 'Lab report summary' : mode === 'prescription' ? 'Prescription reading notes' : 'Health document summary',
         date: new Date().toISOString().split('T')[0],
         summary: data.analysis.slice(0, 150) + '...',
         details: data.analysis,
       });
       localStorage.setItem('healthier-reports', JSON.stringify(existing));
-    } catch (error: any) {
-      toast({ title: 'Error', description: error.message || 'Failed to analyze.', variant: 'destructive' });
+    } catch (error) {
+      toast({ title: 'Could not analyze document', description: error instanceof Error ? error.message : 'Please try again.', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
