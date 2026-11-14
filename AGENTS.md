@@ -1,0 +1,1 @@
+Keep report upload validation and local summary handling in the client utility; the existing edge function owns trusted AI instructions and server-side payload checks because browser inputs are untrusted.
