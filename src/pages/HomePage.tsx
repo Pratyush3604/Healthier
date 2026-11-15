@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Stethoscope, Activity, FileText, MessageCircle,
-  BookOpen, Lightbulb, Phone, Shield, Zap, Heart,
-  Sparkles, Pill, Scan, Calculator,
-  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, Lock, HelpCircle, Globe, X,
+  BookOpen, Lightbulb, Phone, Shield,
+  Pill, Scan, Calculator,
+  ClipboardList, TrendingUp, Monitor, Apple, Dumbbell, ChevronRight, HelpCircle, Globe, X,
   FileSearch, ArrowRight, ClipboardCheck
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ScrollReveal';
