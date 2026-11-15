@@ -162,7 +162,8 @@ export default function ReportsPage() {
         headers: await authHeaders(),
         body: JSON.stringify({ imageBase64: document.dataUrl, mimeType: document.mimeType, fileName: document.name, type: 'report', reportMode: mode, context: extraContext }),
       });
-      if (await handleLimitResponse(response)) return;
+      const quotaBody = response.status === 429 ? await response.clone().json().catch(() => null) : null;
+      if ((response.status !== 429 || quotaBody?.code === 'quota') && await handleLimitResponse(response)) return;
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
         throw new Error(typeof errorBody?.error === 'string' ? errorBody.error : 'Could not read this document. Please try again.');
