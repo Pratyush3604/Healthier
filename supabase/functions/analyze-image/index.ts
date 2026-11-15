@@ -65,7 +65,7 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    if (actualMime === "application/pdf" && !base64Payload.startsWith("JVBERi0")) {
+    if (actualMime === "application/pdf" && !atob(base64Payload.slice(0, 1368)).includes("%PDF-")) {
       return new Response(JSON.stringify({ error: "This PDF could not be verified. Choose another file." }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -202,6 +202,8 @@ What typically causes this type of condition.${safetyRule}`;
       const errorBody = await response.json().catch(() => null);
       const safeMessage = typeof errorBody?.error?.message === "string"
         ? errorBody.error.message.slice(0, 500)
+        : typeof errorBody?.error === "string"
+          ? errorBody.error.slice(0, 500)
         : typeof errorBody?.message === "string"
           ? errorBody.message.slice(0, 500)
           : "Document analysis could not be completed.";
