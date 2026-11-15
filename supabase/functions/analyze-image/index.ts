@@ -43,7 +43,7 @@ serve(async (req) => {
       });
     }
 
-    const dataUrlMatch = imageBase64.match(/^data:(application\/pdf|image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/i);
+    const dataUrlMatch = imageBase64.match(/^data:(application\/pdf|image\/(?:jpeg|png|webp));base64,((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)$/i);
     if (!dataUrlMatch) {
       return new Response(JSON.stringify({ error: "Use a PDF, JPG, PNG, or WebP file." }), {
         status: 400,
@@ -84,7 +84,7 @@ serve(async (req) => {
       });
     }
     if (actualMime === "image/webp") {
-      const imageHeader = atob(base64Payload.slice(0, 20));
+      const imageHeader = base64Payload.length >= 16 ? atob(base64Payload.slice(0, 16)) : "";
       if (!imageHeader.startsWith("RIFF") || imageHeader.slice(8, 12) !== "WEBP") {
         return new Response(JSON.stringify({ error: "This image could not be verified. Choose a JPG, PNG, or WebP photo." }), {
           status: 400,
