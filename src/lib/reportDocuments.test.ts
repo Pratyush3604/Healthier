@@ -9,6 +9,7 @@ describe('report document validation', () => {
     expect(validateReportFile(fileInfo('scan.jpg', 'image/jpeg', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.png', 'image/png', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.webp', 'image/webp', 100))).toBeNull();
+    expect(validateReportFile(fileInfo('scan.jpeg', '', 100))).toBeNull();
   });
 
   it('rejects empty, oversized, and unsupported files', () => {

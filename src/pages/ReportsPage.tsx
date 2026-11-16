@@ -162,11 +162,14 @@ export default function ReportsPage() {
         headers: await authHeaders(),
         body: JSON.stringify({ imageBase64: document.dataUrl, mimeType: document.mimeType, fileName: document.name, type: 'report', reportMode: mode, context: extraContext }),
       });
-      const quotaBody = response.status === 429 ? await response.clone().json().catch(() => null) : null;
-      if ((response.status !== 429 || quotaBody?.code === 'quota') && await handleLimitResponse(response)) return;
+      const errorBody = response.status === 401 || response.status === 429
+        ? await response.clone().json().catch(() => null)
+        : null;
+      if (response.status === 429 && errorBody?.code === 'quota' && await handleLimitResponse(response)) return;
+      if (response.status === 401 && errorBody?.code !== 'gateway_configuration' && await handleLimitResponse(response)) return;
       if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(typeof errorBody?.error === 'string' ? errorBody.error : 'Could not read this document. Please try again.');
+        const failure = errorBody ?? await response.json().catch(() => null);
+        throw new Error(typeof failure?.error === 'string' ? failure.error : 'Could not read this document. Please try again.');
       }
 
       const data = await response.json();
@@ -216,7 +219,7 @@ export default function ReportsPage() {
                   { id: 'prescription', label: 'Prescription', icon: ClipboardCheck },
                   { id: 'unknown', label: 'Not sure', icon: FileSearch },
                 ] as const).map(({ id, label, icon: Icon }) => (
-                  <Button key={id} variant={mode === id ? 'default' : 'outline'} onClick={() => setMode(id)} aria-pressed={mode === id}>
+                  <Button key={id} variant={mode === id ? 'default' : 'outline'} onClick={() => { setMode(id); setAnalysis(null); }} aria-pressed={mode === id}>
                     <Icon className="h-4 w-4" />{label}
                   </Button>
                 ))}

@@ -5,7 +5,14 @@ const supportedTypes = new Set(['application/pdf', 'image/jpeg', 'image/png', 'i
 export function validateReportFile(file: Pick<File, 'name' | 'type' | 'size'>): string | null {
   const mimeType = file.type.toLowerCase();
   const extension = file.name.split('.').pop()?.toLowerCase();
-  const effectiveType = mimeType || (extension === 'pdf' ? 'application/pdf' : '');
+  const extensionType: Record<string, string> = {
+    pdf: 'application/pdf',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+  };
+  const effectiveType = mimeType || extensionType[extension ?? ''] || '';
 
   if (!supportedTypes.has(effectiveType)) return 'Choose a PDF, JPG, PNG, or WebP file.';
   if (file.size <= 0) return 'That file is empty. Choose another file.';
