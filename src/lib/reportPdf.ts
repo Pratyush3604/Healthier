@@ -2,8 +2,20 @@ import jsPDF from 'jspdf';
 
 export type ReportMode = 'lab' | 'prescription' | 'unknown';
 
-export function saveAnalysisAsPdf(analysis: string, mode: ReportMode, date = new Date()) {
-  const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+export interface PdfDocument {
+  internal: { pageSize: { getWidth: () => number; getHeight: () => number } };
+  setTextColor: (...args: number[]) => void;
+  setFont: (...args: string[]) => void;
+  setFontSize: (size: number) => void;
+  text: (text: string | string[], x: number, y: number) => void;
+  splitTextToSize: (text: string, width: number) => string[];
+  addPage: () => unknown;
+  setDrawColor: (...args: number[]) => void;
+  line: (x1: number, y1: number, x2: number, y2: number) => void;
+  save: (filename: string) => void;
+}
+
+export function writeReportPdf(pdf: PdfDocument, analysis: string, mode: ReportMode, date = new Date()) {
   const width = pdf.internal.pageSize.getWidth();
   const height = pdf.internal.pageSize.getHeight();
   const margin = 48;
@@ -24,13 +36,15 @@ export function saveAnalysisAsPdf(analysis: string, mode: ReportMode, date = new
   pdf.setFontSize(11);
   pdf.setTextColor(35, 45, 48);
   const lines = pdf.splitTextToSize(analysis.replace(/[#*`]/g, ''), width - margin * 2);
-  for (const line of lines) {
-    if (y > height - 100) {
+  const bodyLineHeight = 15;
+  const footerTop = height - margin - 64;
+  for (let index = 0; index < lines.length; index += 1) {
+    if (y > footerTop) {
       pdf.addPage();
       y = margin;
     }
-    pdf.text(line, margin, y);
-    y += 15;
+    pdf.text(lines[index], margin, y);
+    y += bodyLineHeight;
   }
 
   const disclaimer = pdf.splitTextToSize(
@@ -48,4 +62,8 @@ export function saveAnalysisAsPdf(analysis: string, mode: ReportMode, date = new
   pdf.setTextColor(100, 80, 40);
   pdf.text(disclaimer, margin, y + 22);
   pdf.save(`healthier-${mode}-notes-${date.toISOString().slice(0, 10)}.pdf`);
+}
+
+export function saveAnalysisAsPdf(analysis: string, mode: ReportMode, date = new Date()) {
+  writeReportPdf(new jsPDF({ unit: 'pt', format: 'a4' }), analysis, mode, date);
 }
