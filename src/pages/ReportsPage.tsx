@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { FloatingBackground } from '@/components/FloatingBackground';
-import { extractClinicianQuestions, validateReportFile } from '@/lib/reportDocuments';
+import { extractClinicianQuestions, reportMimeType, validateReportFile } from '@/lib/reportDocuments';
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
 type ReportMode = 'lab' | 'prescription' | 'unknown';
@@ -137,8 +137,13 @@ export default function ReportsPage() {
         toast({ title: 'Could not open file', description: 'Try another photo or PDF.', variant: 'destructive' });
         return;
       }
-      const mimeType = file.type || 'application/pdf';
-      setDocument({ dataUrl: reader.result, mimeType, name: file.name });
+      const mimeType = reportMimeType(file);
+      if (!mimeType) {
+        toast({ title: 'Unsupported file', description: 'Choose a PDF, JPG, PNG, or WebP file.', variant: 'destructive' });
+        return;
+      }
+      const dataUrl = reader.result.replace(/^data:[^;,]+;base64,/, `data:${mimeType};base64,`);
+      setDocument({ dataUrl, mimeType, name: file.name });
       setAnalysis(null);
     };
     reader.onerror = () => toast({ title: 'Could not open file', description: 'Try another photo or PDF.', variant: 'destructive' });

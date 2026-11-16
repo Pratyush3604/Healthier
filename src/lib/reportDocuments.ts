@@ -1,20 +1,23 @@
 export const MAX_REPORT_FILE_BYTES = 10 * 1024 * 1024;
 
 const supportedTypes = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
+const extensionTypes: Record<string, string> = {
+  pdf: 'application/pdf',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+};
+
+export function reportMimeType(file: Pick<File, 'name' | 'type'>): string | null {
+  const mimeType = file.type.toLowerCase();
+  const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+  const candidate = mimeType || extensionTypes[extension] || '';
+  return supportedTypes.has(candidate) ? candidate : null;
+}
 
 export function validateReportFile(file: Pick<File, 'name' | 'type' | 'size'>): string | null {
-  const mimeType = file.type.toLowerCase();
-  const extension = file.name.split('.').pop()?.toLowerCase();
-  const extensionType: Record<string, string> = {
-    pdf: 'application/pdf',
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    webp: 'image/webp',
-  };
-  const effectiveType = mimeType || extensionType[extension ?? ''] || '';
-
-  if (!supportedTypes.has(effectiveType)) return 'Choose a PDF, JPG, PNG, or WebP file.';
+  if (!reportMimeType(file)) return 'Choose a PDF, JPG, PNG, or WebP file.';
   if (file.size <= 0) return 'That file is empty. Choose another file.';
   if (file.size > MAX_REPORT_FILE_BYTES) return 'Files must be 10 MB or smaller.';
   return null;
