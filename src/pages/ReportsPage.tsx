@@ -3,61 +3,18 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import jsPDF from 'jspdf';
 import { FileText, Upload, X, Loader2, AlertTriangle, RefreshCw, Camera, FileSearch, ClipboardCheck, Copy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { FloatingBackground } from '@/components/FloatingBackground';
-import { extractClinicianQuestions, validateReportFile } from '@/lib/reportDocuments';
+import { extractClinicianQuestions, reportMimeType, validateReportFile } from '@/lib/reportDocuments';
+import { saveAnalysisAsPdf } from '@/lib/reportPdf';
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
 type ReportMode = 'lab' | 'prescription' | 'unknown';
 type SelectedDocument = { dataUrl: string; mimeType: string; name: string };
-
-function saveAnalysisAsPdf(analysis: string, mode: ReportMode) {
-  const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
-  const width = pdf.internal.pageSize.getWidth();
-  const height = pdf.internal.pageSize.getHeight();
-  const margin = 48;
-  const title = mode === 'lab' ? 'Lab report summary' : mode === 'prescription' ? 'Prescription reading notes' : 'Document reading notes';
-
-  pdf.setTextColor(20, 70, 82);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(20);
-  pdf.text('Healthier', margin, 54);
-  pdf.setFontSize(14);
-  pdf.text(title, margin, 82);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(100, 100, 100);
-  pdf.text(`Created ${new Date().toLocaleDateString()}`, margin, 100);
-
-  let y = 128;
-  pdf.setFontSize(11);
-  pdf.setTextColor(35, 45, 48);
-  const lines = pdf.splitTextToSize(analysis.replace(/[#*`]/g, ''), width - margin * 2);
-  for (const line of lines) {
-    if (y > height - 100) {
-      pdf.addPage();
-      y = margin;
-    }
-    pdf.text(line, margin, y);
-    y += 15;
-  }
-
-  if (y > height - 125) {
-    pdf.addPage();
-    y = margin;
-  }
-  pdf.setDrawColor(180, 140, 50);
-  pdf.line(margin, y + 4, width - margin, y + 4);
-  pdf.setFontSize(9);
-  pdf.setTextColor(100, 80, 40);
-  pdf.text(pdf.splitTextToSize('For information only—not a diagnosis or treatment plan. Verify every result and medication instruction against the original document with a qualified clinician or pharmacist. Do not change or start medication based on this summary.', width - margin * 2), margin, y + 22);
-  pdf.save(`healthier-${mode}-notes-${new Date().toISOString().slice(0, 10)}.pdf`);
-}
 
 export default function ReportsPage() {
   const [searchParams] = useSearchParams();
@@ -137,8 +94,13 @@ export default function ReportsPage() {
         toast({ title: 'Could not open file', description: 'Try another photo or PDF.', variant: 'destructive' });
         return;
       }
-      const mimeType = file.type || 'application/pdf';
-      setDocument({ dataUrl: reader.result, mimeType, name: file.name });
+      const mimeType = reportMimeType(file);
+      if (!mimeType) {
+        toast({ title: 'Unsupported file', description: 'Choose a PDF, JPG, PNG, or WebP file.', variant: 'destructive' });
+        return;
+      }
+      const dataUrl = reader.result.replace(/^data:[^;,]+;base64,/, `data:${mimeType};base64,`);
+      setDocument({ dataUrl, mimeType, name: file.name });
       setAnalysis(null);
     };
     reader.onerror = () => toast({ title: 'Could not open file', description: 'Try another photo or PDF.', variant: 'destructive' });
@@ -162,11 +124,14 @@ export default function ReportsPage() {
         headers: await authHeaders(),
         body: JSON.stringify({ imageBase64: document.dataUrl, mimeType: document.mimeType, fileName: document.name, type: 'report', reportMode: mode, context: extraContext }),
       });
-      const quotaBody = response.status === 429 ? await response.clone().json().catch(() => null) : null;
-      if ((response.status !== 429 || quotaBody?.code === 'quota') && await handleLimitResponse(response)) return;
+      const errorBody = response.status === 401 || response.status === 429
+        ? await response.clone().json().catch(() => null)
+        : null;
+      if (response.status === 429 && errorBody?.code === 'quota' && await handleLimitResponse(response)) return;
+      if (response.status === 401 && errorBody?.code !== 'gateway_configuration' && await handleLimitResponse(response)) return;
       if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(typeof errorBody?.error === 'string' ? errorBody.error : 'Could not read this document. Please try again.');
+        const failure = errorBody ?? await response.json().catch(() => null);
+        throw new Error(typeof failure?.error === 'string' ? failure.error : 'Could not read this document. Please try again.');
       }
 
       const data = await response.json();
@@ -216,7 +181,7 @@ export default function ReportsPage() {
                   { id: 'prescription', label: 'Prescription', icon: ClipboardCheck },
                   { id: 'unknown', label: 'Not sure', icon: FileSearch },
                 ] as const).map(({ id, label, icon: Icon }) => (
-                  <Button key={id} variant={mode === id ? 'default' : 'outline'} onClick={() => setMode(id)} aria-pressed={mode === id}>
+                  <Button key={id} variant={mode === id ? 'default' : 'outline'} onClick={() => { setMode(id); setAnalysis(null); }} aria-pressed={mode === id}>
                     <Icon className="h-4 w-4" />{label}
                   </Button>
                 ))}

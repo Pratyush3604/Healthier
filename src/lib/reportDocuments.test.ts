@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extractClinicianQuestions, MAX_REPORT_FILE_BYTES, validateReportFile } from './reportDocuments';
+import { extractClinicianQuestions, MAX_REPORT_FILE_BYTES, reportMimeType, validateReportFile } from './reportDocuments';
 
 const fileInfo = (name: string, type: string, size: number) => ({ name, type, size });
 
@@ -9,6 +9,9 @@ describe('report document validation', () => {
     expect(validateReportFile(fileInfo('scan.jpg', 'image/jpeg', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.png', 'image/png', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.webp', 'image/webp', 100))).toBeNull();
+    expect(validateReportFile(fileInfo('scan.jpeg', '', 100))).toBeNull();
+    expect(reportMimeType(fileInfo('scan.jpeg', ''))).toBe('image/jpeg');
+    expect(reportMimeType(fileInfo('results.pdf', ''))).toBe('application/pdf');
   });
 
   it('rejects empty, oversized, and unsupported files', () => {
