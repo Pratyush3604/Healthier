@@ -3,7 +3,6 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import jsPDF from 'jspdf';
 import { FileText, Upload, X, Loader2, AlertTriangle, RefreshCw, Camera, FileSearch, ClipboardCheck, Copy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,53 +10,11 @@ import { useToast } from '@/hooks/use-toast';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { FloatingBackground } from '@/components/FloatingBackground';
 import { extractClinicianQuestions, reportMimeType, validateReportFile } from '@/lib/reportDocuments';
+import { saveAnalysisAsPdf } from '@/lib/reportPdf';
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
 type ReportMode = 'lab' | 'prescription' | 'unknown';
 type SelectedDocument = { dataUrl: string; mimeType: string; name: string };
-
-function saveAnalysisAsPdf(analysis: string, mode: ReportMode) {
-  const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
-  const width = pdf.internal.pageSize.getWidth();
-  const height = pdf.internal.pageSize.getHeight();
-  const margin = 48;
-  const title = mode === 'lab' ? 'Lab report summary' : mode === 'prescription' ? 'Prescription reading notes' : 'Document reading notes';
-
-  pdf.setTextColor(20, 70, 82);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(20);
-  pdf.text('Healthier', margin, 54);
-  pdf.setFontSize(14);
-  pdf.text(title, margin, 82);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(100, 100, 100);
-  pdf.text(`Created ${new Date().toLocaleDateString()}`, margin, 100);
-
-  let y = 128;
-  pdf.setFontSize(11);
-  pdf.setTextColor(35, 45, 48);
-  const lines = pdf.splitTextToSize(analysis.replace(/[#*`]/g, ''), width - margin * 2);
-  for (const line of lines) {
-    if (y > height - 100) {
-      pdf.addPage();
-      y = margin;
-    }
-    pdf.text(line, margin, y);
-    y += 15;
-  }
-
-  if (y > height - 125) {
-    pdf.addPage();
-    y = margin;
-  }
-  pdf.setDrawColor(180, 140, 50);
-  pdf.line(margin, y + 4, width - margin, y + 4);
-  pdf.setFontSize(9);
-  pdf.setTextColor(100, 80, 40);
-  pdf.text(pdf.splitTextToSize('For information only—not a diagnosis or treatment plan. Verify every result and medication instruction against the original document with a qualified clinician or pharmacist. Do not change or start medication based on this summary.', width - margin * 2), margin, y + 22);
-  pdf.save(`healthier-${mode}-notes-${new Date().toISOString().slice(0, 10)}.pdf`);
-}
 
 export default function ReportsPage() {
   const [searchParams] = useSearchParams();
