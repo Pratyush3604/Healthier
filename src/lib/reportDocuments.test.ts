@@ -10,8 +10,8 @@ describe('report document validation', () => {
     expect(validateReportFile(fileInfo('scan.png', 'image/png', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.webp', 'image/webp', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.jpeg', '', 100))).toBeNull();
-    expect(reportMimeType(fileInfo('scan.jpeg', ''))).toBe('image/jpeg');
-    expect(reportMimeType(fileInfo('results.pdf', ''))).toBe('application/pdf');
+    expect(reportMimeType(fileInfo('scan.jpeg', '', 100))).toBe('image/jpeg');
+    expect(reportMimeType(fileInfo('results.pdf', '', 100))).toBe('application/pdf');
   });
 
   it('rejects empty, oversized, and unsupported files', () => {
