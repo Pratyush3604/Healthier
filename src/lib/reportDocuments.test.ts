@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extractClinicianQuestions, MAX_REPORT_FILE_BYTES, reportMimeType, validateReportFile } from './reportDocuments';
+import { extractClinicianQuestions, MAX_REPORT_FILE_BYTES, removeClinicianQuestions, reportMimeType, validateReportFile } from './reportDocuments';
 
 const fileInfo = (name: string, type: string, size: number) => ({ name, type, size });
 
@@ -10,8 +10,8 @@ describe('report document validation', () => {
     expect(validateReportFile(fileInfo('scan.png', 'image/png', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.webp', 'image/webp', 100))).toBeNull();
     expect(validateReportFile(fileInfo('scan.jpeg', '', 100))).toBeNull();
-    expect(reportMimeType(fileInfo('scan.jpeg', ''))).toBe('image/jpeg');
-    expect(reportMimeType(fileInfo('results.pdf', ''))).toBe('application/pdf');
+    expect(reportMimeType(fileInfo('scan.jpeg', '', 100))).toBe('image/jpeg');
+    expect(reportMimeType(fileInfo('results.pdf', '', 100))).toBe('application/pdf');
   });
 
   it('rejects empty, oversized, and unsupported files', () => {
@@ -29,5 +29,10 @@ describe('clinician question extraction', () => {
 
   it('returns null when no questions section is present', () => {
     expect(extractClinicianQuestions('## Summary\nDiscuss the result with your clinician.')).toBeNull();
+  });
+
+  it('removes the question section from the main summary to prevent duplicate display', () => {
+    expect(removeClinicianQuestions('## Summary\nReview this value.\n\n## Questions to Ask Your Clinician\n- What does it mean?\n\n## Next step\nAsk your doctor.'))
+      .toBe('## Summary\nReview this value.\n\n## Next step\nAsk your doctor.');
   });
 });

@@ -29,3 +29,10 @@ export function extractClinicianQuestions(analysis: string): string | null {
   );
   return match?.[1]?.trim() || null;
 }
+
+export function removeClinicianQuestions(analysis: string): string {
+  return analysis.replace(
+    /(?:^|\n)#{1,4}\s*Questions to Ask Your Clinician\s*\n[\s\S]*?(?=\n#{1,4}\s|$)/i,
+    '',
+  ).trim();
+}

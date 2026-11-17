@@ -21,7 +21,7 @@ const makePdf = (height: number) => {
 
 describe('report PDF export', () => {
   it('moves the safety disclaimer to a new page if it would be clipped', () => {
-    const { pdf, pages, saved } = makePdf(400);
+    const { pdf, pages, saved } = makePdf(240);
     writeReportPdf(pdf, 'A short summary.', 'lab', new Date('2026-11-16T00:00:00.000Z'));
     expect(pages.count).toBe(2);
     expect(saved).toHaveBeenCalledWith('healthier-lab-notes-2026-11-16.pdf');
