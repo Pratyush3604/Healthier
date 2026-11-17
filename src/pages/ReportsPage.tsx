@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { FloatingBackground } from '@/components/FloatingBackground';
-import { extractClinicianQuestions, reportMimeType, validateReportFile } from '@/lib/reportDocuments';
+import { extractClinicianQuestions, removeClinicianQuestions, reportMimeType, validateReportFile } from '@/lib/reportDocuments';
 import { saveAnalysisAsPdf } from '@/lib/reportPdf';
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
@@ -248,7 +248,7 @@ export default function ReportsPage() {
                     <Button variant="outline" size="sm" onClick={() => saveAnalysisAsPdf(analysis, mode)}><FileText className="h-4 w-4" />Save PDF</Button>
                   </div>
                   <div data-no-translate className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground">
-                    <ReactMarkdown>{analysis}</ReactMarkdown>
+                    <ReactMarkdown>{removeClinicianQuestions(analysis)}</ReactMarkdown>
                   </div>
                   {questions && (
                     <div className="mt-6 pt-5 border-t border-border">
